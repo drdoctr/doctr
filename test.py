@@ -18,4 +18,4 @@ pad = padding.OAEP(
     label=None
      )
 
-print(base64.encodebytes(key.encrypt(b'a=b', pad)))
+print(base64.b64encode(key.encrypt(b'a=b', pad)))
