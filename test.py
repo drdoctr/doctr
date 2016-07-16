@@ -1,7 +1,6 @@
 import requests
 
 from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
@@ -12,10 +11,6 @@ r = requests.get('https://api.travis-ci.org/repos/gforsyth/travis_docs_builder/k
 public_key = r.json()['key'].replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
 key = serialization.load_pem_public_key(public_key, backend=default_backend())
 
-pad = padding.OAEP(
-    mgf=padding.MGF1(algorithm=hashes.SHA1()),
-    algorithm=hashes.SHA1(),
-    label=None
-     )
+pad = padding.PKCS1v15()
 
 print(base64.b64encode(key.encrypt(b'a=b', pad)))
