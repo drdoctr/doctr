@@ -194,11 +194,11 @@ if __name__ == '__main__':
         setup_GitHub_push()
         commit_docs()
     else:
-        repo = input("What repo to you want to build the docs for? ")
         username = input("What is your GitHub username? ")
-
         token = generate_GitHub_token(username)
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token), repo=repo)
+
+        repo = input("What repo to you want to build the docs for? ")
+        encrypted_variable = encrypt_variable(b"GH_TOKEN={token}".format(token=token), repo=repo)
         travis_content = """
 env:
   global:
