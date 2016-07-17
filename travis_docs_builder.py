@@ -109,8 +109,8 @@ def run(args):
     token = token.encode('utf-8')
 
     out, err = run_command_hiding_token(args, token)
-    print(out.encode('utf-8'))
-    print(err.encode('utf-8'), sys.stderr)
+    print(out.decode('utf-8'))
+    print(err.decode('utf-8'), sys.stderr)
 
 def setup_GitHub_push(repo):
     """
