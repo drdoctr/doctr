@@ -160,8 +160,6 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     Assumes that setup_GitHub_push() has been run, which sets up the
     origin_token remote.
     """
-    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
-
     token = os.environ.get("GH_TOKEN", None)
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
@@ -177,7 +175,17 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     os.rename(tmp_dir, gh_pages_docs)
     run(['git', 'add', '-A', gh_pages_docs])
 
-        # Only push if there were changes
+def push_docs():
+    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
+
+    token = os.environ.get("GH_TOKEN", None)
+    if not token:
+        raise RuntimeError("GH_TOKEN environment variable not set")
+    token = token.encode('utf-8')
+
+    run = lambda args: run_command_hiding_token(args, token)
+
+    # Only push if there were changes
     if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
 
@@ -198,6 +206,7 @@ if __name__ == '__main__':
         repo = sys.argv[1]
         setup_GitHub_push(repo)
         commit_docs()
+        push_docs()
     else:
         username = input("What is your GitHub username? ")
         token = generate_GitHub_token(username)
