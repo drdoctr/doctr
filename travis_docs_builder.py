@@ -165,7 +165,9 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
 
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
-    shutil.rmtree(gh_pages_docs)
+    if os.exists(gh_pages_docs):
+        # Won't exist on the first build
+        shutil.rmtree(gh_pages_docs)
     os.rename(tmp_dir, gh_pages_docs)
     run(['git', 'add', '-A', gh_pages_docs])
 
