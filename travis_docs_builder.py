@@ -159,7 +159,7 @@ def setup_GitHub_push(repo):
 
     print("Adding token remote")
     run(['git', 'remote', 'add', 'origin_token',
-        'https://{token}@github.com/{repo}.git'.format(token=token, repo=repo)])
+        'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'), repo=repo)])
     print("Fetching token remote")
     run(['git', 'fetch', 'origin_token'])
     print("Checking out gh-pages")
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         token = generate_GitHub_token(username)
 
         repo = input("What repo to you want to build the docs for? ")
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
+        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token.decode('utf-8')).encode('utf-8'), repo=repo)
         travis_content = """
 env:
   global:
