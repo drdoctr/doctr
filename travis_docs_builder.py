@@ -118,6 +118,7 @@ def setup_GitHub_push(repo):
     token = os.environ.get("GH_TOKEN", None)
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
+    token = token.encode('utf-8')
 
     run = lambda args: run_command_hiding_token(args, token)
 
@@ -164,6 +165,7 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     token = os.environ.get("GH_TOKEN", None)
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
+    token = token.encode('utf-8')
 
     run = lambda args: run_command_hiding_token(args, token)
 
