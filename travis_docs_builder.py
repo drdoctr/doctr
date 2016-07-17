@@ -155,7 +155,7 @@ def setup_GitHub_push(repo):
 
     print("Setting git attributes")
     # Should we add some user.email?
-    run(['git', 'config', '--global', 'user.name', "Conda (Travis CI)"])
+    run(['git', 'config', '--global', 'user.name', "Travis docs builder (Travis CI)"])
 
     print("Adding token remote")
     run(['git', 'remote', 'add', 'origin_token',
