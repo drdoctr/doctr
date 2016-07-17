@@ -148,7 +148,7 @@ def setup_GitHub_push(repo):
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def commit_docs(*, built_docs='docs/build/html', gh_pages_docs='docs', tmp_dir='_docs'):
+def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir='_docs'):
     """
     Commit the docs to gh-pages
 
