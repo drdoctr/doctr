@@ -119,7 +119,7 @@ def setup_GitHub_push(repo):
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
 
-    run = lambda args: run_command_hiding_token(run, token)
+    run = lambda args: run_command_hiding_token(args, token)
 
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
@@ -165,7 +165,7 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
 
-    run = lambda args: run_command_hiding_token(run, token)
+    run = lambda args: run_command_hiding_token(args, token)
 
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
