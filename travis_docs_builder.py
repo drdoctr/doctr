@@ -78,7 +78,7 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
         "scopes": ["public_repo"],
         "note": note,
         "note_url": "https://github.com/gforsyth/travis_docs_builder",
-        "fingerprint": uuid.uuid4(),
+        "fingerprint": str(uuid.uuid4()),
     }
     r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
     if r.status_code == 401:
