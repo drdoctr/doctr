@@ -138,6 +138,8 @@ def setup_GitHub_push(repo):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
+    token = get_token()
+
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
         print("This is the $TRAVIS_BRANCH branch", file=sys.stderr)
