@@ -44,3 +44,15 @@ script:
 ```
 
 in your `.travis.yml`. See [the one](.travis.yml) in this repo for example.
+
+**Heads up:** This script requires Python 3.5 or newer. Be sure to run it in a
+Python 3.5 or newer section of your build matrix. It should be in the same
+build in your build matrix as your docs build, as it reuses that.
+
+Another suggestion: Add
+
+    html: SPHINXOPTS += -W
+
+
+to your Sphinx `Makefile`. This will make Sphinx error even if there are
+warnings, keeping your docs more accurate.
