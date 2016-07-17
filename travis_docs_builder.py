@@ -166,6 +166,7 @@ def setup_GitHub_push(repo):
     print("Fetching token remote")
     run(['git', 'fetch', 'origin_token'])
     print("Checking out gh-pages")
+    # TODO: Create the remote gh-pages if it doesn't exist
     run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
     print("Done")
 
