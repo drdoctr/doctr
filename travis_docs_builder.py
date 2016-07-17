@@ -183,3 +183,26 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
         run(['git', 'push', '-q', 'origin_token', 'gh-pages'])
     else:
         print("The docs have not changed. Not updating")
+
+if __name__ == '__main__':
+    on_travis = os.environ.get("TRAVIS_JOB_NUMBER", '')
+
+    if on_travis:
+        # TODO: Get this automatically
+        repo = sys.argv[1]
+        setup_GitHub_push()
+        commit_docs()
+    else:
+        repo = input("What repo to you want to build the docs for? ")
+        username = input("What is your GitHub username? ")
+
+        token = generate_GitHub_token(username)
+        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token), repo=repo)
+        travis_content = """
+env:
+  global:
+    secure: "{encrypted_variable}
+
+""".format(encrypted_variable=encrypted_variable)
+
+        print("Put", travis_content, "in your .travis.yml")
