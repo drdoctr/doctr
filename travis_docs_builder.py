@@ -104,7 +104,7 @@ def run_command_hiding_token(args, token):
     out, err = p.stdout, p.stderr
     out = out.replace(token, b"~"*len(token))
     err = err.replace(token, b"~"*len(token))
-    return (out, err)
+    return (out, err, p.returncode)
 
 def get_token():
     """
@@ -126,9 +126,11 @@ def run(args):
     Automatically hides the secret GitHub token from the output.
     """
     token = get_token()
-    out, err = run_command_hiding_token(args, token)
+    out, err, returncode = run_command_hiding_token(args, token)
     print(out.decode('utf-8'))
     print(err.decode('utf-8'), sys.stderr)
+    if returncode != 0:
+        sys.exit(returncode)
 
 def setup_GitHub_push(repo):
     """
