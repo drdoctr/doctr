@@ -205,8 +205,8 @@ if __name__ == '__main__':
         travis_content = """
 env:
   global:
-    secure: "{encrypted_variable}
+    secure: "{encrypted_variable}"
 
-""".format(encrypted_variable=encrypted_variable)
+""".format(encrypted_variable=encrypted_variable.decode('utf-8'))
 
-        print("Put", travis_content, "in your .travis.yml")
+        print("Put\n", travis_content, "in your .travis.yml", sep='')
