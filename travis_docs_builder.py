@@ -52,7 +52,7 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
     auth = HTTPBasicAuth(username, password)
     AUTH_URL = "https://api.github.com/authorizations"
 
-    note = note or "travis_docs_builder token for pushing to ghpages from Travis"
+    note = note or "travis_docs_builder token for pushing to gh-pages from Travis"
     data = {
         "scopes": ["public_repo"],
         "note": note
