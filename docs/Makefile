@@ -54,6 +54,7 @@ clean:
 	rm -rf $(BUILDDIR)/*
 
 .PHONY: html
+html: SPHINXOPTS += -W
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
