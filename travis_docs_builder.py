@@ -98,8 +98,8 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
 def run_command_hiding_token(args, token):
     p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.stdout, p.stderr
-    out = out.replace(token, "~"*len(token))
-    err = err.replace(token, "~"*len(token))
+    out = out.replace(token, b"~"*len(token))
+    err = err.replace(token, b"~"*len(token))
     return (out, err)
 
 def setup_GitHub_push(repo):
