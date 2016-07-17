@@ -18,9 +18,12 @@ def encrypt_variable(variable, repo, public_key=None):
     Encrypt an environment variable for repo for Travis
 
     ``variable`` should be a bytes object.
+
     ``repo`` should be like 'gforsyth/travis_docs_builder'
+
     ``public_key`` should be a pem format public key, obtained from Travis if
-        not provided.
+    not provided.
+
     """
     if not isinstance(variable, bytes):
         raise TypeError("variable should be bytes")
