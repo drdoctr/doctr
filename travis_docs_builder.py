@@ -75,7 +75,8 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
     note = note or "travis_docs_builder token for pushing to gh-pages from Travis"
     data = {
         "scopes": ["public_repo"],
-        "note": note
+        "note": note,
+        "note_url": "https://github.com/gforsyth/travis_docs_builder",
     }
     r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
     if r.status_code == 401:
