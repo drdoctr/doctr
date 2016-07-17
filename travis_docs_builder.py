@@ -194,7 +194,7 @@ if __name__ == '__main__':
     if on_travis:
         # TODO: Get this automatically
         repo = sys.argv[1]
-        setup_GitHub_push()
+        setup_GitHub_push(repo)
         commit_docs()
     else:
         username = input("What is your GitHub username? ")
