@@ -10,7 +10,7 @@ awesome.
 
 Run
 
-    ./travis_docs_builder
+    ./travis_docs_builder.py
 
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
