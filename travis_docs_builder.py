@@ -102,6 +102,16 @@ def run_command_hiding_token(args, token):
     err = err.replace(token, b"~"*len(token))
     return (out, err)
 
+def run_func_for_token():
+    token = os.environ.get("GH_TOKEN", None)
+    if not token:
+        raise RuntimeError("GH_TOKEN environment variable not set")
+    token = token.encode('utf-8')
+
+    run = lambda args: run_command_hiding_token(args, token)
+
+    return run
+
 def setup_GitHub_push(repo):
     """
     Setup the remote to push to GitHub (to be run on Travis).
@@ -115,13 +125,6 @@ def setup_GitHub_push(repo):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    token = os.environ.get("GH_TOKEN", None)
-    if not token:
-        raise RuntimeError("GH_TOKEN environment variable not set")
-    token = token.encode('utf-8')
-
-    run = lambda args: run_command_hiding_token(args, token)
-
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
         print("This is the $TRAVIS_BRANCH branch", file=sys.stderr)
@@ -130,6 +133,8 @@ def setup_GitHub_push(repo):
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", sys.stderr)
         return False
+
+    run = run_func_for_token()
 
     print("Setting git attributes")
     # Should we add some user.email?
@@ -160,12 +165,7 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     Assumes that setup_GitHub_push() has been run, which sets up the
     origin_token remote.
     """
-    token = os.environ.get("GH_TOKEN", None)
-    if not token:
-        raise RuntimeError("GH_TOKEN environment variable not set")
-    token = token.encode('utf-8')
-
-    run = lambda args: run_command_hiding_token(args, token)
+    run = run_func_for_token()
 
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
@@ -178,12 +178,7 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
 def push_docs():
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
-    token = os.environ.get("GH_TOKEN", None)
-    if not token:
-        raise RuntimeError("GH_TOKEN environment variable not set")
-    token = token.encode('utf-8')
-
-    run = lambda args: run_command_hiding_token(args, token)
+    run = run_func_for_token()
 
     # Only push if there were changes
     if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
