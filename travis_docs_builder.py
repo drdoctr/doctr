@@ -10,6 +10,8 @@ import base64
 from getpass import getpass
 import os
 import subprocess
+import shutil
+import sys
 
 def encrypt_variable(variable, repo, public_key=None):
     """
@@ -103,14 +105,14 @@ def setup_GitHub_push(repo):
     variable.
 
     """
-    TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
-    ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
     token = os.environ.get("GH_TOKEN", None)
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
+
+    run = lambda args: run_command_hiding_token(run, token)
 
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
@@ -120,8 +122,6 @@ def setup_GitHub_push(repo):
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", sys.stderr)
         return False
-
-    run = lambda args: run_command_hiding_token(run, token)
 
     print("Setting git attributes")
     # Should we add some user.email?
@@ -137,3 +137,44 @@ def setup_GitHub_push(repo):
     print("Done")
 
     return True
+
+
+# Here is the logic to get the Travis job number, to only run commit_docs in
+# the right build.
+#
+# TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
+# ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
+
+def commit_docs(*, built_docs='docs/build/html', gh_pages_docs='docs', tmp_dir='_docs'):
+    """
+    Commit the docs to gh-pages
+
+    Assumes that setup_GitHub_push() has been run, which sets up the
+    origin_token remote.
+    """
+    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
+
+    token = os.environ.get("GH_TOKEN", None)
+    if not token:
+        raise RuntimeError("GH_TOKEN environment variable not set")
+
+    run = lambda args: run_command_hiding_token(run, token)
+
+    print("Moving built docs into place")
+    shutil.copytree(built_docs, tmp_dir)
+    shutil.rmtree(gh_pages_docs)
+    os.rename(tmp_dir, gh_pages_docs)
+    run(['git', 'add', '-A', gh_pages_docs])
+
+        # Only push if there were changes
+    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+
+        print("Committing")
+        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
+        print("Pulling")
+        run(["git", "pull"])
+        print("Pushing commit")
+        run(['git', 'push', '-q', 'origin_token', 'gh-pages'])
+    else:
+        print("The docs have not changed. Not updating")
