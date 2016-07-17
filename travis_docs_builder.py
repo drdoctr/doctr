@@ -99,6 +99,7 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
 def run_command_hiding_token(args, token):
     command = ' '.join(map(shlex.quote, args))
     command = command.replace(token.decode('utf-8'), '~'*len(token))
+    print(command)
     p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.stdout, p.stderr
     out = out.replace(token, b"~"*len(token))
