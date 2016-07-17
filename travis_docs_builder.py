@@ -41,6 +41,18 @@ class AuthenticationFailed(Exception):
     pass
 
 def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=None):
+    """
+    Generate a GitHub token for pushing from Travis
+
+    The scope requested is public_repo.
+
+    If no password or OTP are provided, they will be requested from the
+    command line.
+
+    The token created here can be revoked at
+    https://github.com/settings/tokens. The default note is
+    "travis_docs_builder token for pushing to gh-pages from Travis".
+    """
     if not password:
         password = getpass("Enter the GitHub password for {username}: ".format(username=username))
 
