@@ -8,6 +8,8 @@ from cryptography.hazmat.primitives import serialization
 import json
 import base64
 from getpass import getpass
+import os
+import subprocess
 
 def encrypt_variable(variable, repo, public_key=None):
     """
@@ -82,3 +84,56 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
 
     r.raise_for_status()
     return r.json()['token']
+
+# XXX: Do this in a way that is streaming
+def run_command_hiding_token(args, token):
+    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.stdout, p.stderr
+    out = out.replace(token, "~"*len(token))
+    err = err.replace(token, "~"*len(token))
+    return (out, err)
+
+def setup_GitHub_push(repo):
+    """
+    Setup the remote to push to GitHub (to be run on Travis).
+
+    This sets up the remote with the token and checks out the gh-pages branch.
+
+    The token to push to GitHub is assumed to be in the GH_TOKEN environment
+    variable.
+
+    """
+    TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
+    ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
+    TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
+    TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
+
+    token = os.environ.get("GH_TOKEN", None)
+    if not token:
+        raise RuntimeError("GH_TOKEN environment variable not set")
+
+    if TRAVIS_BRANCH != "master":
+        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
+        print("This is the $TRAVIS_BRANCH branch", file=sys.stderr)
+        return False
+
+    if TRAVIS_PULL_REQUEST != "false":
+        print("The website and docs are not pushed to gh-pages on pull requests", sys.stderr)
+        return False
+
+    run = lambda args: run_command_hiding_token(run, token)
+
+    print("Setting git attributes")
+    # Should we add some user.email?
+    run(['git', 'config', '--global', 'user.name', "Conda (Travis CI)"])
+
+    print("Adding token remote")
+    run(['git', 'remote', 'add', 'origin_token',
+        'https://{token}@github.com/{repo}.git'.format(token=token, repo=repo)])
+    print("Fetching token remote")
+    run(['git', 'fetch', 'origin_token'])
+    print("Checking out gh-pages")
+    run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
+    print("Done")
+
+    return True
