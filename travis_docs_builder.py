@@ -1,10 +1,13 @@
 import requests
+from requests.auth import HTTPBasicAuth
 
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
+import json
 import base64
+from getpass import getpass
 
 def encrypt_variable(variable, repo, public_key=None):
     """
@@ -33,3 +36,37 @@ def encrypt_variable(variable, repo, public_key=None):
     pad = padding.PKCS1v15()
 
     return base64.b64encode(key.encrypt(variable, pad))
+
+class AuthenticationFailed(Exception):
+    pass
+
+def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=None):
+    if not password:
+        password = getpass("Enter the GitHub password for {username}: ".format(username=username))
+
+    headers = headers or {}
+
+    if OTP:
+        headers['X-GitHub-OTP'] = OTP
+
+    auth = HTTPBasicAuth(username, password)
+    AUTH_URL = "https://api.github.com/authorizations"
+
+    note = note or "travis_docs_builder token for pushing to ghpages from Travis"
+    data = {
+        "scopes": ["public_repo"],
+        "note": note
+    }
+    r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
+    if r.status_code == 401:
+        two_factor = r.headers.get('X-GitHub-OTP')
+        if two_factor:
+            print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
+            OTP = input("Authentication code: ")
+            return generate_GitHub_token(username=username, password=password,
+                OTP=OTP, note=note, headers=headers)
+
+        raise AuthenticationFailed("invalid username or password")
+
+    r.raise_for_status()
+    return r.json()['token']
