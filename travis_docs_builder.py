@@ -221,7 +221,7 @@ if __name__ == '__main__':
         token = generate_GitHub_token(username)
 
         repo = input("What repo to you want to build the docs for? ")
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token.decode('utf-8')).encode('utf-8'), repo=repo)
+        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
         travis_content = """
 env:
   global:
