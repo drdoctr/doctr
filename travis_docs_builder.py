@@ -102,12 +102,25 @@ def run_command_hiding_token(args, token):
     err = err.replace(token, b"~"*len(token))
     return (out, err)
 
-def run(args):
+def get_token():
+    """
+    Get the encrypted GitHub token in Travis
+
+    Make sure the contents this variable do not link. The ``run()`` function
+    will remove this from the output, so always use it.
+    """
     token = os.environ.get("GH_TOKEN", None)
     if not token:
         raise RuntimeError("GH_TOKEN environment variable not set")
     token = token.encode('utf-8')
 
+def run(args):
+    """
+    Run the command args
+
+    Automatically hides the secret GitHub token from the output.
+    """
+    token = get_token()
     out, err = run_command_hiding_token(args, token)
     print(out.decode('utf-8'))
     print(err.decode('utf-8'), sys.stderr)
