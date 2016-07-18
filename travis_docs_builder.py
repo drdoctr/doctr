@@ -174,6 +174,38 @@ def setup_GitHub_push(repo):
 
     return True
 
+def gh_pages_exists():
+    """
+    Check if there is a remote gh-pages branch.
+    This isn't completely robust.  If there are multiple remotes and you have a gh-pages
+    branch on the non-default remote, this won't see it.
+    """
+    remote_name = subprocess.check_output(['git','remote', 'show']).decode('utf-8').split()[0]
+    branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
+
+    return '{}/gh-pages'.format(remote_name) in branch_names
+
+def create_gh_pages():
+    """
+    If there is no remote gh-pages branch, create one
+
+    Return True if gh-pages was created, False if not
+    """
+    if not gh_pages_exists():
+        print("Stashing your current unstaged work")
+        run(['git', 'stash'])
+        print("Creating gh-pages branch")
+        run(['git', 'symbolic-ref', 'HEAD', 'refs/heads/gh-pages'])
+        #delete everything in the new ref.  this is non-destructive to existing
+        #refs/branches, etc...
+        run(['git', 'rm', '-rf', '.'])
+        print("Adding .nojekyll file to gh-pages branch")
+        run(['touch', '.nojekyll'])
+        run(['git', 'add', '.nojekyll'])
+        run(['git', 'commit', '-m', '"create new gh-pages branch with .nojekyll"'])
+
+        return True
+    return False
 
 # Here is the logic to get the Travis job number, to only run commit_docs in
 # the right build.
