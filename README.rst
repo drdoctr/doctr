@@ -22,9 +22,10 @@ repo you want to build the docs for.
 That repo should already be setup with Travis. Additionally, you should enable
 GitHub pages for the repo. Create a ``gh-pages`` branch (ideally an empty one
 **Note: if you do it on GitHub it will do it based on master**). Go to
-``https://github.com/<your repo>/settings`` and enable GitHub pages. You may also
-want to enable branch protection for the ``gh-pages`` branch and other branches,
-so that this script can't accidentally screw you.
+``https://github.com/<your repo>/settings`` and enable GitHub pages. **Make
+sure to create a file called .nojekyll in the root of the gh-pages branch.**
+You may also want to enable branch protection for the ``gh-pages`` branch and
+other branches, so that this script can't accidentally screw you.
 
 Then add the stuff to your ``.travis.yml``. The command above will tell you a
 secure key to add. You should also have something like
