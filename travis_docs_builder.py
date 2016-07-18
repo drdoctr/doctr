@@ -127,8 +127,10 @@ def run(args):
     """
     token = get_token()
     out, err, returncode = run_command_hiding_token(args, token)
-    print(out.decode('utf-8'))
-    print(err.decode('utf-8'), file=sys.stderr)
+    if out:
+        print(out.decode('utf-8'))
+    if err:
+        print(err.decode('utf-8'), file=sys.stderr)
     if returncode != 0:
         sys.exit(returncode)
 
