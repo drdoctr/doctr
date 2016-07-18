@@ -6,12 +6,15 @@
 Welcome to Travis docs builder's documentation!
 ===============================================
 
+.. include:: ../README.rst
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
    api
+
 
 Indices and tables
 ==================
