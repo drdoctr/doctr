@@ -167,8 +167,9 @@ def setup_GitHub_push(repo):
         'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'), repo=repo)])
     print("Fetching token remote")
     run(['git', 'fetch', 'origin_token'])
+    #create gh-pages empty branch with .nojekyll if it doesn't already exist
+    create_gh_pages()
     print("Checking out gh-pages")
-    # TODO: Create the remote gh-pages if it doesn't exist
     run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
     print("Done")
 
@@ -180,7 +181,7 @@ def gh_pages_exists():
     This isn't completely robust.  If there are multiple remotes and you have a gh-pages
     branch on the non-default remote, this won't see it.
     """
-    remote_name = subprocess.check_output(['git','remote', 'show']).decode('utf-8').split()[0]
+    remote_name = 'origin_token'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
 
     return '{}/gh-pages'.format(remote_name) in branch_names
@@ -192,8 +193,6 @@ def create_gh_pages():
     Return True if gh-pages was created, False if not
     """
     if not gh_pages_exists():
-        print("Stashing your current unstaged work")
-        run(['git', 'stash'])
         print("Creating gh-pages branch")
         run(['git', 'symbolic-ref', 'HEAD', 'refs/heads/gh-pages'])
         #delete everything in the new ref.  this is non-destructive to existing
@@ -203,6 +202,10 @@ def create_gh_pages():
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', '"create new gh-pages branch with .nojekyll"'])
+        print("Pushing gh-pages branch to remote")
+        run(['git', 'push', '-u', 'origin_token', 'gh-pages'])
+        #return to master branch
+        run(['git', 'checkout', 'master'])
 
         return True
     return False
