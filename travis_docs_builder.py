@@ -197,7 +197,7 @@ def create_gh_pages():
         run(['git', 'checkout', '--orphan', 'gh-pages'])
         #delete everything in the new ref.  this is non-destructive to existing
         #refs/branches, etc...
-        run(['git', 'rm', '--cached', '-rf', '.'])
+        run(['git', 'rm', '-rf', '.'])
         print("Adding .nojekyll file to gh-pages branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
