@@ -204,8 +204,6 @@ def create_gh_pages():
         run(['git', 'commit', '-m', '"create new gh-pages branch with .nojekyll"'])
         print("Pushing gh-pages branch to remote")
         run(['git', 'push', '-u', 'origin_token', 'gh-pages'])
-        #return to master branch
-        run(['git', 'checkout', 'master'])
 
         return True
     return False
