@@ -17,11 +17,11 @@ from cryptography.hazmat.primitives import serialization
 
 def encrypt_variable(variable, repo, public_key=None):
     """
-    Encrypt an environment variable for repo for Travis
+    Encrypt an environment variable for ``repo`` for Travis
 
-    ``variable`` should be a bytes object.
+    ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
 
-    ``repo`` should be like 'gforsyth/travis_docs_builder'
+    ``repo`` should be like 'gforsyth/travis_docs_builder'.
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
