@@ -153,7 +153,7 @@ def setup_GitHub_push(repo):
         return False
 
     if TRAVIS_PULL_REQUEST != "false":
-        print("The website and docs are not pushed to gh-pages on pull requests", sys.stderr)
+        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
         return False
 
     token = get_token()
