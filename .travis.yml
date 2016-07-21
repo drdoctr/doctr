@@ -17,12 +17,12 @@ before_install:
 
 script:
   - if [[ "${DOCS}" == "true" ]]; then
-      cd docs
-      make html
-      cd ..
-      python -m travis_docs_builder gforsyth/travis_docs_builder
+      cd docs;
+      make html;
+      cd ..;
+      python -m travis_docs_builder gforsyth/travis_docs_builder;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
-      pyflakes travis_docs_builder
+      pyflakes travis_docs_builder;
     fi
