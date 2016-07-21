@@ -198,6 +198,12 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     run(['git', 'add', '-A', gh_pages_docs])
 
 def push_docs():
+    """
+    Push the changes to the gh-pages branch.
+
+    Assumes that setup_GitHub_push() has been run and returned True,and that
+    commit_docs() has been run. Does not push anything if no changes were made.
+    """
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
     # Only push if there were changes
