@@ -5,11 +5,11 @@
 Local
 =====
 
-.. automodule:: travis_docs_builder.local
+.. automodule:: doctr.local
    :members:
 
 Travis
 ======
 
-.. automodule:: travis_docs_builder.travis
+.. automodule:: doctr.travis
    :members:

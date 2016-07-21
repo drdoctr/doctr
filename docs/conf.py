@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Travis docs builder documentation build configuration file, created by
+# Doctr documentation build configuration file, created by
 # sphinx-quickstart on Sun Jul 17 15:34:54 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Travis docs builder'
+project = 'Doctr'
 copyright = '2016, Aaron Meurer and Gil Forsyth'
 author = 'Aaron Meurer and Gil Forsyth'
 
@@ -125,7 +125,7 @@ html_theme = 'alabaster'
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-#html_title = 'Travis docs builder v1.0'
+#html_title = 'Doctr v1.0'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -207,7 +207,7 @@ html_theme = 'alabaster'
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Travisdocsbuilderdoc'
+htmlhelp_basename = 'doctrdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -229,7 +229,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Travisdocsbuilder.tex', 'Travis docs builder Documentation',
+    (master_doc, 'doctr.tex', 'Doctr Documentation',
      'Aaron Meurer and Gil Forsyth', 'manual'),
 ]
 
@@ -259,7 +259,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'travisdocsbuilder', 'Travis docs builder Documentation',
+    (master_doc, 'doctr', 'Doctr Documentation',
      [author], 1)
 ]
 
@@ -273,8 +273,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Travisdocsbuilder', 'Travis docs builder Documentation',
-     author, 'Travisdocsbuilder', 'One line description of project.',
+    (master_doc, 'Doctr', 'Doctr Documentation',
+     author, 'Doctr', 'One line description of project.',
      'Miscellaneous'),
 ]
 

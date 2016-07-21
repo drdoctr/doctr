@@ -14,7 +14,7 @@ Run
 
 .. code::
 
-   python -m travis_docs_builder
+   python -m doctr
 
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
@@ -37,14 +37,14 @@ secure key to add. You should also have something like
    sudo: false
    env:
      global:
-       secure: "<your secure key from python -m travis_docs_builder here>"
+       secure: "<your secure key from doctr here>"
 
    script:
      - pip install requests cryptography sphinx
      - cd docs
      - make html
      - cd ..
-     - python -m travis_docs_builder <your repo name>
+     - doctr <your repo name>
 
 
 in your ``.travis.yml``. See `the one <.travis.yml>`_ in this repo for example.

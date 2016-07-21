@@ -20,9 +20,9 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m travis_docs_builder gforsyth/travis_docs_builder;
+      python -m doctr gforsyth/doctr;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
-      pyflakes travis_docs_builder;
+      pyflakes doctr;
     fi
