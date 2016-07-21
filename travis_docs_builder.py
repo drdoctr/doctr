@@ -147,16 +147,16 @@ def setup_GitHub_push(repo):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    token = get_token()
-
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
-        print("This is the $TRAVIS_BRANCH branch", file=sys.stderr)
+        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         return False
 
     if TRAVIS_PULL_REQUEST != "false":
-        print("The website and docs are not pushed to gh-pages on pull requests", sys.stderr)
+        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
         return False
+
+    token = get_token()
 
     print("Setting git attributes")
     # Should we add some user.email?
@@ -220,8 +220,9 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     """
     Commit the docs to gh-pages
 
-    Assumes that setup_GitHub_push() has been run, which sets up the
-    origin_token remote.
+    Assumes that setup_GitHub_push(), which sets up the origin_token remote,
+    has been run and returned True.
+
     """
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
@@ -232,6 +233,12 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     run(['git', 'add', '-A', gh_pages_docs])
 
 def push_docs():
+    """
+    Push the changes to the gh-pages branch.
+
+    Assumes that setup_GitHub_push() has been run and returned True,and that
+    commit_docs() has been run. Does not push anything if no changes were made.
+    """
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
     # Only push if there were changes
@@ -253,9 +260,9 @@ if __name__ == '__main__':
     if on_travis:
         # TODO: Get this automatically
         repo = sys.argv[1]
-        setup_GitHub_push(repo)
-        commit_docs()
-        push_docs()
+        if setup_GitHub_push(repo):
+            commit_docs()
+            push_docs()
     else:
         username = input("What is your GitHub username? ")
         token = generate_GitHub_token(username)
