@@ -149,7 +149,7 @@ def setup_GitHub_push(repo):
 
     if TRAVIS_BRANCH != "master":
         print("The docs are only pushed to gh-pages from master", file=sys.stderr)
-        print("This is the $TRAVIS_BRANCH branch", file=sys.stderr)
+        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         return False
 
     if TRAVIS_PULL_REQUEST != "false":
