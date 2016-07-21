@@ -23,6 +23,6 @@ script:
       python -m travis_docs_builder gforsyth/travis_docs_builder
     fi
 
-  - if [[ "${DOCS}" == "true" ]]; then
+  - if [[ "${TESTS}" == "true" ]]; then
       pyflakes travis_docs_builder
     fi
