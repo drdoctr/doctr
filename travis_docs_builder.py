@@ -194,10 +194,10 @@ def create_gh_pages():
     """
     if not gh_pages_exists():
         print("Creating gh-pages branch")
-        run(['git', 'symbolic-ref', 'HEAD', 'refs/heads/gh-pages'])
+        run(['git', 'checkout', '--orphan', 'gh-pages'])
         #delete everything in the new ref.  this is non-destructive to existing
         #refs/branches, etc...
-        run(['git', 'rm', '-rf', '.'])
+        run(['git', 'rm', '--cached', '-rf', '.'])
         print("Adding .nojekyll file to gh-pages branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
