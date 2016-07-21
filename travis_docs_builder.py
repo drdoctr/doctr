@@ -168,9 +168,12 @@ def setup_GitHub_push(repo):
     print("Fetching token remote")
     run(['git', 'fetch', 'origin_token'])
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
-    create_gh_pages()
+    new_gh_pages = create_gh_pages()
     print("Checking out gh-pages")
-    run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
+    if new_gh_pages:
+        run(['git', 'checkout', 'gh-pages'])
+    else:
+        run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
     print("Done")
 
     return True
