@@ -12,4 +12,4 @@ script:
   - cd docs
   - make html
   - cd ..
-  - ./travis_docs_builder.py gforsyth/travis_docs_builder
+  - python -m travis_docs_builder gforsyth/travis_docs_builder
