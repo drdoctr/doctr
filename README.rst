@@ -14,7 +14,7 @@ Run
 
 .. code::
 
-   ./travis_docs_builder.py
+   python -m travis_docs_builder
 
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
@@ -39,7 +39,7 @@ secure key to add. You should also have something like
    sudo: false
    env:
      global:
-       secure: "<your secure key from ./travis_docs_builder.py here>"
+       secure: "<your secure key from python -m travis_docs_builder here>"
 
    script:
      - pip install requests cryptography sphinx
