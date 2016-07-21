@@ -185,8 +185,9 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     """
     Commit the docs to gh-pages
 
-    Assumes that setup_GitHub_push() has been run, which sets up the
-    origin_token remote.
+    Assumes that setup_GitHub_push(), which sets up the origin_token remote,
+    has been run and returned True.
+
     """
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
@@ -218,9 +219,9 @@ if __name__ == '__main__':
     if on_travis:
         # TODO: Get this automatically
         repo = sys.argv[1]
-        setup_GitHub_push(repo)
-        commit_docs()
-        push_docs()
+        if setup_GitHub_push(repo):
+            commit_docs()
+            push_docs()
     else:
         username = input("What is your GitHub username? ")
         token = generate_GitHub_token(username)
