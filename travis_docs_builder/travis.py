@@ -53,7 +53,7 @@ def setup_GitHub_push(repo):
 
     This sets up the remote with the token and checks out the gh-pages branch.
 
-    The token to push to GitHub is assumed to be in the GH_TOKEN environment
+    The token to push to GitHub is assumed to be in the ``GH_TOKEN`` environment
     variable.
 
     """
@@ -94,8 +94,10 @@ def setup_GitHub_push(repo):
 def gh_pages_exists():
     """
     Check if there is a remote gh-pages branch.
-    This isn't completely robust.  If there are multiple remotes and you have a gh-pages
-    branch on the non-default remote, this won't see it.
+
+    This isn't completely robust. If there are multiple remotes and you have a
+    ``gh-pages`` branch on the non-default remote, this won't see it.
+
     """
     remote_name = 'origin_token'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
@@ -104,9 +106,9 @@ def gh_pages_exists():
 
 def create_gh_pages():
     """
-    If there is no remote gh-pages branch, create one
+    If there is no remote ``gh-pages`` branch, create one.
 
-    Return True if gh-pages was created, False if not
+    Return True if ``gh-pages`` was created, False if not.
     """
     if not gh_pages_exists():
         print("Creating gh-pages branch")
@@ -134,9 +136,9 @@ def create_gh_pages():
 
 def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir='_docs'):
     """
-    Commit the docs to gh-pages
+    Commit the docs to ``gh-pages``
 
-    Assumes that setup_GitHub_push(), which sets up the origin_token remote,
+    Assumes that :func:`setup_GitHub_push`, which sets up the `origin_token` remote,
     has been run and returned True.
 
     """
@@ -150,10 +152,12 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
 
 def push_docs():
     """
-    Push the changes to the gh-pages branch.
+    Push the changes to the `gh-pages` branch.
 
-    Assumes that setup_GitHub_push() has been run and returned True,and that
-    commit_docs() has been run. Does not push anything if no changes were made.
+    Assumes that :func:`setup_GitHub_push` has been run and returned True, and
+    that :func:`commit_docs` has been run. Does not push anything if no changes
+    were made.
+
     """
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
