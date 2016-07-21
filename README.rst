@@ -44,7 +44,7 @@ secure key to add. You should also have something like
      - cd docs
      - make html
      - cd ..
-     - ./travis_docs_builder.py <your repo name>
+     - python -m travis_docs_builder <your repo name>
 
 
 in your ``.travis.yml``. See `the one <.travis.yml>`_ in this repo for example.
