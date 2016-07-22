@@ -4,12 +4,11 @@ doctr
 A tool to automatically deploy docs to GitHub pages from Travis CI.
 """
 
-import sys
 import os
 import argparse
 
 from .local import generate_GitHub_token, encrypt_variable
-from .travis import setup_GitHub_push, commit_docs, push_docs
+from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
 def main():
@@ -30,8 +29,7 @@ def main():
         on_travis = args.travis
 
     if on_travis:
-        # TODO: Get this automatically
-        repo = sys.argv[1]
+        repo = get_repo()
         if setup_GitHub_push(repo):
             commit_docs()
             push_docs()
