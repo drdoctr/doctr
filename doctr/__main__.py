@@ -2,6 +2,22 @@
 doctr
 
 A tool to automatically deploy docs to GitHub pages from Travis CI.
+
+The doctr command is two commands in one. To use, first run
+
+doctr
+
+on your local machine. This will prompt for your GitHub credentials and the
+name of the repo you want to deploy docs for. This will generate a secure key,
+which you should insert into your .travis.yml.
+
+Then, on Travis, for the build where you build your docs, add
+
+    - doctr
+
+to the end of the build to deploy the docs to GitHub pages.  This will only
+run on the master branch, and won't run on pull requests.
+
 """
 
 import sys
@@ -13,14 +29,13 @@ from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
     location = parser.add_mutually_exclusive_group()
-    location.add_argument('--travis', action='store_true', default=None, help="""Run
-    the Travis script. The default is to detect automatically.""")
-    location.add_argument('--local', action='store_true', default=None, help="""Run
-    the local script. The default is to detect automatically (only run if not
-    on Travis).""")
+    location.add_argument('--travis', action='store_true', default=None,
+    help="Run as if on Travis. The default is to detect automatically.")
+    location.add_argument('--local', action='store_true', default=None,
+    help="Run as if local (not on Travis). The default is to detect automatically.")
 
     args = parser.parse_args()
 
