@@ -44,7 +44,7 @@ secure key to add. You should also have something like
      - cd docs
      - make html
      - cd ..
-     - doctr <your repo name>
+     - doctr
 
 
 in your ``.travis.yml``. See `the one <.travis.yml>`_ in this repo for example.

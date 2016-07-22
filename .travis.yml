@@ -20,7 +20,7 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr gforsyth/doctr;
+      python -m doctr;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
