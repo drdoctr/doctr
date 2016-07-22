@@ -18,6 +18,7 @@ Then, on Travis, for the build where you build your docs, add
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
 
+For more information, see https://gforsyth.github.io/doctr/docs/
 """
 
 import sys
