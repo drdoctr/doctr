@@ -1,7 +1,4 @@
 language: python
-python:
-  - 3.5
-
 
 sudo: false
 env:
@@ -12,8 +9,16 @@ env:
   global:
     secure: "CY323kJHGxs+H0qJ52q4OPxwF3BkJoaA3dd/A76G/39ExX9YzPuPVUe9KwBpc4BFCdR80uecfRWT9Bc8Q5OdIB1F4SOS9XIgVooJdcE70nz74ozXABzNHX37KlyNmIN2SrVAK0HjwRTx18YH6f8WHF0i6+lulDEzx4YJSjkazSyyyQIZULbmNrl4eh1wS5nK/a2mkhKyaho2BNKtR0NfipbqFMTiKXuCaFcXWRgjp5cSrj53mhBBUaFgCgNGQ0QoKN6dldNKenU3kgEWPsTYl0bfT4xx3YSoY/gWE8+wCgK0ouZyvw6bhFmGNow6VXGxNLEAY3XWeQfvBLAEFgy+4FWmKyVvBvfEJLTWutxLMEAwh6a4fsN7QeqH/ux1rSHbhCbavBCrTRetAo7mikSeWM3v2lJ8IRs2vFJZlnTyV4PZ6smjaqoBoZm6LFKQjmUi0IYrA1HtmsVOHQzi3XMAY5IAyDXg4R2Y3gR1Lw1aZhiEXZU05oSsqXgrOhx0/Mr8fYsGVVOCTFC4dPrThoa6Fxvp0/JYFGWucC7zmLjOC7AC0TgEFbHWvi0HdfAmH+l+QekmZaMBFFCoMsreOLRfpQHSCXJWjQoJX1N5ty9JfRhuxng4C8BCj8FRu3WKIFhzhIxEdi9RGS16pKnU9ZgE3QjYkSqIAehWSYriBhlVwgk="
 
-before_install:
-  - pip install requests cryptography sphinx pyflakes
+install:
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda create -q -n test-environment python=3.5 requests cryptography sphinx pyflakes
+  - source activate test-environment
 
 script:
   - if [[ "${DOCS}" == "true" ]]; then
