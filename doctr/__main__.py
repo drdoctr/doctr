@@ -4,6 +4,7 @@ doctr
 A tool to automatically deploy docs to GitHub pages from Travis CI.
 """
 
+import sys
 import os
 import argparse
 
