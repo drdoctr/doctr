@@ -1,11 +1,33 @@
+"""
+doctr
+
+A tool to automatically deploy docs to GitHub pages from Travis CI.
+"""
+
 import sys
 import os
+import argparse
 
 from .local import generate_GitHub_token, encrypt_variable
 from .travis import setup_GitHub_push, commit_docs, push_docs
+from . import __version__
 
 def main():
-    on_travis = os.environ.get("TRAVIS_JOB_NUMBER", '')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
+    location = parser.add_mutually_exclusive_group()
+    location.add_argument('--travis', action='store_true', default=None, help="""Run
+    the Travis script. The default is to detect automatically.""")
+    location.add_argument('--local', action='store_true', default=None, help="""Run
+    the local script. The default is to detect automatically (only run if not
+    on Travis).""")
+
+    args = parser.parse_args()
+
+    if args.local == args.travis == None:
+        on_travis = os.environ.get("TRAVIS_JOB_NUMBER", '')
+    else:
+        on_travis = args.travis
 
     if on_travis:
         # TODO: Get this automatically
