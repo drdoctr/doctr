@@ -21,7 +21,7 @@ def encrypt_variable(variable, repo, public_key=None):
 
     ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
 
-    ``repo`` should be like 'gforsyth/travis_docs_builder'.
+    ``repo`` should be like 'gforsyth/doctr'.
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
@@ -60,7 +60,7 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
 
     The token created here can be revoked at
     https://github.com/settings/tokens. The default note is
-    "travis_docs_builder token for pushing to gh-pages from Travis".
+    "Doctr token for pushing to gh-pages from Travis".
     """
     if not password:
         password = getpass("Enter the GitHub password for {username}: ".format(username=username))
@@ -73,11 +73,11 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
     auth = HTTPBasicAuth(username, password)
     AUTH_URL = "https://api.github.com/authorizations"
 
-    note = note or "travis_docs_builder token for pushing to gh-pages from Travis"
+    note = note or "Doctr token for pushing to gh-pages from Travis"
     data = {
         "scopes": ["public_repo"],
         "note": note,
-        "note_url": "https://github.com/gforsyth/travis_docs_builder",
+        "note_url": "https://github.com/gforsyth/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
     r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
