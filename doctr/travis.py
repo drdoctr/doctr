@@ -47,7 +47,7 @@ def run(args):
     if returncode != 0:
         sys.exit(returncode)
 
-def get_repo(dir='.'):
+def get_repo():
     """
     Get the GitHub repo name for the current directory.
 
