@@ -57,8 +57,8 @@ def get_repo():
         'remote.origin.url'])
 
     # Travis uses the https clone url
-    _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
-    return org + '/' + git_repo
+    _, org, git_repo = remote_url.rsplit(b'.git', 1)[0].rsplit(b'/', 2)
+    return org + b'/' + git_repo
 
 def setup_GitHub_push(repo):
     """
