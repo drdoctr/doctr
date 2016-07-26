@@ -47,6 +47,19 @@ def run(args):
     if returncode != 0:
         sys.exit(returncode)
 
+def get_repo():
+    """
+    Get the GitHub repo name for the current directory.
+
+    Assumes that the repo is in the ``origin`` remote.
+    """
+    remote_url = subprocess.check_output(['git', 'config', '--get',
+        'remote.origin.url'])
+
+    # Travis uses the https clone url
+    _, org, git_repo = remote_url.rsplit(b'.git', 1)[0].rsplit(b'/', 2)
+    return org + b'/' + git_repo
+
 def setup_GitHub_push(repo):
     """
     Setup the remote to push to GitHub (to be run on Travis).
