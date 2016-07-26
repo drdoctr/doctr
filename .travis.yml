@@ -22,7 +22,8 @@ install:
 
 script:
   - if [[ "${DOCS}" == "true" ]]; then
-      cd docs;
+      docs=$(python -c 'from doctr.travis import find_doc_dir; find_doc_dir()');
+      cd $docs;
       make html;
       cd ..;
       python -m doctr;

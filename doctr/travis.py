@@ -3,10 +3,12 @@ The code that should be run on Travis
 """
 
 import os
+import re
+import sys
+import glob
 import shlex
 import shutil
 import subprocess
-import sys
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
@@ -186,3 +188,23 @@ def push_docs():
         run(['git', 'push', '-q', 'origin_token', 'gh-pages'])
     else:
         print("The docs have not changed. Not updating")
+
+
+DOCS_REGEX = re.compile('([\w.]*)\/conf\.py')
+
+def find_doc_dir():
+    """
+    Locate the local ``Sphinx`` directory
+
+    Searches recursively from the root directory for a ``conf.py`` file and
+    then backs out the name of the docs folder from there.
+
+    Output is printed for purposes of capture by bash on Travis
+    """
+    for conf_loc in glob.iglob('**/conf.py', recursive=True):
+        doc_loc = re.search(DOCS_REGEX, conf_loc)
+        if doc_loc:
+            doc_loc = doc_loc.group(1)
+            #print this to grab it in a BASH envvar
+            print(doc_loc)
+            return
