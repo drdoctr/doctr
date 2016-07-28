@@ -52,8 +52,11 @@ options available.
 
     args = parser.parse_args()
 
-    args.func(args, parser)
+    if not args.location:
+        parser.print_usage()
+        parser.exit(1)
 
+    args.func(args, parser)
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
