@@ -149,7 +149,8 @@ def create_gh_pages():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir='_docs'):
+#def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir='_docs'):
+def commit_docs(*, built_docs=None, gh_pages_docs=None, tmp_dir=None):
     """
     Commit the docs to ``gh-pages``
 
@@ -192,19 +193,20 @@ def push_docs():
 
 DOCS_REGEX = re.compile('([\w.]*)\/conf\.py')
 
-def find_doc_dir():
+def find_doc_and_build_dirs():
     """
-    Locate the local ``Sphinx`` directory
+    Locate the local ``Sphinx`` directory and the name of the ``build``
+    directory within it (by default either ``build`` or ``_build``)
 
     Searches recursively from the root directory for a ``conf.py`` file and
     then backs out the name of the docs folder from there.
-
-    Output is printed for purposes of capture by bash on Travis
     """
     for conf_loc in glob.iglob('**/conf.py', recursive=True):
         doc_loc = re.search(DOCS_REGEX, conf_loc)
         if doc_loc:
             doc_loc = doc_loc.group(1)
-            #print this to grab it in a BASH envvar
-            print(doc_loc)
-            return
+            build_loc = glob.glob('{}/**build'.format(doc_loc),
+                                  recursive=True)[0]
+            build_loc = build_loc.split('/')[-1]
+
+            return doc_loc, build_loc
