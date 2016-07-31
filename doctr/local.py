@@ -110,7 +110,7 @@ def GitHub_post(data, url, *, username=None, password=None, OTP=None, headers=No
         if two_factor:
             print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
             OTP = input("Authentication code: ")
-            return GitHub_post(data, username, password=password,
+            return GitHub_post(data, url, username=username, password=password,
                 OTP=OTP, headers=headers)
 
         raise AuthenticationFailed("invalid username or password")
