@@ -25,7 +25,7 @@ import sys
 import os
 import argparse
 
-from .local import generate_GitHub_token, encrypt_variable
+from .local import (generate_GitHub_token, encrypt_variable, encrypt_file, generate_ssh_key)
 from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
@@ -38,6 +38,11 @@ def main():
     location.add_argument('--local', action='store_true', default=None,
     help="Run as if local (not on Travis). The default is to detect automatically.")
 
+    parser.add_argument('--token', action="store_true", default=False,
+        help="""Generate a personal access token to push to GitHub. The default is to use a
+        deploy key. WARNING: This will grant read/write access to all the
+        public repositories for the user. This option is not recommended
+        unless you are using a separate GitHub user for deploying.""")
     args = parser.parse_args()
 
     if args.local == args.travis == None:
@@ -51,11 +56,28 @@ def main():
             commit_docs()
             push_docs()
     else:
-        username = input("What is your GitHub username? ")
-        token = generate_GitHub_token(username)
-
         repo = input("What repo to you want to build the docs for? ")
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
+
+        if args.token:
+            username = input("What is your GitHub username? ")
+            token = generate_GitHub_token(username)
+            encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
+        else:
+            generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
+            key = encrypt_file('github_deploy_key', delete=True)
+            encrypted_variable =
+            encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY={key}".format(key=key), repo=repo)
+
+            # TODO: Add deploy key to GitHub
+
+            print("""\
+The deploy key has been added for {repo}.
+
+Commit the file github_deploy_key.enc to the repository.
+
+You can go to https://github.com/{repo}/settings/keys to revoke the deploy key.
+""".format(repo=repo)
+
         travis_content = """
 env:
   global:
