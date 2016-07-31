@@ -104,9 +104,7 @@ def main():
 
         """.format(encrypted_variable=encrypted_variable.decode('utf-8')))
 
-        print("Put\n", travis_content, "in your .travis.yml.\n",
-            "Also make sure to create an empty gh-pages branch on GitHub, and "
-            "enable it at https://github.com/{repo}/settings".format(repo=repo), sep='')
+        print("Put\n", travis_content, "in your .travis.yml.\n")
 
 if __name__ == '__main__':
     sys.exit(main())
