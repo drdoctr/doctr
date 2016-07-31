@@ -72,7 +72,7 @@ def main():
         else:
             generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
             key = encrypt_file('github_deploy_key', delete=True)
-            encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY={key}".format(key=key), repo=repo)
+            encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, repo=repo)
 
             deploy_keys_url = 'https://github.com/{repo}/settings/keys'.format(repo=repo)
 
