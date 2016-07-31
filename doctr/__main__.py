@@ -25,7 +25,8 @@ import sys
 import os
 import argparse
 
-from .local import (generate_GitHub_token, encrypt_variable, encrypt_file, generate_ssh_key)
+from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
+    upload_GitHub_deploy_key, generate_ssh_key)
 from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
@@ -43,6 +44,11 @@ def main():
         deploy key. WARNING: This will grant read/write access to all the
         public repositories for the user. This option is not recommended
         unless you are using a separate GitHub user for deploying.""")
+
+    parser.add_argument("--no-upload-key", action="store_false", default=True,
+        dest="upload_key", help="""Don't automatically upload the deploy key
+        to GitHub.""")
+
     args = parser.parse_args()
 
     if args.local == args.travis == None:
@@ -66,15 +72,30 @@ def main():
             key = encrypt_file('github_deploy_key', delete=True)
             encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY={key}".format(key=key), repo=repo)
 
-            # TODO: Add deploy key to GitHub
+            deploy_keys_url = 'https://github.com/{repo}/settings/keys'.format(repo=repo)
 
-            print("""\
+            if args.upload_key:
+                with open("github_deploy_key.pub") as f:
+                    key = f.read()
+
+                upload_GitHub_deploy_key(repo, key)
+
+                print("""\
 The deploy key has been added for {repo}.
 
 Commit the file github_deploy_key.enc to the repository.
 
-You can go to https://github.com/{repo}/settings/keys to revoke the deploy key.
-""".format(repo=repo))
+You can go to {deploy_keys_url} to revoke the deploy key.
+""".format(repo=repo, deploy_keys_url=deploy_keys_url))
+
+            else:
+                print("""\
+Go to {deploy_keys_url} and add the following as a new key:
+
+{key}
+
+Be sure to allow write access for the key
+""".format(key=key, deploy_keys_url=deploy_keys_url))
 
         travis_content = """
 env:
