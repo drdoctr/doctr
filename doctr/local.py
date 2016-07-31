@@ -81,7 +81,7 @@ def encrypt_file(file, delete=False):
 class AuthenticationFailed(Exception):
     pass
 
-def GitHub_post(data, username, *, password=None, OTP=None, headers=None):
+def GitHub_post(data, url, username, *, password=None, OTP=None, headers=None):
     """
     POST the data ``data`` to GitHub.
 
@@ -99,9 +99,8 @@ def GitHub_post(data, username, *, password=None, OTP=None, headers=None):
         headers['X-GitHub-OTP'] = OTP
 
     auth = HTTPBasicAuth(username, password)
-    AUTH_URL = "https://api.github.com/authorizations"
 
-    r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
+    r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
     if r.status_code == 401:
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
@@ -129,14 +128,31 @@ def generate_GitHub_token(username, *, password=None, OTP=None,
     The token created here can be revoked at
     https://github.com/settings/tokens.
     """
+    AUTH_URL = "https://api.github.com/authorizations"
     data = {
         "scopes": ["public_repo"],
         "note": note,
         "note_url": "https://github.com/gforsyth/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
-    return GitHub_post(data, username, password=password, OTP=OTP, headers=headers)['token']
+    return GitHub_post(data, AUTH_URL, username, password=password, OTP=OTP, headers=headers)['token']
 
+def upload_GitHub_deploy_key(repo, key, username, *, read_only=False,
+    title="Doctr deploy key for pushing to gh-pages from Travis"):
+    """
+    Uploads a GitHub deploy key to repo
+
+    If ``read_only=True``, the deploy_key will not be able to write to the
+    repo.
+    """
+    DEPLOY_KEY_URL = "https://api.github.com/repos/{repo}/keys".format(repo=repo)
+
+    data = {
+        "title": title,
+        "key": key,
+        "read_only": read_only,
+    }
+    return GitHub_post(data, DEPLOY_KEY_URL, username)['url']
 
 def generate_ssh_key(note, name='github_deploy_key'):
     """
