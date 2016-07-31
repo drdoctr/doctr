@@ -81,18 +81,14 @@ def encrypt_file(file, delete=False):
 class AuthenticationFailed(Exception):
     pass
 
-def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=None):
+def GitHub_post(data, username, password=None, OTP=None, headers=None):
     """
-    Generate a GitHub token for pushing from Travis
+    POST the data ``data`` to GitHub.
 
-    The scope requested is public_repo.
+    If no password or OTP (2-factor authentication code) are provided, they
+    will be requested from the command line.
 
-    If no password or OTP are provided, they will be requested from the
-    command line.
-
-    The token created here can be revoked at
-    https://github.com/settings/tokens. The default note is
-    "Doctr token for pushing to gh-pages from Travis".
+    Returns the json response from the server, or raises on error status.
     """
     if not password:
         password = getpass("Enter the GitHub password for {username}: ".format(username=username))
@@ -105,26 +101,42 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
     auth = HTTPBasicAuth(username, password)
     AUTH_URL = "https://api.github.com/authorizations"
 
-    note = note or "Doctr token for pushing to gh-pages from Travis"
-    data = {
-        "scopes": ["public_repo"],
-        "note": note,
-        "note_url": "https://github.com/gforsyth/doctr",
-        "fingerprint": str(uuid.uuid4()),
-    }
     r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
     if r.status_code == 401:
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
             print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
             OTP = input("Authentication code: ")
-            return generate_GitHub_token(username=username, password=password,
-                OTP=OTP, note=note, headers=headers)
+            return GitHub_post(data, username, password=password,
+                OTP=OTP, headers=headers)
 
         raise AuthenticationFailed("invalid username or password")
 
     r.raise_for_status()
-    return r.json()['token']
+    return r.json()
+
+
+def generate_GitHub_token(username, password=None, OTP=None,
+    note="Doctr token for pushing to gh-pages from Travis", headers=None):
+    """
+    Generate a GitHub token for pushing from Travis
+
+    The scope requested is public_repo.
+
+    If no password or OTP are provided, they will be requested from the
+    command line.
+
+    The token created here can be revoked at
+    https://github.com/settings/tokens.
+    """
+    data = {
+        "scopes": ["public_repo"],
+        "note": note,
+        "note_url": "https://github.com/gforsyth/doctr",
+        "fingerprint": str(uuid.uuid4()),
+    }
+    return GitHub_post(data, username, password=password, OTP=OTP, headers=headers)['token']
+
 
 def generate_ssh_key(note, name='github_deploy_key'):
     """
