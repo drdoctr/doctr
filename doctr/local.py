@@ -7,9 +7,12 @@ import base64
 import json
 import uuid
 import subprocess
+import os
 
 import requests
 from requests.auth import HTTPBasicAuth
+
+from cryptography.fernet import Fernet
 
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
@@ -46,6 +49,55 @@ def encrypt_variable(variable, repo, public_key=None):
     pad = padding.PKCS1v15()
 
     return base64.b64encode(key.encrypt(variable, pad))
+
+def encrypt_file(file):
+    """
+    Encrypts the file ``file``.
+
+    The encrypted file is saved to the same location with the ``.enc``
+    extension.
+
+    Returns the secret key used for the encryption.
+
+    Decrypt the file with :func:`decrypt_file`.
+
+    """
+    key = Fernet.generate_key()
+    fer = Fernet(key)
+
+    with open(file, 'rb') as f:
+        encrypted_file = fer.encrypt(f.read())
+
+    with open(file + '.enc', 'wb') as f:
+        f.write(encrypted_file)
+
+    return key
+
+def decrypt_file(file, key):
+    """
+    Decrypts the file ``file``.
+
+    The encrypted file is assumed to end with the ``.enc`` extension. The
+    decrypted file is saved to the same location without the ``.enc``
+    extension.
+
+    The permissions on the decrypted file are automatically set to 0o600.
+
+    See also :func:`encrypt_file`.
+
+    """
+    if not file.endswith('.enc'):
+        raise ValueError("%s does not end with .enc" % file)
+
+    fer = Fernet(key)
+
+    with open(file, 'rb') as f:
+        decrypted_file = fer.decrypt(f.read())
+
+    with open(file[:4], 'wb') as f:
+        f.write(decrypted_file)
+
+    os.chmod(file[:4], 0o600)
 
 class AuthenticationFailed(Exception):
     pass
