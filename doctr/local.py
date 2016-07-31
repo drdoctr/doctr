@@ -154,7 +154,7 @@ def upload_GitHub_deploy_key(repo, key, *, read_only=False,
         "key": key,
         "read_only": read_only,
     }
-    return GitHub_post(data, DEPLOY_KEY_URL)['url']
+    return GitHub_post(data, DEPLOY_KEY_URL)
 
 def generate_ssh_key(note, name='github_deploy_key'):
     """
