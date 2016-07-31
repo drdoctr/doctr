@@ -139,7 +139,7 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
     }
     return GitHub_post(data, AUTH_URL)['token']
 
-def upload_GitHub_deploy_key(repo, key, *, read_only=False,
+def upload_GitHub_deploy_key(repo, ssh_key, *, read_only=False,
     title="Doctr deploy key for pushing to gh-pages from Travis"):
     """
     Uploads a GitHub deploy key to repo
@@ -151,7 +151,7 @@ def upload_GitHub_deploy_key(repo, key, *, read_only=False,
 
     data = {
         "title": title,
-        "key": key,
+        "key": ssh_key,
         "read_only": read_only,
     }
     return GitHub_post(data, DEPLOY_KEY_URL)
@@ -159,9 +159,14 @@ def upload_GitHub_deploy_key(repo, key, *, read_only=False,
 def generate_ssh_key(note, name='github_deploy_key'):
     """
     Generates an SSH deploy public and private key.
+
+    Returns the public key as a str.
     """
     p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C', note,
         '-f', name, '-N', ''])
 
     if p.returncode:
         raise RuntimeError("SSH key generation failed")
+
+    with open(name + ".pub") as f:
+        return f.read()

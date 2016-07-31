@@ -70,17 +70,15 @@ def main():
             token = generate_GitHub_token()
             encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
         else:
-            generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
+            ssh_key = generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
             key = encrypt_file('github_deploy_key', delete=True)
             encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, repo=repo)
 
             deploy_keys_url = 'https://github.com/{repo}/settings/keys'.format(repo=repo)
 
             if args.upload_key:
-                with open("github_deploy_key.pub") as f:
-                    key = f.read()
 
-                upload_GitHub_deploy_key(repo, key)
+                upload_GitHub_deploy_key(repo, ssh_key)
 
                 print(dedent("""\
                 The deploy key has been added for {repo}.
@@ -94,10 +92,10 @@ def main():
                 print(dedent("""\
                 Go to {deploy_keys_url} and add the following as a new key:
 
-                {key}
+                {ssh_key}
 
-                Be sure to allow write access for the key
-                """.format(key=key, deploy_keys_url=deploy_keys_url)))
+                Be sure to allow write access for the key.
+                """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url)))
 
         travis_content = dedent("""
         env:
