@@ -50,12 +50,14 @@ def encrypt_variable(variable, repo, public_key=None):
 
     return base64.b64encode(key.encrypt(variable, pad))
 
-def encrypt_file(file):
+def encrypt_file(file, delete=False):
     """
     Encrypts the file ``file``.
 
     The encrypted file is saved to the same location with the ``.enc``
     extension.
+
+    If ``delete=True``, the unencrypted file is deleted after encryption.
 
     Returns the secret key used for the encryption.
 
@@ -70,6 +72,9 @@ def encrypt_file(file):
 
     with open(file + '.enc', 'wb') as f:
         f.write(encrypted_file)
+
+    if delete:
+        os.remove(file)
 
     return key
 
