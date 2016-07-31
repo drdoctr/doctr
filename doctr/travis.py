@@ -8,6 +8,32 @@ import shutil
 import subprocess
 import sys
 
+def decrypt_file(file, key):
+    """
+    Decrypts the file ``file``.
+
+    The encrypted file is assumed to end with the ``.enc`` extension. The
+    decrypted file is saved to the same location without the ``.enc``
+    extension.
+
+    The permissions on the decrypted file are automatically set to 0o600.
+
+    See also :func:`doctr.local.encrypt_file`.
+
+    """
+    if not file.endswith('.enc'):
+        raise ValueError("%s does not end with .enc" % file)
+
+    fer = Fernet(key)
+
+    with open(file, 'rb') as f:
+        decrypted_file = fer.decrypt(f.read())
+
+    with open(file[:4], 'wb') as f:
+        f.write(decrypted_file)
+
+    os.chmod(file[:4], 0o600)
+
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
     command = ' '.join(map(shlex.quote, args))
