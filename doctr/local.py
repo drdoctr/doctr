@@ -81,7 +81,7 @@ def encrypt_file(file, delete=False):
 class AuthenticationFailed(Exception):
     pass
 
-def GitHub_post(data, username, password=None, OTP=None, headers=None):
+def GitHub_post(data, username, *, password=None, OTP=None, headers=None):
     """
     POST the data ``data`` to GitHub.
 
@@ -116,7 +116,7 @@ def GitHub_post(data, username, password=None, OTP=None, headers=None):
     return r.json()
 
 
-def generate_GitHub_token(username, password=None, OTP=None,
+def generate_GitHub_token(username, *, password=None, OTP=None,
     note="Doctr token for pushing to gh-pages from Travis", headers=None):
     """
     Generate a GitHub token for pushing from Travis
