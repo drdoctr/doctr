@@ -81,15 +81,19 @@ def encrypt_file(file, delete=False):
 class AuthenticationFailed(Exception):
     pass
 
-def GitHub_post(data, url, username, *, password=None, OTP=None, headers=None):
+def GitHub_post(data, url, *, username=None, password=None, OTP=None, headers=None):
     """
     POST the data ``data`` to GitHub.
 
-    If no password or OTP (2-factor authentication code) are provided, they
-    will be requested from the command line.
+    If no username, password, or OTP (2-factor authentication code) are
+    provided, they will be requested from the command line.
 
     Returns the json response from the server, or raises on error status.
+
     """
+    if not username:
+        username = input("What is your GitHub username? ")
+
     if not password:
         password = getpass("Enter the GitHub password for {username}: ".format(username=username))
 
@@ -114,9 +118,7 @@ def GitHub_post(data, url, username, *, password=None, OTP=None, headers=None):
     r.raise_for_status()
     return r.json()
 
-
-def generate_GitHub_token(username, *, password=None, OTP=None,
-    note="Doctr token for pushing to gh-pages from Travis", headers=None):
+def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Travis"):
     """
     Generate a GitHub token for pushing from Travis
 
@@ -135,9 +137,9 @@ def generate_GitHub_token(username, *, password=None, OTP=None,
         "note_url": "https://github.com/gforsyth/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
-    return GitHub_post(data, AUTH_URL, username, password=password, OTP=OTP, headers=headers)['token']
+    return GitHub_post(data, AUTH_URL)['token']
 
-def upload_GitHub_deploy_key(repo, key, username, *, read_only=False,
+def upload_GitHub_deploy_key(repo, key, *, read_only=False,
     title="Doctr deploy key for pushing to gh-pages from Travis"):
     """
     Uploads a GitHub deploy key to repo
@@ -152,7 +154,7 @@ def upload_GitHub_deploy_key(repo, key, username, *, read_only=False,
         "key": key,
         "read_only": read_only,
     }
-    return GitHub_post(data, DEPLOY_KEY_URL, username)['url']
+    return GitHub_post(data, DEPLOY_KEY_URL)['url']
 
 def generate_ssh_key(note, name='github_deploy_key'):
     """

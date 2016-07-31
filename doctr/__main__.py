@@ -59,8 +59,7 @@ def main():
         repo = input("What repo to you want to build the docs for? ")
 
         if args.token:
-            username = input("What is your GitHub username? ")
-            token = generate_GitHub_token(username)
+            token = generate_GitHub_token()
             encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
         else:
             generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
