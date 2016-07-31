@@ -25,6 +25,8 @@ import sys
 import os
 import argparse
 
+from textwrap import dedent
+
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key)
 from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
@@ -80,29 +82,29 @@ def main():
 
                 upload_GitHub_deploy_key(repo, key)
 
-                print("""\
-The deploy key has been added for {repo}.
+                print(dedent("""\
+                The deploy key has been added for {repo}.
 
-Commit the file github_deploy_key.enc to the repository.
+                Commit the file github_deploy_key.enc to the repository.
 
-You can go to {deploy_keys_url} to revoke the deploy key.
-""".format(repo=repo, deploy_keys_url=deploy_keys_url))
+                You can go to {deploy_keys_url} to revoke the deploy key.
+                """.format(repo=repo, deploy_keys_url=deploy_keys_url)))
 
             else:
-                print("""\
-Go to {deploy_keys_url} and add the following as a new key:
+                print(dedent("""\
+                Go to {deploy_keys_url} and add the following as a new key:
 
-{key}
+                {key}
 
-Be sure to allow write access for the key
-""".format(key=key, deploy_keys_url=deploy_keys_url))
+                Be sure to allow write access for the key
+                """.format(key=key, deploy_keys_url=deploy_keys_url)))
 
-        travis_content = """
-env:
-  global:
-    secure: "{encrypted_variable}"
+        travis_content = dedent("""
+        env:
+          global:
+            secure: "{encrypted_variable}"
 
-""".format(encrypted_variable=encrypted_variable.decode('utf-8'))
+        """.format(encrypted_variable=encrypted_variable.decode('utf-8')))
 
         print("Put\n", travis_content, "in your .travis.yml.\n",
             "Also make sure to create an empty gh-pages branch on GitHub, and "
