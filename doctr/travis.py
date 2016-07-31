@@ -8,6 +8,8 @@ import shutil
 import subprocess
 import sys
 
+from cryptography.fernet import Fernet
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.
