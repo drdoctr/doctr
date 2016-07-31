@@ -97,6 +97,12 @@ def main():
                 Be sure to allow write access for the key.
                 """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url)))
 
+            # TODO: Should we just delete the public key?
+
+            print(dedent("""Commit the file github_deploy_key.enc. The file
+            github_deploy_key.pub contains the public deploy key for GitHub.
+            It does not need to be committed."""))
+
         travis_content = dedent("""
         env:
           global:
