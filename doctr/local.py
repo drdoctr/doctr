@@ -147,17 +147,12 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
     r.raise_for_status()
     return r.json()['token']
 
-def generate_ssh_key(repo):
-    print("Generating an SSH deploy key for Travis")
-    p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C',
-        "doctr SSH deploy key for {repo}".format(repo=repo), '-f',
-        'github_deploy_key', '-N', ''])
+def generate_ssh_key(note, name='github_deploy_key'):
+    """
+    Generates an SSH deploy public and private key.
+    """
+    p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C', note,
+        '-f', name, '-N', ''])
 
     if p.returncode:
         raise RuntimeError("SSH key generation failed")
-
-    with open("github_deploy_key.pub") as f:
-        public_key = f.read()
-
-    with open("github_deploy_key") as f:
-        private_key = f.read()
