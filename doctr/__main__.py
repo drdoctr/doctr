@@ -5,7 +5,7 @@ A tool to automatically deploy docs to GitHub pages from Travis CI.
 
 The doctr command is two commands in one. To use, first run
 
-doctr local
+doctr configure
 
 on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
@@ -13,7 +13,7 @@ which you should insert into your .travis.yml.
 
 Then, on Travis, for the build where you build your docs, add
 
-    - doctr travis
+    - doctr deploy
 
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
@@ -32,7 +32,7 @@ from . import __version__
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawTextHelpFormatter, epilog="""
-Run --help on the subcommands like 'doctr travis --help' to see the
+Run --help on the subcommands like 'doctr deploy --help' to see the
 options available.
         """,
         )
@@ -40,14 +40,15 @@ options available.
 
     location = parser.add_subparsers(title='location', dest='location',
         description="Location doctr is being run from")
-    travis_parser = location.add_parser('travis', help="Run as if on Travis.")
-    travis_parser.set_defaults(func=travis)
-    travis_parser.add_argument('--force', action='store_true', help="""Run the travis command even
+    deploy_parser = location.add_parser('deploy', help=""""Deploy the docs to GitHub from Travis.""")
+    deploy_parser.set_defaults(func=deploy)
+    deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
 
-    local_parser = location.add_parser('local', help="Run as if local (not on Travis).")
-    local_parser.set_defaults(func=local)
-    local_parser.add_argument('--force', action='store_true', help="""Run the local command even
+    configure_parser = location.add_parser('configure', help="""Configure
+    doctr. This command should be run locally (not on Travis).""")
+    configure_parser.set_defaults(func=configure)
+    configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
     if we appear to be on Travis.""")
 
     args = parser.parse_args()
@@ -61,20 +62,20 @@ options available.
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
 
-def travis(args, parser):
+def deploy(args, parser):
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
-            "doctr travis --force to run anyway.")
+            "doctr deploy --force to run anyway.")
 
     repo = get_repo()
     if setup_GitHub_push(repo):
         commit_docs()
         push_docs()
 
-def local(args, parser):
+def configure(args, parser):
     if not args.force and on_travis():
         parser.error("doctr appears to be running on Travis. Use "
-            "doctr local --force to run anyway.")
+            "doctr configure --force to run anyway.")
 
     username = input("What is your GitHub username? ")
     token = generate_GitHub_token(username)
