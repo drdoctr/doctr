@@ -29,7 +29,7 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key)
-from .travis import setup_deploy_key, setup_GitHub_push, commit_docs, push_docs, get_repo
+from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
 def main():
