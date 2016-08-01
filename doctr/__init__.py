@@ -1,12 +1,14 @@
-from .local import encrypt_variable, generate_GitHub_token
-from .travis import (get_token, run, setup_GitHub_push, gh_pages_exists,
-                     create_gh_pages, commit_docs, push_docs, get_repo,
-                     find_build_dir)
+from .local import (encrypt_variable, encrypt_file, GitHub_post,
+    generate_GitHub_token, upload_GitHub_deploy_key, generate_ssh_key)
+from .travis import (decrypt_file, setup_deploy_key, get_token, run,
+    setup_GitHub_push, gh_pages_exists, create_gh_pages, commit_docs,
+    push_docs, get_repo, find_build_dir)
 
 __all__ = [
-    'encrypt_variable', 'generate_GitHub_token',
+    'encrypt_variable', 'encrypt_file', 'GitHub_post',
+    'generate_GitHub_token', 'upload_GitHub_deploy_key', 'generate_ssh_key',
 
-    'get_token', 'run', 'setup_GitHub_push', 'gh_pages_exists',
+    'decrypt_file', 'setup_deploy_key', 'get_token', 'run', 'setup_GitHub_push', 'gh_pages_exists',
     'create_gh_pages', 'commit_docs', 'push_docs', 'get_repo',
     'find_build_dir',
 ]

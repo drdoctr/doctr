@@ -10,6 +10,58 @@ import shlex
 import shutil
 import subprocess
 
+from cryptography.fernet import Fernet
+
+def decrypt_file(file, key):
+    """
+    Decrypts the file ``file``.
+
+    The encrypted file is assumed to end with the ``.enc`` extension. The
+    decrypted file is saved to the same location without the ``.enc``
+    extension.
+
+    The permissions on the decrypted file are automatically set to 0o600.
+
+    See also :func:`doctr.local.encrypt_file`.
+
+    """
+    if not file.endswith('.enc'):
+        raise ValueError("%s does not end with .enc" % file)
+
+    fer = Fernet(key)
+
+    with open(file, 'rb') as f:
+        decrypted_file = fer.decrypt(f.read())
+
+    with open(file[:4], 'wb') as f:
+        f.write(decrypted_file)
+
+    os.chmod(file[:4], 0o600)
+
+def setup_deploy_key():
+    """
+    Decrypts the deploy key and configures it with ssh
+
+    The key is assumed to be encrypted as github_deploy_key.enc, and the
+    encryption key is assumed to be set in the environment variable
+    DOCTR_DEPLOY_ENCRYPTION_KEY.
+
+    """
+    key = os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None)
+    if not key:
+        raise RuntimeError("DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set")
+
+    key = key.encode('utf-8')
+    decrypt_file('githib_deploy_key.enc', key)
+
+    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    os.move("github_deploy_key", key_path)
+
+    with open(os.expanduser("~/.ssh/config"), 'a') as f:
+        f.write("Host github.com"
+                '  IdentityFile "%s"'
+                "  LogLevel ERROR\n" % key_path)
+
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
     command = ' '.join(map(shlex.quote, args))
@@ -40,7 +92,10 @@ def run(args):
 
     Automatically hides the secret GitHub token from the output.
     """
-    token = get_token()
+    if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
+        token = ''
+    else:
+        token = get_token()
     out, err, returncode = run_command_hiding_token(args, token)
     if out:
         print(out.decode('utf-8'))
@@ -62,16 +117,21 @@ def get_repo():
     _, org, git_repo = remote_url.rsplit(b'.git', 1)[0].rsplit(b'/', 2)
     return org + b'/' + git_repo
 
-def setup_GitHub_push(repo):
+def setup_GitHub_push(repo, auth_type='deploy_key'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
-    This sets up the remote with the token and checks out the gh-pages branch.
+    ``auth_type`` should be either ``'deploy_key'`` or ``'token'``.
 
-    The token to push to GitHub is assumed to be in the ``GH_TOKEN`` environment
+    For ``auth_type='token'``, this sets up the remote with the token and
+    checks out the gh-pages branch. The token to push to GitHub is assumed to be in the ``GH_TOKEN`` environment
     variable.
 
+    For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
+    if auth_type not in ['deploy_key', 'token']:
+        raise ValueError("auth_type must be 'deploy_key' or 'token'")
+
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
@@ -84,24 +144,31 @@ def setup_GitHub_push(repo):
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
         return False
 
-    token = get_token()
-
     print("Setting git attributes")
     # Should we add some user.email?
     run(['git', 'config', '--global', 'user.name', "Travis docs builder (Travis CI)"])
 
-    print("Adding token remote")
-    run(['git', 'remote', 'add', 'origin_token',
-        'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'), repo=repo)])
-    print("Fetching token remote")
-    run(['git', 'fetch', 'origin_token'])
+    print("Adding doctr remote")
+    if auth_type == 'token':
+        token = get_token()
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'),
+                repo=repo)])
+    else:
+        setup_deploy_key()
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'git@github.com:{repo}.git'.format(repo=repo)])
+
+    print("Fetching doctr remote")
+    run(['git', 'fetch', 'doctr_remote'])
+
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
     new_gh_pages = create_gh_pages()
     print("Checking out gh-pages")
     if new_gh_pages:
         run(['git', 'checkout', 'gh-pages'])
     else:
-        run(['git', 'checkout', '-b', 'gh-pages', '--track', 'origin_token/gh-pages'])
+        run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
     print("Done")
 
     return True
@@ -114,7 +181,7 @@ def gh_pages_exists():
     ``gh-pages`` branch on the non-default remote, this won't see it.
 
     """
-    remote_name = 'origin_token'
+    remote_name = 'doctr_remote'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
 
     return '{}/gh-pages'.format(remote_name) in branch_names
@@ -136,7 +203,7 @@ def create_gh_pages():
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', '"create new gh-pages branch with .nojekyll"'])
         print("Pushing gh-pages branch to remote")
-        run(['git', 'push', '-u', 'origin_token', 'gh-pages'])
+        run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
         #return to master branch
         run(['git', 'checkout', 'master'])
 
@@ -153,8 +220,8 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs'):
     """
     Commit the docs to ``gh-pages``
 
-    Assumes that :func:`setup_GitHub_push`, which sets up the `origin_token` remote,
-    has been run and returned True.
+    Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
+    remote, has been run and returned True.
 
     """
     if not built_docs:
@@ -187,7 +254,7 @@ def push_docs():
         print("Pulling")
         run(["git", "pull"])
         print("Pushing commit")
-        run(['git', 'push', '-q', 'origin_token', 'gh-pages'])
+        run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
     else:
         print("The docs have not changed. Not updating")
 
