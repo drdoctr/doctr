@@ -106,7 +106,7 @@ def main():
         travis_content = dedent("""
         env:
           global:
-            secure: "{encrypted_variable}"
+            - secure: "{encrypted_variable}"
 
         """.format(encrypted_variable=encrypted_variable.decode('utf-8')))
 
