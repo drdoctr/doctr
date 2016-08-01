@@ -36,6 +36,30 @@ def decrypt_file(file, key):
 
     os.chmod(file[:4], 0o600)
 
+def setup_deploy_key():
+    """
+    Decrypts the deploy key and configures it with ssh
+
+    The key is assumed to be encrypted as github_deploy_key.enc, and the
+    encryption key is assumed to be set in the environment variable
+    DOCTR_DEPLOY_ENCRYPTION_KEY.
+
+    """
+    key = os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None)
+    if not key:
+        raise RuntimeError("DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set")
+
+    key = key.encode('utf-8')
+    decrypt_file('githib_deploy_key.enc', key)
+
+    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    os.move("github_deploy_key", key_path)
+
+    with open(os.expanduser("~/.ssh/config"), 'a') as f:
+        f.write("Host github.com"
+                '  IdentityFile "%s"'
+                "  LogLevel ERROR\n" % key_path)
+
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
     command = ' '.join(map(shlex.quote, args))
