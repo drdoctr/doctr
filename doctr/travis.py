@@ -91,7 +91,7 @@ def run(args):
     Automatically hides the secret GitHub token from the output.
     """
     if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
-        token = ''
+        token = ''.encode('utf-8')
     else:
         token = get_token()
     out, err, returncode = run_command_hiding_token(args, token)
