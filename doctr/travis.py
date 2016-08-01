@@ -50,7 +50,7 @@ def setup_deploy_key():
         raise RuntimeError("DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set")
 
     key = key.encode('utf-8')
-    decrypt_file('githib_deploy_key.enc', key)
+    decrypt_file('github_deploy_key.enc', key)
 
     key_path = os.path.expanduser("~/.ssh/github_deploy_key")
     os.move("github_deploy_key", key_path)
@@ -91,7 +91,7 @@ def run(args):
     Automatically hides the secret GitHub token from the output.
     """
     if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
-        token = ''.encode('utf-8')
+        token = b''
     else:
         token = get_token()
     out, err, returncode = run_command_hiding_token(args, token)
