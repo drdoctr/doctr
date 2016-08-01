@@ -60,8 +60,6 @@ def main():
 
     if on_travis:
         repo = get_repo()
-        if not args.token:
-            setup_deploy_key()
         if setup_GitHub_push(repo, auth_type='token' if args.token else 'deploy_key'):
             commit_docs()
             push_docs()

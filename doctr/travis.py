@@ -126,8 +126,6 @@ def setup_GitHub_push(repo, auth_type='deploy_key'):
     variable.
 
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
-    It assumes that the deploy key has already been decrypted and set up with
-    ssh (that :func:`setup_deploy_key` has been run).
     """
     if auth_type not in ['deploy_key', 'token']:
         raise ValueError("auth_type must be 'deploy_key' or 'token'")
@@ -155,6 +153,7 @@ def setup_GitHub_push(repo, auth_type='deploy_key'):
             'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'),
                 repo=repo)])
     else:
+        setup_deploy_key()
         run(['git', 'remote', 'add', 'doctr_remote',
             'git@github.com:{repo}.git'.format(repo=repo)])
 
