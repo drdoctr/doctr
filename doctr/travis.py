@@ -62,7 +62,7 @@ def setup_deploy_key():
                 "  LogLevel ERROR\n" % key_path)
 
     # start ssh-agent and add key to it
-    run(['eval', '"ssh-agent -s"'])
+    run(['eval', 'ssh-agent -s'])
     run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
