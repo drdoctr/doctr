@@ -148,14 +148,14 @@ def setup_GitHub_push(repo, auth_type='deploy_key'):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-#    if TRAVIS_BRANCH != "master":
-#        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
-#        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
-#        return False
-#
-#    if TRAVIS_PULL_REQUEST != "false":
-#        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-#        return False
+    if TRAVIS_BRANCH != "master":
+        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
+        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
+        return False
+
+    if TRAVIS_PULL_REQUEST != "false":
+        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        return False
 
     print("Setting git attributes")
     # Should we add some user.email?
