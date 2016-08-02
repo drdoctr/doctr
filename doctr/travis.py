@@ -70,8 +70,8 @@ def setup_deploy_key():
     AUTH_SOCK = agent_info[0].split('=')[1][:-1]
     AGENT_PID = agent_info[3].split('=')[1][:-1]
 
-    os.environ['AUTH_SOCK'] = AUTH_SOCK
-    os.environ['AGENT_PID'] = AGENT_PID
+    os.putenv('AUTH_SOCK', AUTH_SOCK)
+    os.putenv('AGENT_PID', AGENT_PID)
 
     run(['ssh-agent', 'ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
