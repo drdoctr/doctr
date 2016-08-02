@@ -62,7 +62,18 @@ def setup_deploy_key():
                 "  LogLevel ERROR\n" % key_path)
 
     # start ssh-agent and add key to it
-    subprocess.run(['eval', 'ssh-agent -s'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    # info from SSH agent has to be put into the environment
+    agent_info = subprocess.check_output(['ssh-agent', '-s'],
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
+    agent_info = agent_info.decode('utf-8')
+    agent_info = agent_info.split('\n')
+    AUTH_SOCK = agent_info[0].split('=')[1][:-1]
+    AGENT_PID = agent_info[3].split('=')[1][:-1]
+
+    os.environ['AUTH_SOCK'] = AUTH_SOCK
+    os.environ['AGENT_PID'] = AGENT_PID
+
     run(['ssh-agent', 'ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
