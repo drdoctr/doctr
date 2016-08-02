@@ -33,6 +33,9 @@ from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
 def main():
+    # This uses RawTextHelpFormatter so that the description (the docstring of
+    # this module) is formatted correctly. Unfortunately, that means that
+    # parser help is not text wrapped (but all other help is).
     parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawTextHelpFormatter, epilog="""
 Run --help on the subcommands like 'doctr deploy --help' to see the
@@ -48,8 +51,7 @@ options available.
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
 
-    configure_parser = location.add_parser('configure', help="""Configure
-    doctr. This command should be run locally (not on Travis).""")
+    configure_parser = location.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
     if we appear to be on Travis.""")
