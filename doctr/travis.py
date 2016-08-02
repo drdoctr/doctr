@@ -60,7 +60,7 @@ def setup_deploy_key():
         f.write("Host github.com"
                 '  IdentityFile "%s"'
                 "  LogLevel ERROR\n" % key_path)
-    run(['eval', '`ssh-agent -s`'])
+    run(['ssh-agent', '-s'])
     run(['ssh-add', '~/.ssh/github_deploy_key'])
 
 # XXX: Do this in a way that is streaming
