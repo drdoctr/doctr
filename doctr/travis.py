@@ -56,7 +56,7 @@ def setup_deploy_key():
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
-    with open(os.expanduser("~/.ssh/config"), 'a') as f:
+    with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
         f.write("Host github.com"
                 '  IdentityFile "%s"'
                 "  LogLevel ERROR\n" % key_path)
