@@ -31,10 +31,10 @@ def decrypt_file(file, key):
     with open(file, 'rb') as f:
         decrypted_file = fer.decrypt(f.read())
 
-    with open(file[:4], 'wb') as f:
+    with open(file[:-4], 'wb') as f:
         f.write(decrypted_file)
 
-    os.chmod(file[:4], 0o600)
+    os.chmod(file[:-4], 0o600)
 
 def setup_deploy_key():
     """
