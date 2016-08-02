@@ -34,9 +34,6 @@ def decrypt_file(file, key):
     with open(file[:-4], 'wb') as f:
         f.write(decrypted_file)
 
-    run(['ls'])
-    run(['pwd'])
-
     os.chmod(file[:-4], 0o600)
 
 def setup_deploy_key():
@@ -59,12 +56,13 @@ def setup_deploy_key():
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
-    run(['ls', os.path.expanduser('~/.ssh')])
-    run(['pwd'])
     with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
         f.write("Host github.com"
                 '  IdentityFile "%s"'
                 "  LogLevel ERROR\n" % key_path)
+
+    # start ssh-agent and add key to it
+    run(['eval', '"ssh-agent -s"'])
     run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
