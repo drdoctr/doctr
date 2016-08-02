@@ -131,10 +131,9 @@ def configure(args, parser):
     env:
       global:
         - secure: "{encrypted_variable}"
-
     """.format(encrypted_variable=encrypted_variable.decode('utf-8')))
 
-    print("Put\n", travis_content, "in your .travis.yml.\n")
+    print("Put", travis_content, "in your .travis.yml.", sep='\n')
 
 if __name__ == '__main__':
     sys.exit(main())
