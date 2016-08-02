@@ -25,7 +25,7 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr;
+      python -m doctr deploy;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
