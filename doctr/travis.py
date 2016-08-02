@@ -52,15 +52,16 @@ def setup_deploy_key():
     key = key.encode('utf-8')
     decrypt_file('github_deploy_key.enc', key)
 
-    #key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
-    #os.rename("github_deploy_key", key_path)
+    os.rename("github_deploy_key", key_path)
 
-    #with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
-    #    f.write("Host github.com"
-    #            '  IdentityFile "%s"'
-    #            "  LogLevel ERROR\n" % key_path)
-    subprocess.run(['ssh-add', 'github_deploy_key'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
+        f.write("Host github.com"
+                '  IdentityFile "%s"'
+                "  LogLevel ERROR\n" % key_path)
+
+    run(['ssh-add', '~/.ssh/github_deploy_key'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
@@ -135,14 +136,14 @@ def setup_GitHub_push(repo, auth_type='deploy_key'):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    if TRAVIS_BRANCH != "master":
-        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
-        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
-        return False
-
-    if TRAVIS_PULL_REQUEST != "false":
-        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-        return False
+#    if TRAVIS_BRANCH != "master":
+#        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
+#        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
+#        return False
+#
+#    if TRAVIS_PULL_REQUEST != "false":
+#        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+#        return False
 
     print("Setting git attributes")
     # Should we add some user.email?
