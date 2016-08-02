@@ -73,7 +73,7 @@ def setup_deploy_key():
     os.putenv('AUTH_SOCK', AUTH_SOCK)
     os.putenv('AGENT_PID', AGENT_PID)
 
-    run(['ssh-agent', 'ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
+    run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
