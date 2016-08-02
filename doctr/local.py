@@ -6,9 +6,13 @@ from getpass import getpass
 import base64
 import json
 import uuid
+import subprocess
+import os
 
 import requests
 from requests.auth import HTTPBasicAuth
+
+from cryptography.fernet import Fernet
 
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
@@ -46,22 +50,50 @@ def encrypt_variable(variable, repo, public_key=None):
 
     return base64.b64encode(key.encrypt(variable, pad))
 
+def encrypt_file(file, delete=False):
+    """
+    Encrypts the file ``file``.
+
+    The encrypted file is saved to the same location with the ``.enc``
+    extension.
+
+    If ``delete=True``, the unencrypted file is deleted after encryption.
+
+    Returns the secret key used for the encryption.
+
+    Decrypt the file with :func:`doctr.travis.decrypt_file`.
+
+    """
+    key = Fernet.generate_key()
+    fer = Fernet(key)
+
+    with open(file, 'rb') as f:
+        encrypted_file = fer.encrypt(f.read())
+
+    with open(file + '.enc', 'wb') as f:
+        f.write(encrypted_file)
+
+    if delete:
+        os.remove(file)
+
+    return key
+
 class AuthenticationFailed(Exception):
     pass
 
-def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=None):
+def GitHub_post(data, url, *, username=None, password=None, OTP=None, headers=None):
     """
-    Generate a GitHub token for pushing from Travis
+    POST the data ``data`` to GitHub.
 
-    The scope requested is public_repo.
+    If no username, password, or OTP (2-factor authentication code) are
+    provided, they will be requested from the command line.
 
-    If no password or OTP are provided, they will be requested from the
-    command line.
+    Returns the json response from the server, or raises on error status.
 
-    The token created here can be revoked at
-    https://github.com/settings/tokens. The default note is
-    "Doctr token for pushing to gh-pages from Travis".
     """
+    if not username:
+        username = input("What is your GitHub username? ")
+
     if not password:
         password = getpass("Enter the GitHub password for {username}: ".format(username=username))
 
@@ -71,25 +103,70 @@ def generate_GitHub_token(username, password=None, OTP=None, note=None, headers=
         headers['X-GitHub-OTP'] = OTP
 
     auth = HTTPBasicAuth(username, password)
-    AUTH_URL = "https://api.github.com/authorizations"
 
-    note = note or "Doctr token for pushing to gh-pages from Travis"
+    r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
+    if r.status_code == 401:
+        two_factor = r.headers.get('X-GitHub-OTP')
+        if two_factor:
+            print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
+            OTP = input("Authentication code: ")
+            return GitHub_post(data, url, username=username, password=password,
+                OTP=OTP, headers=headers)
+
+        raise AuthenticationFailed("invalid username or password")
+
+    r.raise_for_status()
+    return r.json()
+
+def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Travis"):
+    """
+    Generate a GitHub token for pushing from Travis
+
+    The scope requested is public_repo.
+
+    If no password or OTP are provided, they will be requested from the
+    command line.
+
+    The token created here can be revoked at
+    https://github.com/settings/tokens.
+    """
+    AUTH_URL = "https://api.github.com/authorizations"
     data = {
         "scopes": ["public_repo"],
         "note": note,
         "note_url": "https://github.com/gforsyth/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
-    r = requests.post(AUTH_URL, auth=auth, headers=headers, data=json.dumps(data))
-    if r.status_code == 401:
-        two_factor = r.headers.get('X-GitHub-OTP')
-        if two_factor:
-            print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
-            OTP = input("Authentication code: ")
-            return generate_GitHub_token(username=username, password=password,
-                OTP=OTP, note=note, headers=headers)
+    return GitHub_post(data, AUTH_URL)['token']
 
-        raise AuthenticationFailed("invalid username or password")
+def upload_GitHub_deploy_key(repo, ssh_key, *, read_only=False,
+    title="Doctr deploy key for pushing to gh-pages from Travis"):
+    """
+    Uploads a GitHub deploy key to repo
 
-    r.raise_for_status()
-    return r.json()['token']
+    If ``read_only=True``, the deploy_key will not be able to write to the
+    repo.
+    """
+    DEPLOY_KEY_URL = "https://api.github.com/repos/{repo}/keys".format(repo=repo)
+
+    data = {
+        "title": title,
+        "key": ssh_key,
+        "read_only": read_only,
+    }
+    return GitHub_post(data, DEPLOY_KEY_URL)
+
+def generate_ssh_key(note, name='github_deploy_key'):
+    """
+    Generates an SSH deploy public and private key.
+
+    Returns the public key as a str.
+    """
+    p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C', note,
+        '-f', name, '-N', ''])
+
+    if p.returncode:
+        raise RuntimeError("SSH key generation failed")
+
+    with open(name + ".pub") as f:
+        return f.read()
