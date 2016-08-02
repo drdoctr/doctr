@@ -52,15 +52,28 @@ def setup_deploy_key():
     key = key.encode('utf-8')
     decrypt_file('github_deploy_key.enc', key)
 
-    #key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
-    #os.rename("github_deploy_key", key_path)
+    os.rename("github_deploy_key", key_path)
 
-    #with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
-    #    f.write("Host github.com"
-    #            '  IdentityFile "%s"'
-    #            "  LogLevel ERROR\n" % key_path)
-    subprocess.run(['ssh-add', 'github_deploy_key'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
+        f.write("Host github.com"
+                '  IdentityFile "%s"'
+                "  LogLevel ERROR\n" % key_path)
+
+    # start ssh-agent and add key to it
+    # info from SSH agent has to be put into the environment
+    agent_info = subprocess.check_output(['ssh-agent', '-s'])
+    agent_info = agent_info.decode('utf-8')
+    agent_info = agent_info.split()
+
+    AUTH_SOCK = agent_info[0].split('=')[1][:-1]
+    AGENT_PID = agent_info[3].split('=')[1][:-1]
+
+    os.putenv('AUTH_SOCK', AUTH_SOCK)
+    os.putenv('AGENT_PID', AGENT_PID)
+
+    run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
