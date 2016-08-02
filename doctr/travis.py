@@ -110,11 +110,11 @@ def get_repo():
     Assumes that the repo is in the ``origin`` remote.
     """
     remote_url = subprocess.check_output(['git', 'config', '--get',
-        'remote.origin.url'])
+        'remote.origin.url']).decode('utf-8')
 
     # Travis uses the https clone url
-    _, org, git_repo = remote_url.rsplit(b'.git', 1)[0].rsplit(b'/', 2)
-    return org + b'/' + git_repo
+    _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
+    return (org + '/' + git_repo)
 
 def setup_GitHub_push(repo, auth_type='deploy_key'):
     """
