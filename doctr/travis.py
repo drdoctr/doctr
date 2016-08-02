@@ -53,6 +53,7 @@ def setup_deploy_key():
     decrypt_file('github_deploy_key.enc', key)
 
     key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
     with open(os.expanduser("~/.ssh/config"), 'a') as f:
