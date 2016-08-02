@@ -21,6 +21,7 @@ install:
   - source activate test-environment
 
 script:
+  - eval `ssh-agent -s`
   - if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
