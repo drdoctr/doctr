@@ -92,7 +92,11 @@ def configure(args, parser):
 
     if args.token:
         token = generate_GitHub_token()
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'), repo=repo)
+        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
+        repo=repo)
+        print(dedent("""\
+        A personal access token for doctr has been created.
+        You can go to https://github.com/settings/tokens to revoke it.\n"""))
     else:
         ssh_key = generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
         key = encrypt_file('github_deploy_key', delete=True)
