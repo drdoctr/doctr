@@ -63,9 +63,11 @@ def setup_deploy_key():
 
     # start ssh-agent and add key to it
     # info from SSH agent has to be put into the environment
+    run(['ssh-agent', '-s'])
     agent_info = subprocess.check_output(['ssh-agent', '-s'])
     agent_info = agent_info.decode('utf-8')
     agent_info = agent_info.split('\n')
+    print(agent_info)
     AUTH_SOCK = agent_info[0].split('=')[1][:-1]
     AGENT_PID = agent_info[3].split('=')[1][:-1]
 
