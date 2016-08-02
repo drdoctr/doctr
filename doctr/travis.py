@@ -61,7 +61,7 @@ def setup_deploy_key():
                 '  IdentityFile "%s"'
                 "  LogLevel ERROR\n" % key_path)
 
-    run(['ssh-add', '~/.ssh/github_deploy_key'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    run(['ssh-add', '~/.ssh/github_deploy_key'])
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
