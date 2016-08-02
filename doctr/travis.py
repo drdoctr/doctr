@@ -34,6 +34,9 @@ def decrypt_file(file, key):
     with open(file[:-4], 'wb') as f:
         f.write(decrypted_file)
 
+    run(['ls'])
+    run(['pwd'])
+
     os.chmod(file[:-4], 0o600)
 
 def setup_deploy_key():
@@ -56,6 +59,8 @@ def setup_deploy_key():
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
+    run(['ls', '~/.ssh'])
+    run(['pwd'])
     with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
         f.write("Host github.com"
                 '  IdentityFile "%s"'
