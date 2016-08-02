@@ -59,13 +59,13 @@ def setup_deploy_key():
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
-    run(['ls', '~/.ssh'])
+    run(['ls', os.path.expanduser('~/.ssh')])
     run(['pwd'])
     with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
         f.write("Host github.com"
                 '  IdentityFile "%s"'
                 "  LogLevel ERROR\n" % key_path)
-    run(['ssh-add', '~/.ssh/github_deploy_key'])
+    run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
