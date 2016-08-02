@@ -31,10 +31,10 @@ def decrypt_file(file, key):
     with open(file, 'rb') as f:
         decrypted_file = fer.decrypt(f.read())
 
-    with open(file[:4], 'wb') as f:
+    with open(file[:-4], 'wb') as f:
         f.write(decrypted_file)
 
-    os.chmod(file[:4], 0o600)
+    os.chmod(file[:-4], 0o600)
 
 def setup_deploy_key():
     """
@@ -53,6 +53,7 @@ def setup_deploy_key():
     decrypt_file('github_deploy_key.enc', key)
 
     key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
     os.rename("github_deploy_key", key_path)
 
     with open(os.expanduser("~/.ssh/config"), 'a') as f:
