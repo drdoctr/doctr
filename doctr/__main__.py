@@ -50,6 +50,9 @@ options available.
     deploy_parser.set_defaults(func=deploy)
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
+    deploy_parser.add_argument('--token', action='store_true', default=False,
+        help="""Push to GitHub using a personal access token. Use this if you
+        used 'doctr configure --token'.""")
 
     configure_parser = location.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
