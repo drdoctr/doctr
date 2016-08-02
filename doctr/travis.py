@@ -52,14 +52,15 @@ def setup_deploy_key():
     key = key.encode('utf-8')
     decrypt_file('github_deploy_key.enc', key)
 
-    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    #key_path = os.path.expanduser("~/.ssh/github_deploy_key")
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
-    os.rename("github_deploy_key", key_path)
+    #os.rename("github_deploy_key", key_path)
 
-    with open(os.expanduser("~/.ssh/config"), 'a') as f:
-        f.write("Host github.com"
-                '  IdentityFile "%s"'
-                "  LogLevel ERROR\n" % key_path)
+    #with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
+    #    f.write("Host github.com"
+    #            '  IdentityFile "%s"'
+    #            "  LogLevel ERROR\n" % key_path)
+    subprocess.run(['ssh-add', 'github_deploy_key'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
@@ -110,11 +111,11 @@ def get_repo():
     Assumes that the repo is in the ``origin`` remote.
     """
     remote_url = subprocess.check_output(['git', 'config', '--get',
-        'remote.origin.url'])
+        'remote.origin.url']).decode('utf-8')
 
     # Travis uses the https clone url
-    _, org, git_repo = remote_url.rsplit(b'.git', 1)[0].rsplit(b'/', 2)
-    return org + b'/' + git_repo
+    _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
+    return (org + '/' + git_repo)
 
 def setup_GitHub_push(repo, auth_type='deploy_key'):
     """
