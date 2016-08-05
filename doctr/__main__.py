@@ -54,6 +54,15 @@ options available.
         used 'doctr configure --token'.""")
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
+    deploy_parser.add_argument('--built-docs', default='docs/_build/html',
+        help="""Location of the built html documentation to be deployed to
+        gh-pages. The default is %(default)s""")
+    deploy_parser.add_argument('--gh-pages-docs', default='docs',
+        help="""Directory to deploy the html documentation to on gh-pages. The
+        default is %(default)s""")
+    deploy_parser.add_argument('--tmp-dir', default='_docs',
+        help="""Temporary directory used on gh-pages. The default is %(default)s""")
+
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -91,7 +100,8 @@ def deploy(args, parser):
     repo = get_repo()
     if setup_GitHub_push(repo, auth_type='token' if args.token else
         'deploy_key', full_key_path=args.key_path):
-        commit_docs()
+        commit_docs(built_docs=args.built_docs,
+            gh_pages_docs=args.gh_pages_docs, tmp_dir=args.tmp_dir)
         push_docs()
 
 class IncrementingInt:
