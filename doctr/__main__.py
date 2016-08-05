@@ -159,18 +159,18 @@ def configure(args, parser):
         committed.
         """.format(keypath=args.key_path, N=N)))
 
-        if args.key_path != 'github_deploy_key':
-            options = '--key-path {keypath}.enc'.format(keypath=args.key_path)
-        else:
-            options = ''
+    if args.key_path != 'github_deploy_key':
+        options = '--key-path {keypath}.enc'.format(keypath=args.key_path)
+    else:
+        options = ''
 
-        print(dedent("""\
-        {N}. Add
+    print(dedent("""\
+    {N}. Add
 
-            - doctr deploy {options}
+        - doctr deploy {options}
 
-        to the docs build of your .travis.yml.
-        """.format(options=options, N=N)))
+    to the docs build of your .travis.yml.
+    """.format(options=options, N=N)))
 
     print(dedent("""\
     {N}. Put
