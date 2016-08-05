@@ -240,6 +240,8 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     remote, has been run and returned True.
 
     """
+    if gh_pages_docs == '.':
+        raise NotImplementedError("Base directory docs deploying is not yet implemented.")
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
     if os.path.exists(gh_pages_docs):
