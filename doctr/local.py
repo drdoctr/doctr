@@ -156,17 +156,17 @@ def upload_GitHub_deploy_key(repo, ssh_key, *, read_only=False,
     }
     return GitHub_post(data, DEPLOY_KEY_URL)
 
-def generate_ssh_key(note, name='github_deploy_key'):
+def generate_ssh_key(note, keypath='github_deploy_key'):
     """
     Generates an SSH deploy public and private key.
 
     Returns the public key as a str.
     """
     p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C', note,
-        '-f', name, '-N', ''])
+        '-f', keypath, '-N', ''])
 
     if p.returncode:
         raise RuntimeError("SSH key generation failed")
 
-    with open(name + ".pub") as f:
+    with open(keypath + ".pub") as f:
         return f.read()
