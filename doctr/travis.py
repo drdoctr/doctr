@@ -3,10 +3,12 @@ The code that should be run on Travis
 """
 
 import os
+import re
+import sys
+import glob
 import shlex
 import shutil
 import subprocess
-import sys
 
 from cryptography.fernet import Fernet
 
@@ -232,7 +234,7 @@ def create_gh_pages():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir='_docs'):
+def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs'):
     """
     Commit the docs to ``gh-pages``
 
@@ -240,6 +242,8 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     remote, has been run and returned True.
 
     """
+    if not built_docs:
+        built_docs = '{}/html'.format(find_build_dir)
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
     if os.path.exists(gh_pages_docs):
@@ -271,3 +275,27 @@ def push_docs():
         run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
     else:
         print("The docs have not changed. Not updating")
+
+
+DOCS_REGEX = re.compile('([\w.]*)\/conf\.py')
+
+def find_build_dir():
+    """
+    Locate the local ``Sphinx`` directory and the name of the ``build``
+    directory within it (by default either ``build`` or ``_build``)
+
+    Searches recursively from the root directory for a ``conf.py`` file and
+    then backs out the name of the docs' build folder from there.
+    """
+    for conf_loc in glob.iglob('**/conf.py', recursive=True):
+        doc_loc = re.search(DOCS_REGEX, conf_loc)
+        if doc_loc:
+            doc_loc = doc_loc.group(1)
+            try:
+                build_loc = glob.glob('{}/**build'.format(doc_loc),
+                                      recursive=True)[0]
+            except IndexError:
+                sys.exit('Cannot find build directory.  Is there a ``make html`` in your ``.travis.yml``?')
+            build_loc = build_loc.split('/')
+
+            return build_loc
