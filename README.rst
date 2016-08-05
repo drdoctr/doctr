@@ -62,3 +62,54 @@ Another suggestion: Add
 
 to your Sphinx ``Makefile``. This will make Sphinx error even if there are
 warnings, keeping your docs more accurate.
+
+FAQ
+---
+
+- **Why did you build this?**
+
+  Deploying to GitHub pages from Travis is not amazingly difficult, but it's
+  difficult enough that we wanted to write the code to do it once. We found
+  that Travis docs uploading scripts are cargo culted and done in a way that
+  is difficult to reproduce, especially the do-once steps of setting up keys.
+  The ``doctr configure`` command handles key generation automatically, and
+  tells you everything you need to do to set Doctr up. It is also completely
+  self-contained (it does not depend on the ``travis`` Ruby gem).  The ``doctr
+  deploy`` command handles key decryption (for deploy keys) and hiding tokens
+  from the command output (for personal access tokens).
+
+  Furthermore, most Travis deploy guides that we've found recommend setting up
+  a GitHub personal access token to push to GitHub pages. GitHub personal
+  access tokens grant read/write access to all public GitHub repositories for
+  a given user. A more secure way is to use a GitHub deploy key, which grants
+  read/write access only to a single repository. Doctr creates a GitHub deploy
+  key by default (although the option to use a token exists if you know what
+  you are doing).
+
+- **Why not Read the Docs?**
+
+  Read the Docs is great, but it has some limitations:
+
+  - It only works with Python documentation. Doctr was designed to work with
+    Sphinx, but it can work with deploying anything to ``gh-pages``.
+
+  - You are limited in what you can install in Read the Docs. Travis lets you
+    run arbitrary code, which may be necessary to build your documentation.
+
+  - Read the Docs deploys to readthedocs.io. Doctr deploys to GitHub pages.
+    This is often more convenient, as your docs can easily sit alongside other
+    website materials for your project on GitHub pages.
+
+  In general, you should already be building your docs on Travis anyway (to
+  test that they build), so it seems natural to deploy them from there.
+
+- **I would use this, but it's missing a feature that I want.**
+
+  Doctr is still very new. We welcome all `feature requests
+  <https://github.com/gforsyth/doctr/issues>`_ and `pull requests
+  <https://github.com/gforsyth/doctr/pulls>`_.
+
+- **Why is it called Doctr?**
+
+  Because it deploys **doc**\ umentation from **Tr**\ avis. And it makes you
+  feel good.
