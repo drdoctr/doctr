@@ -14,7 +14,7 @@ Contents:
    :maxdepth: 2
 
    api
-
+   changelog
 
 Indices and tables
 ==================
