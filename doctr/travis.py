@@ -36,11 +36,11 @@ def decrypt_file(file, key):
 
     os.chmod(file[:-4], 0o600)
 
-def setup_deploy_key():
+def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
     """
     Decrypts the deploy key and configures it with ssh
 
-    The key is assumed to be encrypted as github_deploy_key.enc, and the
+    The key is assumed to be encrypted as keypath + key_ext, and the
     encryption key is assumed to be set in the environment variable
     DOCTR_DEPLOY_ENCRYPTION_KEY.
 
@@ -49,12 +49,13 @@ def setup_deploy_key():
     if not key:
         raise RuntimeError("DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set")
 
+    key_filename = os.path.basename(keypath)
     key = key.encode('utf-8')
-    decrypt_file('github_deploy_key.enc', key)
+    decrypt_file(keypath + key_ext, key)
 
-    key_path = os.path.expanduser("~/.ssh/github_deploy_key")
+    key_path = os.path.expanduser("~/.ssh/" + key_filename)
     os.makedirs(os.path.expanduser("~/.ssh"), exist_ok=True)
-    os.rename("github_deploy_key", key_path)
+    os.rename(keypath, key_path)
 
     with open(os.path.expanduser("~/.ssh/config"), 'a') as f:
         f.write("Host github.com"
@@ -73,7 +74,7 @@ def setup_deploy_key():
     os.putenv('SSH_AUTH_SOCK', AUTH_SOCK)
     os.putenv('SSH_AGENT_PID', AGENT_PID)
 
-    run(['ssh-add', os.path.expanduser('~/.ssh/github_deploy_key')])
+    run(['ssh-add', os.path.expanduser('~/.ssh/' + key_filename)])
 
 # XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token):
@@ -130,7 +131,7 @@ def get_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(repo, auth_type='deploy_key'):
+def setup_GitHub_push(repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -168,7 +169,8 @@ def setup_GitHub_push(repo, auth_type='deploy_key'):
             'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'),
                 repo=repo)])
     else:
-        setup_deploy_key()
+        keypath, key_ext = full_key_path.rsplit('.', 1)
+        setup_deploy_key(keypath=keypath, key_ext=key_ext)
         run(['git', 'remote', 'add', 'doctr_remote',
             'git@github.com:{repo}.git'.format(repo=repo)])
 
