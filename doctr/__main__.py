@@ -53,6 +53,8 @@ options available.
     deploy_parser.add_argument('--token', action='store_true', default=False,
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
+    deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
+        help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
 
     configure_parser = location.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -66,6 +68,10 @@ options available.
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
         dest="upload_key", help="""Don't automatically upload the deploy key
         to GitHub.""")
+    configure_parser.add_argument('--key-path', default='github_deploy_key',
+        help="""Path to save the encrypted GitHub deploy key. The default is '%(default)s'.
+    The .enc extension is added to the file automatically.""")
+
 
     args = parser.parse_args()
 
@@ -84,7 +90,8 @@ def deploy(args, parser):
             "doctr deploy --force to run anyway.")
 
     repo = get_repo()
-    if setup_GitHub_push(repo, auth_type='token' if args.token else 'deploy_key'):
+    if setup_GitHub_push(repo, auth_type='token' if args.token else
+        'deploy_key', full_key_path=args.key_path):
         commit_docs()
         push_docs()
 
@@ -103,8 +110,8 @@ def configure(args, parser):
         A personal access token for doctr has been created.
         You can go to https://github.com/settings/tokens to revoke it.\n"""))
     else:
-        ssh_key = generate_ssh_key("doctr deploy key for {repo}".format(repo=repo))
-        key = encrypt_file('github_deploy_key', delete=True)
+        ssh_key = generate_ssh_key("doctr deploy key for {repo}".format(repo=repo), keypath=args.key_path)
+        key = encrypt_file(args.key_path, delete=True)
         encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, repo=repo)
 
         deploy_keys_url = 'https://github.com/{repo}/settings/keys'.format(repo=repo)
