@@ -290,8 +290,11 @@ def find_build_dir():
         doc_loc = re.search(DOCS_REGEX, conf_loc)
         if doc_loc:
             doc_loc = doc_loc.group(1)
-            build_loc = glob.glob('{}/**build'.format(doc_loc),
-                                  recursive=True)[0]
+            try:
+                build_loc = glob.glob('{}/**build'.format(doc_loc),
+                                      recursive=True)[0]
+            except IndexError:
+                sys.exit('Cannot find build directory.  Is there a ``make html`` in your ``.travis.yml``?')
             build_loc = build_loc.split('/')
 
             return build_loc
