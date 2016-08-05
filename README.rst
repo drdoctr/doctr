@@ -7,8 +7,8 @@ to GitHub pages.
 This tool is still a work in progress, but once it works it's going to be
 awesome.
 
-Usage (this will change)
-------------------------
+Usage
+-----
 
 Run
 
@@ -19,14 +19,13 @@ Run
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
 
-That repo should already be setup with Travis. The script will create the
-``gh-pages`` branch for you, but you will need to go to
-``https://github.com/<your repo>/settings`` and enable GitHub pages. You may
-also want to enable branch protection for the ``gh-pages`` branch and other
-branches, so that this script can't accidentally screw you.
+That repo should already be setup with Travis. We recommend enabling branch
+protection for the ``gh-pages`` branch and other branches, as the deploy key
+used by Doctr has the ability to push to any branch in your repo.
 
-Then add the stuff to your ``.travis.yml``. The command above will tell you a
-secure key to add. You should also have something like
+Then add the stuff to your ``.travis.yml`` and commit the encrypted deploy
+key. The command above will tell you what to do. You should also have
+something like
 
 .. code:: yaml
 
@@ -47,9 +46,11 @@ secure key to add. You should also have something like
      - doctr deploy
 
 
-in your ``.travis.yml``. See `the one <.travis.yml>`_ in this repo for example.
+in your ``.travis.yml``. See `the one
+<https://github.com/gforsyth/doctr/blob/master/.travis.yml>`_ used by Doctr
+itself for example.
 
-**Heads up:** This script requires Python 3.5 or newer. Be sure to run it in a
+**Heads up:** Doctr requires Python 3.5 or newer. Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
 
