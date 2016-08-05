@@ -123,11 +123,8 @@ def configure(args, parser):
             print(dedent("""\
             The deploy key has been added for {repo}.
 
-            Commit the file github_deploy_key.enc to the repository.
-
             You can go to {deploy_keys_url} to revoke the deploy key.
-            """.format(repo=repo, deploy_keys_url=deploy_keys_url)))
-
+            """.format(repo=repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
         else:
             print(dedent("""\
             Go to {deploy_keys_url} and add the following as a new key:
@@ -139,17 +136,34 @@ def configure(args, parser):
 
         # TODO: Should we just delete the public key?
 
-        print(dedent("""Commit the file github_deploy_key.enc. The file
-        github_deploy_key.pub contains the public deploy key for GitHub.
-        It does not need to be committed."""))
+        print(dedent("""\
+        Commit the file {keypath}.enc. The file {keypath}.pub contains the
+        public deploy key for GitHub. It does not need to be
+        committed.
+        """.format(keypath=args.key_path)))
 
-    travis_content = dedent("""
-    env:
-      global:
-        - secure: "{encrypted_variable}"
-    """.format(encrypted_variable=encrypted_variable.decode('utf-8')))
+        if args.key_path != 'github_deploy_key':
+            options = '--key-path {keypath}.enc'.format(keypath=args.key_path)
+        else:
+            options = ''
 
-    print("Put", travis_content, "in your .travis.yml.", sep='\n')
+        print(dedent("""\
+        Add
+
+            - doctr deploy {options}
+
+        to the docs build of your .travis.yml.
+        """.format(options=options)))
+
+    print(dedent("""\
+    Put
+
+        env:
+          global:
+            - secure: "{encrypted_variable}"
+
+    in your .travis.yml.
+    """.format(encrypted_variable=encrypted_variable.decode('utf-8'))))
 
 if __name__ == '__main__':
     sys.exit(main())
