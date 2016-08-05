@@ -90,9 +90,6 @@ FAQ
 
   Read the Docs is great, but it has some limitations:
 
-  - It only works with Python documentation. Doctr was designed to work with
-    Sphinx, but it can work with deploying anything to ``gh-pages``.
-
   - You are limited in what you can install in Read the Docs. Travis lets you
     run arbitrary code, which may be necessary to build your documentation.
 
