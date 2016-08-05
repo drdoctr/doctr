@@ -111,7 +111,7 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
-    repo = input("What repo to you want to build the docs for? ")
+    repo = input("What repo do you want to build the docs for? ")
 
     N = IncrementingInt(1)
 
@@ -167,6 +167,7 @@ def configure(args, parser):
         print(dedent("""\
         {N}. Add
 
+            - pip install doctr
             - doctr deploy {options}
 
         to the docs build of your .travis.yml.

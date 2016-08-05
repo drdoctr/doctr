@@ -39,7 +39,7 @@ something like
        secure: "<your secure key from doctr here>"
 
    script:
-     - pip install requests cryptography sphinx
+     - pip install sphinx doctr
      - cd docs
      - make html
      - cd ..
