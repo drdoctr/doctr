@@ -100,6 +100,18 @@ FAQ
   In general, you should already be building your docs on Travis anyway (to
   test that they build), so it seems natural to deploy them from there.
 
+- **Why does Doctr require Python 3.5?**
+
+  There are several language features of Python that we wanted to make use of
+  that are not available in earlier versions of Python, such as `keyword-only
+  arguments <https://www.python.org/dev/peps/pep-3102/>`_ and
+  `subprocess.run
+  <https://docs.python.org/3/library/subprocess.html#subprocess.run>`_. These
+  features help keep the Doctr code cleaner and more maintainable.
+
+  If you cannot build your documentation in Python 3.5, you will need to
+  install Python 3.5 in Travis to run Doctr.
+
 - **I would use this, but it's missing a feature that I want.**
 
   Doctr is still very new. We welcome all `feature requests
