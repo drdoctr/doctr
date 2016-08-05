@@ -44,9 +44,8 @@ options available.
         )
     parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
 
-    location = parser.add_subparsers(title='location', dest='location',
-        description="Location doctr is being run from")
-    deploy_parser = location.add_parser('deploy', help=""""Deploy the docs to GitHub from Travis.""")
+    subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
+    deploy_parser = subcommand.add_parser('deploy', help=""""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
@@ -56,7 +55,7 @@ options available.
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
 
-    configure_parser = location.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
+    configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
     if we appear to be on Travis.""")
@@ -75,7 +74,7 @@ options available.
 
     args = parser.parse_args()
 
-    if not args.location:
+    if not args.subcommand:
         parser.print_usage()
         parser.exit(1)
 
