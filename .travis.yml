@@ -7,7 +7,7 @@ env:
     - TESTS="true"
   global:
     - secure: "lRNuFUVplsdD9P1g5ahPGT4sENcZ0Q5AB8iGm6/GWJ2QUoTZfbcPRTLj2XuYRK2Yi4QOoVSm/ZSxT2/GazvZNUUJxoIdclPTWjr5rRSRZrq1KOkipm3spyu9y5IuXwAeTykUzGnxijYJcdWeEQ5XyB6x+6AWtFmuTjkX35uXd8CH+ubYWmL/oqPwXgryuH47tnTT+AIpLSE9F4FTbvrM3RPwg4BBcSZ0qlieQKo21l0V1TvSIeTr8yK1F1HWQaOzBe2KFDHLVWv6kjw5I+ZXZIMRrhgFGYxJwdgIsNbZiKEpWo74XTb1Y+XYcXuh1erro5GkuOPsEUSvEPMiwYy58TS8G28h1sXidRO37EchsxSYJKymvSxz61AtLkuwhPtZNYehFt6kZWJpkd31KByEB8YlowvHotwFG7GxYjTBkAj98mRq87tFaTtYUFeY32rOlHbnIr9tm83rDEYyBryTFLmx4vL3lRrbbs5tNGHsn1axCTZhqu5inhkx2qMO/nD8bOtCMSOmq4LrwHptKB/Dn1g86CMQjBBSsROZC9GR0x7w8YqLuRqBzz837mPXfPLnMET9oNSLalMTpLgvQiUB2UkCkSkAqlngUl0e7fuCBdKS8Y5ARf0OpxnSsBaf37Xd5ToEkkznxxlg1PUIsoB0dcAQMLVsi4cQ69WJPYNemW0="
-    
+
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -25,7 +25,7 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy;
+      python -m doctr deploy --key-path deploy_key.enc;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
