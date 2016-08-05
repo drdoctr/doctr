@@ -14,7 +14,7 @@ Run
 
 .. code::
 
-   python -m doctr
+   doctr configure
 
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
@@ -44,7 +44,7 @@ secure key to add. You should also have something like
      - cd docs
      - make html
      - cd ..
-     - doctr
+     - doctr deploy
 
 
 in your ``.travis.yml``. See `the one <.travis.yml>`_ in this repo for example.
