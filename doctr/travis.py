@@ -170,6 +170,7 @@ def setup_GitHub_push(repo, auth_type='deploy_key', full_key_path='github_deploy
                 repo=repo)])
     else:
         keypath, key_ext = full_key_path.rsplit('.', 1)
+        key_ext = '.' + key_ext
         setup_deploy_key(keypath=keypath, key_ext=key_ext)
         run(['git', 'remote', 'add', 'doctr_remote',
             'git@github.com:{repo}.git'.format(repo=repo)])
