@@ -118,7 +118,7 @@ def run(args):
     if returncode != 0:
         sys.exit(returncode)
 
-def get_repo():
+def get_current_repo():
     """
     Get the GitHub repo name for the current directory.
 
@@ -131,7 +131,7 @@ def get_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc'):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -166,14 +166,14 @@ def setup_GitHub_push(repo, auth_type='deploy_key', full_key_path='github_deploy
     if auth_type == 'token':
         token = get_token()
         run(['git', 'remote', 'add', 'doctr_remote',
-            'https://{token}@github.com/{repo}.git'.format(token=token.decode('utf-8'),
-                repo=repo)])
+            'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
+                deploy_repo=deploy_repo)])
     else:
         keypath, key_ext = full_key_path.rsplit('.', 1)
         key_ext = '.' + key_ext
         setup_deploy_key(keypath=keypath, key_ext=key_ext)
         run(['git', 'remote', 'add', 'doctr_remote',
-            'git@github.com:{repo}.git'.format(repo=repo)])
+            'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
