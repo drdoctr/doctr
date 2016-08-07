@@ -29,7 +29,7 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key)
-from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
+from .travis import setup_GitHub_push, commit_docs, push_docs, get_current_repo
 from . import __version__
 
 def main():
@@ -55,6 +55,8 @@ options available.
         used 'doctr configure --token'.""")
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
+    deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
+        deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
 
     configure_parser = location.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -89,8 +91,10 @@ def deploy(args, parser):
         parser.error("doctr does not appear to be running on Travis. Use "
             "doctr deploy --force to run anyway.")
 
-    repo = get_repo()
-    if setup_GitHub_push(repo, auth_type='token' if args.token else
+    build_repo = get_current_repo()
+    deploy_repo = args.deploy_repo or build_repo
+
+    if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
         'deploy_key', full_key_path=args.key_path):
         commit_docs()
         push_docs()
@@ -111,14 +115,18 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
-    repo = input("What repo do you want to build the docs for? ")
+    build_repo = input("What repo do you want to build the docs for? ")
+    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}]".format(build_repo=build_repo))
+
+    if not deploy_repo:
+        deploy_repo = build_repo
 
     N = IncrementingInt(1)
 
     if args.token:
         token = generate_GitHub_token()
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-        repo=repo)
+            build_repo=build_repo)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -126,21 +134,21 @@ def configure(args, parser):
 
         print("\n============ You should now do the following ============\n")
     else:
-        ssh_key = generate_ssh_key("doctr deploy key for {repo}".format(repo=repo), keypath=args.key_path)
+        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
         key = encrypt_file(args.key_path, delete=True)
-        encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, repo=repo)
+        encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, build_repo=build_repo)
 
-        deploy_keys_url = 'https://github.com/{repo}/settings/keys'.format(repo=repo)
+        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_repo)
 
         if args.upload_key:
 
-            upload_GitHub_deploy_key(repo, ssh_key)
+            upload_GitHub_deploy_key(deploy_repo, ssh_key)
 
             print(dedent("""
-            The deploy key has been added for {repo}.
+            The deploy key has been added for {deploy_repo}.
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
-            """.format(repo=repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
+            """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
             print("\n============ You should now do the following ============\n")
         else:
             print("\n============ You should now do the following ============\n")
@@ -159,10 +167,11 @@ def configure(args, parser):
         committed.
         """.format(keypath=args.key_path, N=N)))
 
+    options = ''
     if args.key_path != 'github_deploy_key':
-        options = '--key-path {keypath}.enc'.format(keypath=args.key_path)
-    else:
-        options = ''
+        options += ' --key-path {keypath}.enc'.format(keypath=args.key_path)
+    if deploy_repo != build_repo:
+        options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
     print(dedent("""\
     {N}. Add
