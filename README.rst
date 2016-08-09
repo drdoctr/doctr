@@ -1,11 +1,28 @@
-Travis docs builder
-===================
+Doctr
+=====
 
 A tool for automatically building Sphinx docs on Travis CI, and deploying them
 to GitHub pages.
 
-This tool is still a work in progress, but once it works it's going to be
-awesome.
+Contribute to Doctr development on `GitHub
+<https://github.com/gforsyth/doctr>`_.
+
+Installation
+------------
+
+Install doctr with pip
+
+.. code::
+
+   pip install doctr
+
+or conda
+
+.. code::
+
+   conda install -c conda-forge doctr
+
+**Note that doctr requires Python 3.5.**
 
 Usage
 -----

@@ -160,7 +160,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     print("Setting git attributes")
     # Should we add some user.email?
-    run(['git', 'config', '--global', 'user.name', "Travis docs builder (Travis CI)"])
+    run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
 
     print("Adding doctr remote")
     if auth_type == 'token':
@@ -240,6 +240,8 @@ def commit_docs(*, built_docs='docs/_build/html', gh_pages_docs='docs', tmp_dir=
     remote, has been run and returned True.
 
     """
+    if gh_pages_docs == '.':
+        raise NotImplementedError("Base directory docs deploying is not yet implemented.")
     print("Moving built docs into place")
     shutil.copytree(built_docs, tmp_dir)
     if os.path.exists(gh_pages_docs):

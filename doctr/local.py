@@ -42,6 +42,7 @@ def encrypt_variable(variable, build_repo, public_key=None):
         # TODO: Error handling
         r = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo),
             headers={'Accept': 'application/vnd.travis-ci.2+json'})
+        r.raise_for_status()
         public_key = r.json()['key']
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
