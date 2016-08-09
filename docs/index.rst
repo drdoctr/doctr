@@ -1,4 +1,4 @@
-.. Travis docs builder documentation master file, created by
+.. Doctr documentation master file, created by
    sphinx-quickstart on Sun Jul 17 15:34:54 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -11,8 +11,8 @@
    alt="Fork me on GitHub"
    data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
-Welcome to Travis docs builder's documentation!
-===============================================
+Welcome to Doctr documentation!
+===============================
 
 .. include:: ../README.rst
 
