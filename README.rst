@@ -4,6 +4,9 @@ Travis docs builder
 A tool for automatically building Sphinx docs on Travis CI, and deploying them
 to GitHub pages.
 
+Contribute to Doctr development on `GitHub
+<https://github.com/gforsyth/doctr>`_.
+
 Installation
 ------------
 
