@@ -122,7 +122,7 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
-    repo = input("What repo do you want to build the docs for? ")
+    repo = input("What repo do you want to build the docs for (org/reponame, like 'gforsyth/doctr')? ")
 
     N = IncrementingInt(1)
 
