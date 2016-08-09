@@ -32,7 +32,7 @@ from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
 from .travis import setup_GitHub_push, commit_docs, push_docs, get_repo
 from . import __version__
 
-def main():
+def get_parser():
     # This uses RawTextHelpFormatter so that the description (the docstring of
     # this module) is formatted correctly. Unfortunately, that means that
     # parser help is not text wrapped (but all other help is).
@@ -53,15 +53,15 @@ options available.
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
-        help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
+        help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
     deploy_parser.add_argument('--built-docs', default='docs/_build/html',
         help="""Location of the built html documentation to be deployed to
-        gh-pages. The default is %(default)s""")
+        gh-pages. The default is %(default)r.""")
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
         help="""Directory to deploy the html documentation to on gh-pages. The
-        default is %(default)s""")
+        default is %(default)r.""")
     deploy_parser.add_argument('--tmp-dir', default='_docs',
-        help="""Temporary directory used on gh-pages. The default is %(default)s""")
+        help="""Temporary directory used on gh-pages. The default is %(default)r.""")
 
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
@@ -77,17 +77,19 @@ options available.
         dest="upload_key", help="""Don't automatically upload the deploy key
         to GitHub.""")
     configure_parser.add_argument('--key-path', default='github_deploy_key',
-        help="""Path to save the encrypted GitHub deploy key. The default is '%(default)s'.
+        help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
 
+    return parser
 
+def process_args(parser):
     args = parser.parse_args()
 
     if not args.subcommand:
         parser.print_usage()
         parser.exit(1)
 
-    args.func(args, parser)
+    return args.func(args, parser)
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
@@ -191,6 +193,9 @@ def configure(args, parser):
 
     in your .travis.yml.
     """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
+
+def main():
+    return process_args(get_parser())
 
 if __name__ == '__main__':
     sys.exit(main())
