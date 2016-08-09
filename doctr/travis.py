@@ -160,7 +160,7 @@ def setup_GitHub_push(repo, auth_type='deploy_key', full_key_path='github_deploy
 
     print("Setting git attributes")
     # Should we add some user.email?
-    run(['git', 'config', '--global', 'user.name', "Travis docs builder (Travis CI)"])
+    run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
 
     print("Adding doctr remote")
     if auth_type == 'token':
