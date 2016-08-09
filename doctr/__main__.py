@@ -53,15 +53,15 @@ options available.
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
-        help="""Path of the encrypted GitHub deploy key. The default is '%(default)s'.""")
+        help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
     deploy_parser.add_argument('--built-docs', default='docs/_build/html',
         help="""Location of the built html documentation to be deployed to
-        gh-pages. The default is %(default)s""")
+        gh-pages. The default is %(default)r.""")
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
         help="""Directory to deploy the html documentation to on gh-pages. The
-        default is %(default)s""")
+        default is %(default)r.""")
     deploy_parser.add_argument('--tmp-dir', default='_docs',
-        help="""Temporary directory used on gh-pages. The default is %(default)s""")
+        help="""Temporary directory used on gh-pages. The default is %(default)r.""")
 
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
@@ -77,7 +77,7 @@ options available.
         dest="upload_key", help="""Don't automatically upload the deploy key
         to GitHub.""")
     configure_parser.add_argument('--key-path', default='github_deploy_key',
-        help="""Path to save the encrypted GitHub deploy key. The default is '%(default)s'.
+        help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
 
     return parser
