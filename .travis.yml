@@ -21,6 +21,7 @@ install:
   - source activate test-environment
 
 script:
+  - set -e
   - if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
