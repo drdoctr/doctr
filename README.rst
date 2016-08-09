@@ -7,6 +7,23 @@ to GitHub pages.
 This tool is still a work in progress, but once it works it's going to be
 awesome.
 
+Installation
+------------
+
+Install doctr with pip
+
+.. code::
+
+   pip install doctr
+
+or conda
+
+.. code::
+
+   conda install -c conda-forge doctr
+
+**Note that doctr requires Python 3.5.**
+
 Usage
 -----
 
