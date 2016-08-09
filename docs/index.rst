@@ -11,8 +11,8 @@
    alt="Fork me on GitHub"
    data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
-Welcome to Doctr documentation!
-===============================
+Welcome to the Doctr documentation!
+===================================
 
 .. include:: ../README.rst
 

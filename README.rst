@@ -1,5 +1,5 @@
-Travis docs builder
-===================
+Doctr
+=====
 
 A tool for automatically building Sphinx docs on Travis CI, and deploying them
 to GitHub pages.
