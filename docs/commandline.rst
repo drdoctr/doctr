@@ -2,7 +2,5 @@
  Doctr Command Line Help
 =========================
 
-.. argparse::
-   :module: doctr.__main__
-   :func: get_parser
+.. autoprogram:: doctr.__main__:get_parser()
    :prog: doctr
