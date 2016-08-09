@@ -2,6 +2,18 @@
  Doctr Changelog
 =================
 
+1.1.1 (2016-??-??)
+==================
+
+Minor Changes
+-------------
+
+- Add installation instructions to the documentation. (#60)
+- Fix some lingering "Travis docs builder" -> "Doctr", including in the git
+  attributes on Travis. (#60)
+- Better error message when the repo doesn't exist in doctr configure. (#59)
+- Indicate that repo should be org/reponame in doctr configure. (#59)
+
 1.1 (2016-08-09)
 ================
 
