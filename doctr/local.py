@@ -19,13 +19,14 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
-def encrypt_variable(variable, repo, public_key=None):
+def encrypt_variable(variable, build_repo, public_key=None):
     """
-    Encrypt an environment variable for ``repo`` for Travis
+    Encrypt an environment variable for ``build_repo`` for Travis
 
     ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
 
-    ``repo`` should be like 'gforsyth/doctr'.
+    ``build_repo`` is the repo that ``doctr deploy`` will be run from. It
+    should be like 'gforsyth/doctr'.
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
@@ -39,7 +40,7 @@ def encrypt_variable(variable, repo, public_key=None):
 
     if not public_key:
         # TODO: Error handling
-        r = requests.get('https://api.travis-ci.org/repos/{repo}/key'.format(repo=repo),
+        r = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo),
             headers={'Accept': 'application/vnd.travis-ci.2+json'})
         r.raise_for_status()
         public_key = r.json()['key']
@@ -140,15 +141,15 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
     }
     return GitHub_post(data, AUTH_URL)['token']
 
-def upload_GitHub_deploy_key(repo, ssh_key, *, read_only=False,
+def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
     title="Doctr deploy key for pushing to gh-pages from Travis"):
     """
-    Uploads a GitHub deploy key to repo
+    Uploads a GitHub deploy key to ``deploy_repo``.
 
     If ``read_only=True``, the deploy_key will not be able to write to the
     repo.
     """
-    DEPLOY_KEY_URL = "https://api.github.com/repos/{repo}/keys".format(repo=repo)
+    DEPLOY_KEY_URL = "https://api.github.com/repos/{deploy_repo}/keys".format(deploy_repo=deploy_repo)
 
     data = {
         "title": title,
