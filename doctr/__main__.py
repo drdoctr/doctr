@@ -54,9 +54,9 @@ options available.
         used 'doctr configure --token'.""")
     deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
-    deploy_parser.add_argument('--built-docs', default='docs/_build/html',
+    deploy_parser.add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
-        gh-pages. The default is %(default)r.""")
+        gh-pages. If not specified, Doctr will try to automatically detect build location""")
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
         help="""Directory to deploy the html documentation to on gh-pages. The
         default is %(default)r.""")
