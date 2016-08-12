@@ -2,6 +2,14 @@
  Doctr Changelog
 =================
 
+1.1.2 (????-??-??)
+==================
+
+Minor Changes
+-------------
+
+- Automatically detect Sphinx build directory (#6)
+
 1.1.1 (2016-08-09)
 ==================
 
