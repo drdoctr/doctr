@@ -237,8 +237,8 @@ def find_sphinx_build_dir():
     This is called by :func:`commit_docs` if keyword arg ``built_docs`` is not
     specified on the command line.
     """
-    docs_folder = glob.glob('**/conf.py')[0].split('/', 1)[0]
-    build_folder = glob.glob(docs_folder+'/**build')[0].split('/', 1)[1]
+    docs_folder = glob.glob('**/conf.py', recursive=True)[0].split('/', 1)[0]
+    build_folder = glob.glob(docs_folder+'/**build', recursive=True)[0].split('/', 1)[1]
 
     return os.path.join(docs_folder, build_folder)
 
