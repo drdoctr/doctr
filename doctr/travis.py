@@ -229,10 +229,13 @@ def create_gh_pages():
 
 def find_sphinx_build_dir():
     """
-    Find name of build folder within sphinx docs directory.
+    Find name of docs folder and build subfolder within sphinx docs directory.
 
     Locate the sphinx docs directory by looking for a ``conf.py`` file.
     Then look for the ``build`` folder, by convention either ``build`` or ``_build``
+
+    This is called by :func:`commit_docs` if keyword arg ``built_docs`` is not
+    specified on the command line.
     """
     docs_folder = glob.glob('**/conf.py')[0].split('/', 1)[0]
     build_folder = glob.glob(docs_folder+'/**build')[0].split('/', 1)[1]
