@@ -32,5 +32,5 @@ script:
 
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
-      py.test doctr;
+      py.test;
     fi
