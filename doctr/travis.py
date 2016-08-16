@@ -229,24 +229,17 @@ def create_gh_pages():
 
 def find_sphinx_build_dir():
     """
-    Find name of docs folder and build subfolder within sphinx docs directory.
-
-    Locate the sphinx docs directory by looking for a ``conf.py`` file.
-    Then look for the ``build`` folder, by convention either ``build`` or ``_build``
+    Find build subfolder within sphinx docs directory.
 
     This is called by :func:`commit_docs` if keyword arg ``built_docs`` is not
     specified on the command line.
     """
-    conf = glob.glob('**/conf.py', recursive=True)
-    if not conf:
-        raise RuntimeError("Could not find conf.py automatically")
-    docs_folder = conf[0].split('/', 1)[0]
-    build = glob.glob(docs_folder+'/**build', recursive=True)
+    build = glob.glob('**/*build/html', recursive=True)
     if not build:
         raise RuntimeError("Could not find Sphinx build directory automatically")
-    build_folder = build[0].split('/', 1)[1]
+    build_folder = build[0]
 
-    return os.path.join(docs_folder, build_folder)
+    return build_folder
 
 # Here is the logic to get the Travis job number, to only run commit_docs in
 # the right build.
@@ -263,7 +256,7 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs'):
 
     """
     if not built_docs:
-        built_docs = os.path.join(find_sphinx_build_dir(), 'html')
+        built_docs = find_sphinx_build_dir()
     if gh_pages_docs == '.':
         raise NotImplementedError("Base directory docs deploying is not yet implemented.")
     print("Moving built docs into place")
