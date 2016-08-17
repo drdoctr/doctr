@@ -64,6 +64,8 @@ options available.
         help="""Temporary directory used on gh-pages. The default is %(default)r.""")
     deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
+    deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
+        default=True, help="""Allow docs to be pushed from a branch other than master""")
 
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
@@ -105,7 +107,8 @@ def deploy(args, parser):
     deploy_repo = args.deploy_repo or build_repo
 
     if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
-        'deploy_key', full_key_path=args.key_path):
+                         'deploy_key', full_key_path=args.key_path,
+                         require_master=args.require_master):
         commit_docs(built_docs=args.built_docs,
             gh_pages_docs=args.gh_pages_docs, tmp_dir=args.tmp_dir)
         push_docs()
