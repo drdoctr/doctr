@@ -247,7 +247,7 @@ def find_sphinx_build_dir():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs'):
+def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
     """
     Commit the docs to ``gh-pages``
 
@@ -257,14 +257,47 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs'):
     """
     if not built_docs:
         built_docs = find_sphinx_build_dir()
-    if gh_pages_docs == '.':
-        raise NotImplementedError("Base directory docs deploying is not yet implemented.")
     print("Moving built docs into place")
-    shutil.copytree(built_docs, tmp_dir)
-    if os.path.exists(gh_pages_docs):
-        # Won't exist on the first build
-        shutil.rmtree(gh_pages_docs)
-    os.rename(tmp_dir, gh_pages_docs)
+    if gh_pages_docs == '.':
+        if not built_docs.endswith(os.pathsep):
+            built_docs += os.sep
+
+        if not os.path.exists(log_file):
+            # Assume this is the first run
+            print("%s doesn't exist. Not removing any files." % log_file)
+        else:
+            with open(log_file) as f:
+                files = f.read().strip().split('\n')
+
+            for f in files:
+                f = f.strip()
+                new_f = f[len(built_docs):]
+                if os.path.exists(new_f):
+                    os.remove(new_f)
+                else:
+                    print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
+
+        files_log = []
+        files = glob.iglob(os.path.join(built_docs, '**'), recursive=True)
+        next(files) # Remove built_docs itself
+        for f in files:
+            new_f = f[len(built_docs):]
+            if os.path.isdir(f):
+                os.makedirs(new_f, exist_ok=True)
+            else:
+                shutil.copy2(f, new_f)
+                files_log.append(f)
+
+        with open(log_file, 'w') as f:
+            f.write('\n'.join(files_log))
+            f.write('\n')
+
+    else:
+        shutil.copytree(built_docs, tmp_dir)
+        if os.path.exists(gh_pages_docs):
+            # Won't exist on the first build
+            shutil.rmtree(gh_pages_docs)
+        os.rename(tmp_dir, gh_pages_docs)
     run(['git', 'add', '-A', gh_pages_docs])
 
 def push_docs():
