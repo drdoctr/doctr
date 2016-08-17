@@ -108,7 +108,7 @@ def deploy(args, parser):
 
     if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                          'deploy_key', full_key_path=args.key_path,
-                         no_require_master=args.nomaster):
+                         require_master=args.require_master):
         commit_docs(built_docs=args.built_docs,
             gh_pages_docs=args.gh_pages_docs, tmp_dir=args.tmp_dir)
         push_docs()
