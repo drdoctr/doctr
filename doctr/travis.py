@@ -132,7 +132,7 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc'):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -150,8 +150,9 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    if TRAVIS_BRANCH != "master":
-        print("The docs are only pushed to gh-pages from master", file=sys.stderr)
+    if TRAVIS_BRANCH != "master" and require_master:
+        print("The docs are only pushed to gh-pages from master. To allow pushing from "
+        "a non-master branch, use the --no-require-master flag", file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         return False
 
