@@ -247,6 +247,48 @@ def find_sphinx_build_dir():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
+def sync_from_log(src, dst, log_file):
+    """
+    Sync the files in ``src`` to ``dst``.
+
+    The files that are synced are logged to ``log_file``. If ``log_file``
+    exists, the files in ``log_file`` are removed first.
+    """
+    from os.path import join, exists, isdir
+    if not src.endswith(os.sep):
+        src += os.sep
+
+    if not exists(log_file):
+        # Assume this is the first run
+        print("%s doesn't exist. Not removing any files." % log_file)
+    else:
+        with open(log_file) as f:
+            files = f.read().strip().split('\n')
+
+        for f in files:
+            f = f.strip()
+            new_f = join(dst, f[len(src):])
+            if exists(new_f):
+                os.remove(new_f)
+            else:
+                print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
+
+    files_log = []
+    files = glob.iglob(join(src, '**'), recursive=True)
+    next(files) # Remove src itself
+    for f in files:
+        new_f = join(dst, f[len(src):])
+        if isdir(f):
+            os.makedirs(new_f, exist_ok=True)
+        else:
+            shutil.copy2(f, new_f)
+            files_log.append(f)
+
+    with open(log_file, 'w') as f:
+        f.write('\n'.join(files_log))
+        f.write('\n')
+
+
 def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
     """
     Commit the docs to ``gh-pages``
@@ -259,39 +301,7 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
         built_docs = find_sphinx_build_dir()
     print("Moving built docs into place")
     if gh_pages_docs == '.':
-        if not built_docs.endswith(os.pathsep):
-            built_docs += os.sep
-
-        if not os.path.exists(log_file):
-            # Assume this is the first run
-            print("%s doesn't exist. Not removing any files." % log_file)
-        else:
-            with open(log_file) as f:
-                files = f.read().strip().split('\n')
-
-            for f in files:
-                f = f.strip()
-                new_f = f[len(built_docs):]
-                if os.path.exists(new_f):
-                    os.remove(new_f)
-                else:
-                    print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
-
-        files_log = []
-        files = glob.iglob(os.path.join(built_docs, '**'), recursive=True)
-        next(files) # Remove built_docs itself
-        for f in files:
-            new_f = f[len(built_docs):]
-            if os.path.isdir(f):
-                os.makedirs(new_f, exist_ok=True)
-            else:
-                shutil.copy2(f, new_f)
-                files_log.append(f)
-
-        with open(log_file, 'w') as f:
-            f.write('\n'.join(files_log))
-            f.write('\n')
-
+        sync_from_log(src=built_docs, dst=gh_pages_docs, log_file=log_file)
     else:
         shutil.copytree(built_docs, tmp_dir)
         if os.path.exists(gh_pages_docs):
