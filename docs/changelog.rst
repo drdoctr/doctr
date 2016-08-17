@@ -9,6 +9,7 @@ Minor Changes
 -------------
 
 - Automatically detect Sphinx build directory (#6)
+- Add ``--no-require-master`` flag to allow pushing from branches other than master (#70)
 
 1.1.1 (2016-08-09)
 ==================
