@@ -78,8 +78,8 @@ options available.
         public repositories for the user. This option is not recommended
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
-        dest="upload_key", help="""Don't automatically upload the deploy key
-        to GitHub.""")
+        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
+        option, you will not be prompted for your GitHub credentials. """)
     configure_parser.add_argument('--key-path', default='github_deploy_key',
         help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
