@@ -2,14 +2,20 @@
  Doctr Changelog
 =================
 
-1.1.2 (????-??-??)
-==================
+1.2 (????-??-??)
+================
+
+Major Changes
+-------------
+- Allow --gh-pages-docs to be ``.`` (the root directory). (#73)
+- Allow deploying to a separate repo (via ``doctr deploy --deploy-repo``). (#63)
+- Automatically detect Sphinx build directory. (#6)
+- Add ``--no-require-master`` flag to allow pushing from branches other than master. (#70)
 
 Minor Changes
 -------------
-
-- Automatically detect Sphinx build directory (#6)
-- Add ``--no-require-master`` flag to allow pushing from branches other than master (#70)
+- Add a GitHub banner to the docs. (#64)
+- Move to the GitHub organization `drdoctr <https://github.com/drdoctr>`_. (#67)
 
 1.1.1 (2016-08-09)
 ==================
