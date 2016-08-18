@@ -9,7 +9,7 @@ Major Changes
 -------------
 - Allow ``--gh-pages-docs .`` (deploying to the root directory of the
   ``gh-pages`` branch). (#73)
-- Allow deploying to a separate repo (via ``doctr deploy --deploy-repo``). (#63)
+- Allow deploying to a separate repo (via ``doctr deploy --deploy-repo <repo>``). (#63)
 - Automatically detect Sphinx build directory. (#6)
 - Add ``--no-require-master`` flag to allow pushing from branches other than master. (#70)
 
