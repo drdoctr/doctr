@@ -26,7 +26,14 @@ def test_sync_from_log():
                 f.write('test2')
 
             # Test that the sync happens
-            sync_from_log('src', '.', 'logfile')
+            added, removed = sync_from_log('src', '.', 'logfile')
+
+            assert added == [
+                join('.', 'test1'),
+                join('.', 'testdir', 'test2'),
+                ]
+
+            assert removed == []
 
             with open('test1') as f:
                 assert f.read() == 'test1'
@@ -44,7 +51,15 @@ def test_sync_from_log():
             with open(join('src', 'test3'), 'w') as f:
                 f.write('test3')
 
-            sync_from_log('src', '.', 'logfile')
+            added, removed = sync_from_log('src', '.', 'logfile')
+
+            assert added == [
+                join('.', 'test1'),
+                join('.', 'test3'),
+                join('.', 'testdir', 'test2'),
+            ]
+
+            assert removed == []
 
             with open('test1') as f:
                 assert f.read() == 'test1'
@@ -65,7 +80,16 @@ def test_sync_from_log():
             # Delete a file
             os.remove(join('src', 'test3'))
 
-            sync_from_log('src', '.', 'logfile')
+            added, removed = sync_from_log('src', '.', 'logfile')
+
+            assert added == [
+                join('.', 'test1'),
+                join('.', 'testdir', 'test2'),
+            ]
+
+            assert removed == [
+                join('.', 'test3'),
+            ]
 
             with open('test1') as f:
                 assert f.read() == 'test1'
@@ -85,7 +109,14 @@ def test_sync_from_log():
             with open(join('src', 'test1'), 'w') as f:
                 f.write('test1 modified')
 
-            sync_from_log('src', '.', 'logfile')
+            added, removed = sync_from_log('src', '.', 'logfile')
+
+            assert added == [
+                join('.', 'test1'),
+                join('.', 'testdir', 'test2'),
+            ]
+
+            assert removed == []
 
             with open('test1') as f:
                 assert f.read() == 'test1 modified'
