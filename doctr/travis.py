@@ -287,8 +287,6 @@ def sync_from_log(src, dst, log_file):
 
     with open(log_file, 'w') as f:
         f.write('\n'.join(files_log))
-        f.write('\n')
-
 
 def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
     """
