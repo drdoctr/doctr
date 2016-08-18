@@ -169,7 +169,8 @@ def configure(args, parser):
         else:
             print(header)
             print(dedent("""\
-            {N}. Go to {deploy_keys_url} and add the following as a new key:
+            {N}. Go to {deploy_keys_url}
+            and add the following as a new key:
 
             {ssh_key}
             Be sure to allow write access for the key.
@@ -178,9 +179,9 @@ def configure(args, parser):
         # TODO: Should we just delete the public key?
 
         print(dedent("""\
-        {N}. Commit the file {keypath}.enc. The file {keypath}.pub contains the
-        public deploy key for GitHub. It does not need to be
-        committed.
+        {N}. Commit the file {keypath}.enc.
+        The file {keypath}.pub contains the public deploy key for GitHub. It
+        does not need to be committed.
         """.format(keypath=args.key_path, N=N)))
 
     options = ''
