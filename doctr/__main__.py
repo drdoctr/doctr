@@ -137,6 +137,8 @@ def configure(args, parser):
 
     N = IncrementingInt(1)
 
+    header = "\n================== You should now do the following ==================\n"
+
     if args.token:
         token = generate_GitHub_token()
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
@@ -146,7 +148,7 @@ def configure(args, parser):
 
         You can go to https://github.com/settings/tokens to revoke it."""))
 
-        print("\n============ You should now do the following ============\n")
+        print(header)
     else:
         ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
         key = encrypt_file(args.key_path, delete=True)
@@ -163,9 +165,9 @@ def configure(args, parser):
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
             """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
-            print("\n============ You should now do the following ============\n")
+            print(header)
         else:
-            print("\n============ You should now do the following ============\n")
+            print(header)
             print(dedent("""\
             {N}. Go to {deploy_keys_url} and add the following as a new key:
 
