@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to the Doctr documentation! &mdash; Doctr 1.1.1+65.g1413831 documentation</title>
+    <title>Welcome to the Doctr documentation! &mdash; Doctr 1.1.1+68.g065c4c6 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.1+65.g1413831',
+        VERSION:     '1.1.1+68.g065c4c6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.1.1+65.g1413831 documentation" href="#" />
+    <link rel="top" title="Doctr 1.1.1+68.g065c4c6 documentation" href="#" />
     <link rel="next" title="Doctr Command Line Help" href="commandline.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -138,8 +138,9 @@ test that they build), so it seems natural to deploy them from there.</p>
 <li><p class="first"><strong>Why does Doctr require Python 3.5?</strong></p>
 <p>There are several language features of Python that we wanted to make use of
 that are not available in earlier versions of Python, such as <a class="reference external" href="https://www.python.org/dev/peps/pep-3102/">keyword-only
-arguments</a> and
-<a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.run">subprocess.run</a>. These
+arguments</a>,
+<a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.run">subprocess.run</a>, and
+<a class="reference external" href="https://docs.python.org/3/library/glob.html">recursive globs</a>. These
 features help keep the Doctr code cleaner and more maintainable.</p>
 <p>If you cannot build your documentation in Python 3.5, you will need to
 install Python 3.5 in Travis to run Doctr.</p>
