@@ -18,7 +18,7 @@ install:
   - conda config --add channels conda-forge # For sphinxcontrib.autoprogram
   - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment python=3.5 requests cryptography sphinx pyflakes sphinxcontrib-autoprogram=0.1.2
+  - conda create -q -n test-environment python=3.5 requests cryptography sphinx pyflakes sphinxcontrib-autoprogram=0.1.2 pytest
   - source activate test-environment
 
 script:
@@ -28,8 +28,10 @@ script:
       make html;
       cd ..;
       python -m doctr deploy --key-path deploy_key.enc;
+      python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
+      py.test doctr;
     fi

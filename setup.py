@@ -15,7 +15,7 @@ setup(
     author='Aaron Meurer and Gil Forsyth',
     author_email='asmeurer@gmail.com',
     url='https://github.com/gforsyth/doctr',
-    packages=['doctr'],
+    packages=['doctr', 'doctr.tests'],
     long_description="""
 doctr
 
