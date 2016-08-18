@@ -31,3 +31,27 @@ For security purposes, it is not possible to deploy from branches on forks
 (Travis does not allow access to encrypted environment variables on pull
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.
+
+Deploy to a separate repo
+=========================
+
+By default, Doctr deploys to the ``gh-pages`` branch of the same repository it
+is run from, but you can deploy to the ``gh-pages`` branch of any repository.
+
+To do this, specify a separate deploy and build repository when running
+``doctr configure`` (it will ask you for the two separately). You will need
+admin access to the deploy repository to upload the deploy key (``doctr
+configure`` will prompt you for your GitHub credentials). If you do not have
+access, you can run ``doctr configure --no-upload-key``. This will print out the
+public deploy key, which you can then give to someone who has admin access to
+add to the form on GitHub (``doctr configure`` will print the public key and
+the url of the form for someone with admin access to paste it in).
+
+In your ``.travis.yml``, specify the deploy repository with
+
+.. code:: yaml
+
+   - doctr deploy --deploy-repo <deploy repo>
+
+The instructions from ``doctr configure`` will also give you the correct
+command to run.
