@@ -219,7 +219,7 @@ def create_gh_pages():
         print("Adding .nojekyll file to gh-pages branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
-        run(['git', 'commit', '-m', '"create new gh-pages branch with .nojekyll"'])
+        run(['git', 'commit', '-m', 'Create new gh-pages branch with .nojekyll'])
         print("Pushing gh-pages branch to remote")
         run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
         #return to master branch
