@@ -268,16 +268,14 @@ def sync_from_log(src, dst, log_file):
         with open(log_file) as f:
             files = f.read().strip().split('\n')
 
-        for f in files:
-            f = f.strip()
-            new_f = join(dst, f[len(src):])
+        for new_f in files:
+            new_f = new_f.strip()
             if exists(new_f):
                 os.remove(new_f)
                 removed.append(new_f)
             else:
                 print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
 
-    files_log = []
     files = glob.iglob(join(src, '**'), recursive=True)
     # sorted makes this easier to test
     for f in sorted(files):
@@ -288,11 +286,10 @@ def sync_from_log(src, dst, log_file):
             os.makedirs(new_f, exist_ok=True)
         else:
             shutil.copy2(f, new_f)
-            files_log.append(f)
             added.append(new_f)
 
     with open(log_file, 'w') as f:
-        f.write('\n'.join(files_log))
+        f.write('\n'.join(added))
 
     return added, removed
 

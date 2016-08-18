@@ -36,8 +36,8 @@ def test_sync_from_log():
 
             with open('logfile') as f:
                 assert f.read() == '\n'.join([
-                    join('src', 'test1'),
-                    join('src', 'testdir', 'test2'),
+                    join('.', 'test1'),
+                    join('.', 'testdir', 'test2'),
                     ])
 
             # Create a new file
@@ -57,9 +57,9 @@ def test_sync_from_log():
 
             with open('logfile') as f:
                 assert f.read() == '\n'.join([
-                    join('src', 'test1'),
-                    join('src', 'test3'),
-                    join('src', 'testdir', 'test2'),
+                    join('.', 'test1'),
+                    join('.', 'test3'),
+                    join('.', 'testdir', 'test2'),
                     ])
 
             # Delete a file
@@ -77,8 +77,8 @@ def test_sync_from_log():
 
             with open('logfile') as f:
                 assert f.read() == '\n'.join([
-                    join('src', 'test1'),
-                    join('src', 'testdir', 'test2'),
+                    join('.', 'test1'),
+                    join('.', 'testdir', 'test2'),
                     ])
 
             # Change a file
@@ -97,8 +97,8 @@ def test_sync_from_log():
 
             with open('logfile') as f:
                 assert f.read() == '\n'.join([
-                    join('src', 'test1'),
-                    join('src', 'testdir', 'test2'),
+                    join('.', 'test1'),
+                    join('.', 'testdir', 'test2'),
                     ])
 
         finally:
