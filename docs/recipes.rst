@@ -55,3 +55,28 @@ In your ``.travis.yml``, specify the deploy repository with
 
 The instructions from ``doctr configure`` will also give you the correct
 command to run.
+
+Setting up Doctr for a repo you don't have admin access to
+==========================================================
+
+``doctr configure`` by default asks for your GitHub credentials so that it can
+upload the deploy key it creates. However, if you do not have admin access to
+the repository you are deploying to, you cannot upload the deploy key.
+
+No worries, you can still help. Run
+
+.. code:: bash
+
+   doctr configure --no-upload-key
+
+This will set up doctr, but not require any GitHub credentials. Follow the
+instructions on screen. Create a new branch, commit the
+``github_deploy_key.enc`` file, and edit ``.travis.yml`` to include the
+encrypted environment variable and the call to ``doctr deploy``.
+
+Then, create a pull request to the repository. Tell the owner of the
+repository to add the public key which doctr has printed as a deploy key for
+the repo (doctr will also print the url where they can add this). Don't worry,
+the key is a public SSH key, so it's OK to post it publicly in the pull
+request. If you lose the output of ``doctr configure``, you can also use the
+file ``github_deploy_key.pub`` (you should not commit this file).
