@@ -27,7 +27,7 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --key-path deploy_key.enc;
+      python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
     fi
 
   - if [[ "${TESTS}" == "true" ]]; then
