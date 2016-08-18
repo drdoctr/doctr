@@ -259,6 +259,8 @@ def sync_from_log(src, dst, log_file):
     if not src.endswith(os.sep):
         src += os.sep
 
+    added, removed = [], []
+
     if not exists(log_file):
         # Assume this is the first run
         print("%s doesn't exist. Not removing any files." % log_file)
@@ -271,6 +273,7 @@ def sync_from_log(src, dst, log_file):
             new_f = join(dst, f[len(src):])
             if exists(new_f):
                 os.remove(new_f)
+                removed.append(new_f)
             else:
                 print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
 
@@ -286,9 +289,12 @@ def sync_from_log(src, dst, log_file):
         else:
             shutil.copy2(f, new_f)
             files_log.append(f)
+            added.append(new_f)
 
     with open(log_file, 'w') as f:
         f.write('\n'.join(files_log))
+
+    return added, removed
 
 def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
     """
@@ -302,14 +308,19 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
         built_docs = find_sphinx_build_dir()
     print("Moving built docs into place")
     if gh_pages_docs == '.':
-        sync_from_log(src=built_docs, dst=gh_pages_docs, log_file=log_file)
+        added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
+            log_file=log_file)
+        for f in added:
+            run(['git', 'add', f])
+        for f in removed:
+            run(['git', 'rm', f])
     else:
         shutil.copytree(built_docs, tmp_dir)
         if os.path.exists(gh_pages_docs):
             # Won't exist on the first build
             shutil.rmtree(gh_pages_docs)
         os.rename(tmp_dir, gh_pages_docs)
-    run(['git', 'add', '-A', gh_pages_docs])
+        run(['git', 'add', '-A', gh_pages_docs])
 
 def push_docs():
     """
