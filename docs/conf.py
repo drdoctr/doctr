@@ -128,6 +128,7 @@ html_theme_options = {
     'github_repo': 'doctr',
     'github_banner': True,
     'logo_name': True,
+    'travis_button': True,
     }
 
 # Add any paths that contain custom themes here, relative to this directory.
