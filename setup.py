@@ -14,7 +14,7 @@ setup(
     description='''Deploy docs from Travis to GitHub pages.''',
     author='Aaron Meurer and Gil Forsyth',
     author_email='asmeurer@gmail.com',
-    url='https://github.com/gforsyth/doctr',
+    url='https://github.com/drdoctr/doctr',
     packages=['doctr', 'doctr.tests'],
     long_description="""
 doctr

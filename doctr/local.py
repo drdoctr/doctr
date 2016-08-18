@@ -26,7 +26,7 @@ def encrypt_variable(variable, build_repo, public_key=None):
     ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
 
     ``build_repo`` is the repo that ``doctr deploy`` will be run from. It
-    should be like 'gforsyth/doctr'.
+    should be like 'drdoctr/doctr'.
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
@@ -136,7 +136,7 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
     data = {
         "scopes": ["public_repo"],
         "note": note,
-        "note_url": "https://github.com/gforsyth/doctr",
+        "note_url": "https://github.com/drdoctr/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
     return GitHub_post(data, AUTH_URL)['token']
