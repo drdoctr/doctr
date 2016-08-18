@@ -120,9 +120,10 @@ FAQ
 
   There are several language features of Python that we wanted to make use of
   that are not available in earlier versions of Python, such as `keyword-only
-  arguments <https://www.python.org/dev/peps/pep-3102/>`_ and
+  arguments <https://www.python.org/dev/peps/pep-3102/>`_,
   `subprocess.run
-  <https://docs.python.org/3/library/subprocess.html#subprocess.run>`_. These
+  <https://docs.python.org/3/library/subprocess.html#subprocess.run>`_, and
+  `recursive globs <https://docs.python.org/3/library/glob.html>`_. These
   features help keep the Doctr code cleaner and more maintainable.
 
   If you cannot build your documentation in Python 3.5, you will need to
