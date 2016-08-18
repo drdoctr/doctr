@@ -124,7 +124,7 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'github_user': 'gforsyth',
+    'github_user': 'drdoctr',
     'github_repo': 'doctr',
     'github_banner': True,
     'logo_name': True,

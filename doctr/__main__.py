@@ -18,7 +18,7 @@ Then, on Travis, for the build where you build your docs, add
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
 
-For more information, see https://gforsyth.github.io/doctr/docs/
+For more information, see https://drdoctr.github.io/doctr/docs/
 """
 
 import sys
@@ -129,7 +129,7 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
-    build_repo = input("What repo do you want to build the docs for (org/reponame, like 'gforsyth/doctr')? ")
+    build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
     deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}]".format(build_repo=build_repo))
 
     if not deploy_repo:

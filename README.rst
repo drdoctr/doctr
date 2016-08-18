@@ -5,7 +5,7 @@ A tool for automatically building Sphinx docs on Travis CI, and deploying them
 to GitHub pages.
 
 Contribute to Doctr development on `GitHub
-<https://github.com/gforsyth/doctr>`_.
+<https://github.com/drdoctr/doctr>`_.
 
 Installation
 ------------
@@ -64,7 +64,7 @@ something like
 
 
 in your ``.travis.yml``. See `the one
-<https://github.com/gforsyth/doctr/blob/master/.travis.yml>`_ used by Doctr
+<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
 itself for example.
 
 **Heads up:** Doctr requires Python 3.5 or newer. Be sure to run it in a
@@ -132,8 +132,8 @@ FAQ
 - **I would use this, but it's missing a feature that I want.**
 
   Doctr is still very new. We welcome all `feature requests
-  <https://github.com/gforsyth/doctr/issues>`_ and `pull requests
-  <https://github.com/gforsyth/doctr/pulls>`_.
+  <https://github.com/drdoctr/doctr/issues>`_ and `pull requests
+  <https://github.com/drdoctr/doctr/pulls>`_.
 
 - **Why is it called Doctr?**
 
