@@ -254,6 +254,11 @@ def sync_from_log(src, dst, log_file):
 
     The files that are synced are logged to ``log_file``. If ``log_file``
     exists, the files in ``log_file`` are removed first.
+
+    Returns ``(added, removed)``, where added is a list of all files synced from
+    ``src`` (even if it already existed in ``dst``), and ``removed`` is every
+    file from ``log_file`` that was removed from ``dst`` because it wasn't in
+    ``src``.
     """
     from os.path import join, exists, isdir
     if not src.endswith(os.sep):
