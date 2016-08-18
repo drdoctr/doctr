@@ -78,8 +78,8 @@ options available.
         public repositories for the user. This option is not recommended
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
-        dest="upload_key", help="""Don't automatically upload the deploy key
-        to GitHub.""")
+        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
+        option, you will not be prompted for your GitHub credentials. """)
     configure_parser.add_argument('--key-path', default='github_deploy_key',
         help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
@@ -130,12 +130,14 @@ def configure(args, parser):
             "doctr configure --force to run anyway.")
 
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}]".format(build_repo=build_repo))
+    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
 
     if not deploy_repo:
         deploy_repo = build_repo
 
     N = IncrementingInt(1)
+
+    header = "\n================== You should now do the following ==================\n"
 
     if args.token:
         token = generate_GitHub_token()
@@ -146,7 +148,7 @@ def configure(args, parser):
 
         You can go to https://github.com/settings/tokens to revoke it."""))
 
-        print("\n============ You should now do the following ============\n")
+        print(header)
     else:
         ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
         key = encrypt_file(args.key_path, delete=True)
@@ -163,11 +165,12 @@ def configure(args, parser):
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
             """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
-            print("\n============ You should now do the following ============\n")
+            print(header)
         else:
-            print("\n============ You should now do the following ============\n")
+            print(header)
             print(dedent("""\
-            {N}. Go to {deploy_keys_url} and add the following as a new key:
+            {N}. Go to {deploy_keys_url}
+            and add the following as a new key:
 
             {ssh_key}
             Be sure to allow write access for the key.
@@ -176,9 +179,9 @@ def configure(args, parser):
         # TODO: Should we just delete the public key?
 
         print(dedent("""\
-        {N}. Commit the file {keypath}.enc. The file {keypath}.pub contains the
-        public deploy key for GitHub. It does not need to be
-        committed.
+        {N}. Commit the file {keypath}.enc.
+        The file {keypath}.pub contains the public deploy key for GitHub. It
+        does not need to be committed.
         """.format(keypath=args.key_path, N=N)))
 
     options = ''

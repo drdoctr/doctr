@@ -1,8 +1,7 @@
 Doctr
 =====
 
-A tool for automatically building Sphinx docs on Travis CI, and deploying them
-to GitHub pages.
+A tool for automatically deploying docs from Travis CI to GitHub pages.
 
 Contribute to Doctr development on `GitHub
 <https://github.com/drdoctr/doctr>`_.
