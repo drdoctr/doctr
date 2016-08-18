@@ -254,10 +254,17 @@ def sync_from_log(src, dst, log_file):
 
     The files that are synced are logged to ``log_file``. If ``log_file``
     exists, the files in ``log_file`` are removed first.
+
+    Returns ``(added, removed)``, where added is a list of all files synced from
+    ``src`` (even if it already existed in ``dst``), and ``removed`` is every
+    file from ``log_file`` that was removed from ``dst`` because it wasn't in
+    ``src``.
     """
     from os.path import join, exists, isdir
     if not src.endswith(os.sep):
         src += os.sep
+
+    added, removed = [], []
 
     if not exists(log_file):
         # Assume this is the first run
@@ -266,15 +273,14 @@ def sync_from_log(src, dst, log_file):
         with open(log_file) as f:
             files = f.read().strip().split('\n')
 
-        for f in files:
-            f = f.strip()
-            new_f = join(dst, f[len(src):])
+        for new_f in files:
+            new_f = new_f.strip()
             if exists(new_f):
                 os.remove(new_f)
+                removed.append(new_f)
             else:
                 print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
 
-    files_log = []
     files = glob.iglob(join(src, '**'), recursive=True)
     # sorted makes this easier to test
     for f in sorted(files):
@@ -285,10 +291,14 @@ def sync_from_log(src, dst, log_file):
             os.makedirs(new_f, exist_ok=True)
         else:
             shutil.copy2(f, new_f)
-            files_log.append(f)
+            added.append(new_f)
+            if new_f in removed:
+                removed.remove(new_f)
 
     with open(log_file, 'w') as f:
-        f.write('\n'.join(files_log))
+        f.write('\n'.join(added))
+
+    return added, removed
 
 def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
     """
@@ -302,14 +312,19 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
         built_docs = find_sphinx_build_dir()
     print("Moving built docs into place")
     if gh_pages_docs == '.':
-        sync_from_log(src=built_docs, dst=gh_pages_docs, log_file=log_file)
+        added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
+            log_file=log_file)
+        for f in added:
+            run(['git', 'add', f])
+        for f in removed:
+            run(['git', 'rm', f])
     else:
         shutil.copytree(built_docs, tmp_dir)
         if os.path.exists(gh_pages_docs):
             # Won't exist on the first build
             shutil.rmtree(gh_pages_docs)
         os.rename(tmp_dir, gh_pages_docs)
-    run(['git', 'add', '-A', gh_pages_docs])
+        run(['git', 'add', '-A', gh_pages_docs])
 
 def push_docs():
     """
