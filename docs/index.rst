@@ -14,6 +14,7 @@ Contents:
    :maxdepth: 2
 
    commandline
+   recipes
    api
    changelog
 
