@@ -292,6 +292,8 @@ def sync_from_log(src, dst, log_file):
         else:
             shutil.copy2(f, new_f)
             added.append(new_f)
+            if new_f in removed:
+                removed.remove(new_f)
 
     with open(log_file, 'w') as f:
         f.write('\n'.join(added))
