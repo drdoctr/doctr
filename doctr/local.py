@@ -179,15 +179,12 @@ def check_repo_exists(deploy_repo):
     user to generate a key to deploy to that repo.
     """
     user, repo = deploy_repo.split('/')
-    r = requests.get('https://api.github.com/users/{user}/repos'.format(user=user))
+    search = 'https://api.github.com/search/repositories?q={repo}+user:{user}'
+    r = requests.get(search.format(user=user, repo=repo))
 
-    if r.status_code == requests.codes.not_found:
+    if r.status_code == requests.codes.unprocessable_entity:
         sys.exit('User/org "{user}" not found on GitHub.  Exiting'.format(user=user))
-
-    repos = [found['name'] for found in r.json()]
-
-    if repo not in repos:
-        sys.exit('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo,
-                                                                         user=user))
+    elif not r.json()['items']:
+        sys.exit('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo, user=user))
 
     return True
