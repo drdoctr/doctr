@@ -43,7 +43,8 @@ def encrypt_variable(variable, build_repo, public_key=None):
         r = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo),
             headers={'Accept': 'application/vnd.travis-ci.2+json'})
         if r.status_code == requests.codes.not_found:
-            sys.exit('Could not find requested repo on Travis.  Is Travis enabled?')
+            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
+        r.raise_for_status()
         public_key = r.json()['key']
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
@@ -183,8 +184,8 @@ def check_repo_exists(deploy_repo):
     r = requests.get(search.format(user=user, repo=repo))
 
     if r.status_code == requests.codes.unprocessable_entity:
-        sys.exit('User/org "{user}" not found on GitHub.  Exiting'.format(user=user))
+        raise RuntimeError('User/org "{user}" not found on GitHub.  Exiting'.format(user=user))
     elif not r.json()['items']:
-        sys.exit('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo, user=user))
+        raise RuntimeError('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo, user=user))
 
     return True
