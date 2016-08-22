@@ -93,7 +93,10 @@ def process_args(parser):
         parser.print_usage()
         parser.exit(1)
 
-    return args.func(args, parser)
+    try:
+        return args.func(args, parser)
+    except RuntimeError as e:
+        sys.exit("Error: " + e.args[0])
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
