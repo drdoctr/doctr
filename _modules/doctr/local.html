@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.local &#8212; Doctr 1.1.1+77.gd9e5a0a documentation</title>
+    <title>doctr.local &#8212; Doctr 1.1.1+82.gd73f8e0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.1.1+77.gd9e5a0a',
+        VERSION:     '1.1.1+82.gd73f8e0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.1.1+77.gd9e5a0a documentation" href="../../index.html" />
+    <link rel="top" title="Doctr 1.1.1+82.gd73f8e0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -218,9 +218,17 @@
         <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="check_repo_exists"><a class="viewcode-back" href="../../api.html#doctr.local.check_repo_exists">[docs]</a><span class="k">def</span> <span class="nf">check_repo_exists</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks that the deploy repository exists on GitHub before allowing</span>
-<span class="sd">    user to generate a key to deploy to that repo.</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks that the repository exists on GitHub.</span>
+
+<span class="sd">    This should be done before attempting generate a key to deploy to that</span>
+<span class="sd">    repo.</span>
+
+<span class="sd">    Raises ``RuntimeError`` if the repo is not valid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">deploy_repo</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{deploy_repo}</span><span class="s1">&quot; should be in the form username/repo&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">))</span>
+
     <span class="n">user</span><span class="p">,</span> <span class="n">repo</span> <span class="o">=</span> <span class="n">deploy_repo</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="n">search</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/search/repositories?q=</span><span class="si">{repo}</span><span class="s1">+user:</span><span class="si">{user}</span><span class="s1">&#39;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">search</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">))</span>
