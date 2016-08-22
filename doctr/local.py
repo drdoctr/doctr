@@ -175,9 +175,14 @@ def generate_ssh_key(note, keypath='github_deploy_key'):
         return f.read()
 
 def check_repo_exists(deploy_repo):
-    """Checks that the deploy repository exists on GitHub before allowing
-    user to generate a key to deploy to that repo.
     """
+    Checks that the repository exists on GitHub.
+
+    This should be done before attempting generate a key to deploy to that repo.
+    """
+    if deploy_repo.count("/") != 1:
+        raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
+
     user, repo = deploy_repo.split('/')
     search = 'https://api.github.com/search/repositories?q={repo}+user:{user}'
     r = requests.get(search.format(user=user, repo=repo))
