@@ -178,7 +178,10 @@ def check_repo_exists(deploy_repo):
     """
     Checks that the repository exists on GitHub.
 
-    This should be done before attempting generate a key to deploy to that repo.
+    This should be done before attempting generate a key to deploy to that
+    repo.
+
+    Raises ``RuntimeError`` if the repo is not valid.
     """
     if deploy_repo.count("/") != 1:
         raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
