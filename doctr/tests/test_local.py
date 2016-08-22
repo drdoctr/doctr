@@ -12,3 +12,10 @@ def test_bad_repo():
 
 def test_repo_exists():
     assert check_repo_exists('drdoctr/doctr')
+
+def test_invalid_repo():
+    with raises(RuntimeError):
+        check_repo_exists('fdsf')
+
+    with raises(RuntimeError):
+        check_repo_exists('fdsf/fdfs/fd')

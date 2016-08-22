@@ -93,7 +93,10 @@ def process_args(parser):
         parser.print_usage()
         parser.exit(1)
 
-    return args.func(args, parser)
+    try:
+        return args.func(args, parser)
+    except RuntimeError as e:
+        sys.exit("Error: " + e.args[0])
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
@@ -130,12 +133,14 @@ def configure(args, parser):
             "doctr configure --force to run anyway.")
 
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
+    check_repo_exists(build_repo)
 
+    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
     if not deploy_repo:
         deploy_repo = build_repo
 
-    check_repo_exists(deploy_repo)
+    if deploy_repo != build_repo:
+        check_repo_exists(deploy_repo)
 
     N = IncrementingInt(1)
 
