@@ -17,6 +17,7 @@ Minor Changes
 -------------
 - Add a GitHub banner to the docs. (#64)
 - Move to the GitHub organization `drdoctr <https://github.com/drdoctr>`_. (#67)
+- Check if user/org and repo are valid before generating ssh keys or pinging travis (#77)
 
 1.1.1 (2016-08-09)
 ==================

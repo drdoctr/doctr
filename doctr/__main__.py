@@ -28,7 +28,7 @@ import argparse
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists)
 from .travis import setup_GitHub_push, commit_docs, push_docs, get_current_repo
 from . import __version__
 
@@ -134,6 +134,8 @@ def configure(args, parser):
 
     if not deploy_repo:
         deploy_repo = build_repo
+
+    check_repo_exists(deploy_repo)
 
     N = IncrementingInt(1)
 

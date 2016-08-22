@@ -2,12 +2,12 @@
 The code that should be run locally
 """
 
-from getpass import getpass
-import base64
+import os
 import json
 import uuid
+import base64
 import subprocess
-import os
+from getpass import getpass
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -39,9 +39,10 @@ def encrypt_variable(variable, build_repo, public_key=None):
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
     if not public_key:
-        # TODO: Error handling
         r = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo),
             headers={'Accept': 'application/vnd.travis-ci.2+json'})
+        if r.status_code == requests.codes.not_found:
+            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
         r.raise_for_status()
         public_key = r.json()['key']
 
@@ -172,3 +173,18 @@ def generate_ssh_key(note, keypath='github_deploy_key'):
 
     with open(keypath + ".pub") as f:
         return f.read()
+
+def check_repo_exists(deploy_repo):
+    """Checks that the deploy repository exists on GitHub before allowing
+    user to generate a key to deploy to that repo.
+    """
+    user, repo = deploy_repo.split('/')
+    search = 'https://api.github.com/search/repositories?q={repo}+user:{user}'
+    r = requests.get(search.format(user=user, repo=repo))
+
+    if r.status_code == requests.codes.unprocessable_entity:
+        raise RuntimeError('User/org "{user}" not found on GitHub.  Exiting'.format(user=user))
+    elif not r.json()['items']:
+        raise RuntimeError('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo, user=user))
+
+    return True
