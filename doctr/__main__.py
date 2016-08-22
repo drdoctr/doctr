@@ -130,12 +130,14 @@ def configure(args, parser):
             "doctr configure --force to run anyway.")
 
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
+    check_repo_exists(build_repo)
 
+    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
     if not deploy_repo:
         deploy_repo = build_repo
 
-    check_repo_exists(deploy_repo)
+    if deploy_repo != build_repo:
+        check_repo_exists(deploy_repo)
 
     N = IncrementingInt(1)
 
