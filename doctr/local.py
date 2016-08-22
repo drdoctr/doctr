@@ -3,7 +3,6 @@ The code that should be run locally
 """
 
 import os
-import sys
 import json
 import uuid
 import base64
