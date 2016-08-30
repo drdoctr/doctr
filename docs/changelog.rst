@@ -22,6 +22,8 @@ Minor Changes
 
 - Correctly commit the log file.
 - Fix sync_from_log to create dst if it doesn't exist, and add tests for this.
+- Don't assume that doctr is being run from master when creating gh-pages.
+- Return to the previous branch after deploying.
 
 1.2 (2016-08-29)
 ================
