@@ -166,7 +166,8 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     remotes = subprocess.check_output(['git', 'remote']).decode('utf-8').split('\n')
     if 'doctr_remote' in remotes:
-        print("doctr_remote already exists")
+        print("doctr_remote already exists, removing")
+        run(['git', 'remote', 'remove', 'doctr_remote'])
     else:
         print("Adding doctr remote")
         if auth_type == 'token':
