@@ -201,7 +201,7 @@ def configure(args, parser):
     {N}. Add
 
         - pip install doctr
-        - doctr deploy {options}
+        - doctr deploy{options}
 
     to the docs build of your .travis.yml.
     """.format(options=options, N=N)))
