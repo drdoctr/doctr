@@ -17,6 +17,7 @@ Contents:
    recipes
    api
    changelog
+   releasing
 
 Indices and tables
 ==================
