@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.2+28.ga96cd7b documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.2+32.gaeca05f documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.2+28.ga96cd7b',
+        VERSION:     '1.2+32.gaeca05f',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.2+28.ga96cd7b documentation" href="../../index.html" />
+    <link rel="top" title="Doctr 1.2+32.gaeca05f documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -207,18 +207,22 @@
     <span class="c1"># Should we add some user.email?</span>
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.name&#39;</span><span class="p">,</span> <span class="s2">&quot;Doctr (Travis CI)&quot;</span><span class="p">])</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding doctr remote&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s1">&#39;token&#39;</span><span class="p">:</span>
-        <span class="n">token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;https://</span><span class="si">{token}</span><span class="s1">@github.com/</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
-                <span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+    <span class="n">remotes</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;doctr_remote&#39;</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;doctr_remote already exists&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span> <span class="o">=</span> <span class="n">full_key_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">key_ext</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key_ext</span>
-        <span class="n">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="n">key_ext</span><span class="p">)</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;git@github.com:</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding doctr remote&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s1">&#39;token&#39;</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;https://</span><span class="si">{token}</span><span class="s1">@github.com/</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+                    <span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span> <span class="o">=</span> <span class="n">full_key_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">key_ext</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key_ext</span>
+            <span class="n">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="n">key_ext</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;git@github.com:</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fetching doctr remote&quot;</span><span class="p">)</span>
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
