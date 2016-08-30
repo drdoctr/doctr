@@ -120,7 +120,7 @@ def deploy(args, parser):
             if not args.built_docs:
                 built_docs = find_sphinx_build_dir()
 
-            log_file = join(args.gh_pages_docs, '.doctr-files')
+            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
