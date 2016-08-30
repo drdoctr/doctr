@@ -164,18 +164,22 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     # Should we add some user.email?
     run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
 
-    print("Adding doctr remote")
-    if auth_type == 'token':
-        token = get_token()
-        run(['git', 'remote', 'add', 'doctr_remote',
-            'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
-                deploy_repo=deploy_repo)])
+    remotes = subprocess.check_output(['git', 'remote']).split('\n')
+    if 'doctr_remote' in remotes:
+        print("doctr_remote already exists")
     else:
-        keypath, key_ext = full_key_path.rsplit('.', 1)
-        key_ext = '.' + key_ext
-        setup_deploy_key(keypath=keypath, key_ext=key_ext)
-        run(['git', 'remote', 'add', 'doctr_remote',
-            'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
+        print("Adding doctr remote")
+        if auth_type == 'token':
+            token = get_token()
+            run(['git', 'remote', 'add', 'doctr_remote',
+                'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
+                    deploy_repo=deploy_repo)])
+        else:
+            keypath, key_ext = full_key_path.rsplit('.', 1)
+            key_ext = '.' + key_ext
+            setup_deploy_key(keypath=keypath, key_ext=key_ext)
+            run(['git', 'remote', 'add', 'doctr_remote',
+                'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
