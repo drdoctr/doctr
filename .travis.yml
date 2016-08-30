@@ -1,3 +1,5 @@
+language: null
+
 sudo: false
 env:
   matrix:
