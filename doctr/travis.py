@@ -166,20 +166,20 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     remotes = subprocess.check_output(['git', 'remote']).decode('utf-8').split('\n')
     if 'doctr_remote' in remotes:
-        print("doctr_remote already exists")
+        print("doctr_remote already exists, removing")
+        run(['git', 'remote', 'remove', 'doctr_remote'])
+    print("Adding doctr remote")
+    if auth_type == 'token':
+        token = get_token()
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
+                deploy_repo=deploy_repo)])
     else:
-        print("Adding doctr remote")
-        if auth_type == 'token':
-            token = get_token()
-            run(['git', 'remote', 'add', 'doctr_remote',
-                'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
-                    deploy_repo=deploy_repo)])
-        else:
-            keypath, key_ext = full_key_path.rsplit('.', 1)
-            key_ext = '.' + key_ext
-            setup_deploy_key(keypath=keypath, key_ext=key_ext)
-            run(['git', 'remote', 'add', 'doctr_remote',
-                'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
+        keypath, key_ext = full_key_path.rsplit('.', 1)
+        key_ext = '.' + key_ext
+        setup_deploy_key(keypath=keypath, key_ext=key_ext)
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
@@ -187,7 +187,8 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
     new_gh_pages = create_gh_pages()
     print("Checking out gh-pages")
-    if new_gh_pages:
+    local_gh_pages_exists = 'gh-pages' in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if new_gh_pages or local_gh_pages_exists:
         run(['git', 'checkout', 'gh-pages'])
     else:
         run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
