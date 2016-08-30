@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Changelog &#8212; Doctr 1.2+14.gb789c91 documentation</title>
+    <title>Doctr Changelog &#8212; Doctr 1.2+29.g797ebfc documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2+14.gb789c91',
+        VERSION:     '1.2+29.g797ebfc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.2+14.gb789c91 documentation" href="index.html" />
+    <link rel="top" title="Doctr 1.2+29.g797ebfc documentation" href="index.html" />
     <link rel="next" title="Releasing" href="releasing.html" />
     <link rel="prev" title="API" href="api.html" />
    
@@ -49,20 +49,23 @@
 <h3>Major Changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Remove the <code class="docutils literal"><span class="pre">--tmp-dir</span></code> flag from the command line (doctr now always
-deploys using a log file).</li>
+deploys using a log file). (#92)</li>
 <li>Python API: Change <code class="docutils literal"><span class="pre">commit_docs</span></code> to actually commit the docs (previously,
-it was done in <code class="docutils literal"><span class="pre">push_docs</span></code>).</li>
+it was done in <code class="docutils literal"><span class="pre">push_docs</span></code>). (#92)</li>
 <li>Python API: Don&#8217;t sync files or get the build dir in <code class="docutils literal"><span class="pre">commit_docs</span></code>. This
 is done separately in <code class="docutils literal"><span class="pre">__main__.py</span></code>. The Python API for <code class="docutils literal"><span class="pre">commit_docs</span></code> is
 now <code class="docutils literal"><span class="pre">commit_docs(*,</span> <span class="pre">added,</span> <span class="pre">removed)</span></code>. <code class="docutils literal"><span class="pre">sync_from_log</span></code> automatically
-includes the log file in the list of added files.</li>
+includes the log file in the list of added files. (#92)</li>
 </ul>
 </div>
 <div class="section" id="minor-changes">
 <h3>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Correctly commit the log file.</li>
-<li>Fix sync_from_log to create dst if it doesn&#8217;t exist, and add tests for this.</li>
+<li>Correctly commit the log file. (#92)</li>
+<li>Fix sync_from_log to create dst if it doesn&#8217;t exist, and add tests for this. (#92)</li>
+<li>Don&#8217;t assume that doctr is being run from master when creating gh-pages. (#93)</li>
+<li>Return to the previous branch after deploying. (#93)</li>
+<li>Remove extra space before options in configure help text. (#90)</li>
 </ul>
 </div>
 </div>

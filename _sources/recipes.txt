@@ -26,6 +26,11 @@ for each branch. The following will deploy the docs to ``docs`` on master and
        doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH";
      fi
 
+This will not remove the docs after the branch is merged. You will need to do
+that manually.
+
+.. TODO: How can we add steps to do that automatically?
+
 **Note**: It is only possible to deploy docs from branches on the same repo.
 For security purposes, it is not possible to deploy from branches on forks
 (Travis does not allow access to encrypted environment variables on pull

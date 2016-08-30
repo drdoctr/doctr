@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.2+14.gb789c91 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.2+29.g797ebfc documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.2+14.gb789c91',
+        VERSION:     '1.2+29.g797ebfc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.2+14.gb789c91 documentation" href="../../index.html" />
+    <link rel="top" title="Doctr 1.2+29.g797ebfc documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -256,8 +256,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">gh_pages_exists</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating gh-pages branch&quot;</span><span class="p">)</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
-        <span class="c1">#delete everything in the new ref.  this is non-destructive to existing</span>
-        <span class="c1">#refs/branches, etc...</span>
+        <span class="c1"># delete everything in the new ref.  this is non-destructive to existing</span>
+        <span class="c1"># refs/branches, etc...</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-rf&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to gh-pages branch&quot;</span><span class="p">)</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;touch&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
@@ -265,8 +265,8 @@
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new gh-pages branch with .nojekyll&#39;</span><span class="p">])</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing gh-pages branch to remote&quot;</span><span class="p">)</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
-        <span class="c1">#return to master branch</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;master&#39;</span><span class="p">])</span>
+        <span class="c1"># return to master branch</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
