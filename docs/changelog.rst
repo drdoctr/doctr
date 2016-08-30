@@ -16,6 +16,7 @@ Major Changes
   is done separately in ``__main__.py``. The Python API for ``commit_docs`` is
   now ``commit_docs(*, added, removed)``. ``sync_from_log`` automatically
   includes the log file in the list of added files. (#92)
+- Support running doctr multiple times in the same build. (#93, #95)
 
 Minor Changes
 -------------
