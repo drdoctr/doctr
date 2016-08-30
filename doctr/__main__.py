@@ -68,7 +68,6 @@ options available.
     deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
 
-
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
@@ -121,7 +120,7 @@ def deploy(args, parser):
             if not args.built_docs:
                 built_docs = find_sphinx_build_dir()
 
-            log_file = '.doctr-files'
+            log_file = join(args.gh_pages_docs, '.doctr-files')
 
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
