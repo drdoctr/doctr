@@ -213,8 +213,8 @@ def create_gh_pages():
     if not gh_pages_exists():
         print("Creating gh-pages branch")
         run(['git', 'checkout', '--orphan', 'gh-pages'])
-        #delete everything in the new ref.  this is non-destructive to existing
-        #refs/branches, etc...
+        # delete everything in the new ref.  this is non-destructive to existing
+        # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
         print("Adding .nojekyll file to gh-pages branch")
         run(['touch', '.nojekyll'])
@@ -222,8 +222,8 @@ def create_gh_pages():
         run(['git', 'commit', '-m', 'Create new gh-pages branch with .nojekyll'])
         print("Pushing gh-pages branch to remote")
         run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
-        #return to master branch
-        run(['git', 'checkout', 'master'])
+        # return to master branch
+        run(['git', 'checkout', '-'])
 
         return True
     return False

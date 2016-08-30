@@ -27,10 +27,13 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
-      python -m doctr deploy --gh-pages-docs docs --key-path deploy_key.enc;
+      if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
+        python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
+        python -m doctr deploy --gh-pages-docs docs --key-path deploy_key.enc;
+      else
+        python -m doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH" --key-path deploy_key.enc;
+      fi
     fi
-
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
       py.test doctr;
