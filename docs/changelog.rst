@@ -9,22 +9,22 @@ Major Changes
 -------------
 
 - Remove the ``--tmp-dir`` flag from the command line (doctr now always
-  deploys using a log file).
+  deploys using a log file). (#92)
 - Python API: Change ``commit_docs`` to actually commit the docs (previously,
-  it was done in ``push_docs``).
+  it was done in ``push_docs``). (#92)
 - Python API: Don't sync files or get the build dir in ``commit_docs``. This
   is done separately in ``__main__.py``. The Python API for ``commit_docs`` is
   now ``commit_docs(*, added, removed)``. ``sync_from_log`` automatically
-  includes the log file in the list of added files.
+  includes the log file in the list of added files. (#92)
 
 Minor Changes
 -------------
 
-- Correctly commit the log file.
-- Fix sync_from_log to create dst if it doesn't exist, and add tests for this.
-- Don't assume that doctr is being run from master when creating gh-pages.
-- Return to the previous branch after deploying.
-- Remove extra space before options in configure help text.
+- Correctly commit the log file. (#92)
+- Fix sync_from_log to create dst if it doesn't exist, and add tests for this. (#92)
+- Don't assume that doctr is being run from master when creating gh-pages. (#93)
+- Return to the previous branch after deploying. (#93)
+- Remove extra space before options in configure help text. (#90)
 
 1.2 (2016-08-29)
 ================
