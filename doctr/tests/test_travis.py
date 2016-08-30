@@ -35,6 +35,7 @@ def test_sync_from_log(src, dst):
             assert added == [
                 join(dst, 'test1'),
                 join(dst, 'testdir', 'test2'),
+                'logfile',
                 ]
 
             assert removed == []
@@ -61,6 +62,7 @@ def test_sync_from_log(src, dst):
                 join(dst, 'test1'),
                 join(dst, 'test3'),
                 join(dst, 'testdir', 'test2'),
+                'logfile',
             ]
 
             assert removed == []
@@ -89,6 +91,7 @@ def test_sync_from_log(src, dst):
             assert added == [
                 join(dst, 'test1'),
                 join(dst, 'testdir', 'test2'),
+                'logfile',
             ]
 
             assert removed == [
@@ -118,6 +121,7 @@ def test_sync_from_log(src, dst):
             assert added == [
                 join(dst, 'test1'),
                 join(dst, 'testdir', 'test2'),
+                'logfile',
             ]
 
             assert removed == []
