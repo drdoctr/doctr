@@ -168,19 +168,18 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     if 'doctr_remote' in remotes:
         print("doctr_remote already exists, removing")
         run(['git', 'remote', 'remove', 'doctr_remote'])
+    print("Adding doctr remote")
+    if auth_type == 'token':
+        token = get_token()
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
+                deploy_repo=deploy_repo)])
     else:
-        print("Adding doctr remote")
-        if auth_type == 'token':
-            token = get_token()
-            run(['git', 'remote', 'add', 'doctr_remote',
-                'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
-                    deploy_repo=deploy_repo)])
-        else:
-            keypath, key_ext = full_key_path.rsplit('.', 1)
-            key_ext = '.' + key_ext
-            setup_deploy_key(keypath=keypath, key_ext=key_ext)
-            run(['git', 'remote', 'add', 'doctr_remote',
-                'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
+        keypath, key_ext = full_key_path.rsplit('.', 1)
+        key_ext = '.' + key_ext
+        setup_deploy_key(keypath=keypath, key_ext=key_ext)
+        run(['git', 'remote', 'add', 'doctr_remote',
+            'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
