@@ -258,7 +258,7 @@ def sync_from_log(src, dst, log_file):
     Returns ``(added, removed)``, where added is a list of all files synced from
     ``src`` (even if it already existed in ``dst``), and ``removed`` is every
     file from ``log_file`` that was removed from ``dst`` because it wasn't in
-    ``src``.
+    ``src``. ``added`` also includes the log file.
     """
     from os.path import join, exists, isdir
     if not src.endswith(os.sep):
@@ -284,8 +284,6 @@ def sync_from_log(src, dst, log_file):
     files = glob.iglob(join(src, '**'), recursive=True)
     # sorted makes this easier to test
     for f in sorted(files):
-        if f == src:
-            continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
             os.makedirs(new_f, exist_ok=True)
@@ -298,33 +296,35 @@ def sync_from_log(src, dst, log_file):
     with open(log_file, 'w') as f:
         f.write('\n'.join(added))
 
+    added.append(log_file)
+
     return added, removed
 
-def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
+def commit_docs(*, added, removed):
     """
     Commit the docs to ``gh-pages``
 
     Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
     remote, has been run and returned True.
 
+    Returns True if changes were committed and False if no changes were
+    committed.
     """
-    if not built_docs:
-        built_docs = find_sphinx_build_dir()
-    print("Moving built docs into place")
-    if gh_pages_docs == '.':
-        added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
-            log_file=log_file)
-        for f in added:
-            run(['git', 'add', f])
-        for f in removed:
-            run(['git', 'rm', f])
-    else:
-        shutil.copytree(built_docs, tmp_dir)
-        if os.path.exists(gh_pages_docs):
-            # Won't exist on the first build
-            shutil.rmtree(gh_pages_docs)
-        os.rename(tmp_dir, gh_pages_docs)
-        run(['git', 'add', '-A', gh_pages_docs])
+    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
+
+    for f in added:
+        run(['git', 'add', f])
+    for f in removed:
+        run(['git', 'rm', f])
+
+    # Only commit if there were changes
+    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+        print("Committing")
+        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
+        return True
+
+    return False
 
 def push_docs():
     """
@@ -335,17 +335,8 @@ def push_docs():
     were made.
 
     """
-    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
-    # Only push if there were changes
-    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
-
-        print("Committing")
-        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
-        print("Pulling")
-        run(["git", "pull"])
-        print("Pushing commit")
-        run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
-    else:
-        print("The docs have not changed. Not updating")
+    print("Pulling")
+    run(["git", "pull"])
+    print("Pushing commit")
+    run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
