@@ -30,7 +30,7 @@ from textwrap import dedent
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
-    get_current_repo, sync_from_log, find_sphinx_build_dir)
+    get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
 
 def get_parser():
@@ -113,24 +113,27 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
-    if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
-                         'deploy_key', full_key_path=args.key_path,
-                         require_master=args.require_master):
+    try:
+        if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
+                             'deploy_key', full_key_path=args.key_path,
+                             require_master=args.require_master):
 
-        if not args.built_docs:
-            built_docs = find_sphinx_build_dir()
+            if not args.built_docs:
+                built_docs = find_sphinx_build_dir()
 
-        log_file = '.doctr-files'
+            log_file = '.doctr-files'
 
-        print("Moving built docs into place")
-        added, removed = sync_from_log(src=built_docs,
-            dst=args.gh_pages_docs, log_file=log_file)
+            print("Moving built docs into place")
+            added, removed = sync_from_log(src=built_docs,
+                dst=args.gh_pages_docs, log_file=log_file)
 
-        changes = commit_docs(added=added, removed=removed)
-        if changes:
-            push_docs()
-        else:
-            print("The docs have not changed. Not updating")
+            changes = commit_docs(added=added, removed=removed)
+            if changes:
+                push_docs()
+            else:
+                print("The docs have not changed. Not updating")
+    finally:
+        run(['git', 'checkout', '-'])
 
 class IncrementingInt:
     def __init__(self, i=0):
