@@ -300,7 +300,7 @@ def sync_from_log(src, dst, log_file):
 
     return added, removed
 
-def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_file='.doctr-files'):
+def commit_docs(*, built_docs=None, gh_pages_docs='docs', log_file='.doctr-files'):
     """
     Commit the docs to ``gh-pages``
 
@@ -315,21 +315,13 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
     if not built_docs:
         built_docs = find_sphinx_build_dir()
     print("Moving built docs into place")
-    if gh_pages_docs == '.':
-        added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
-            log_file=log_file)
-        for f in added:
-            run(['git', 'add', f])
-        for f in removed:
-            run(['git', 'rm', f])
-        run(['git', 'add', log_file])
-    else:
-        shutil.copytree(built_docs, tmp_dir)
-        if os.path.exists(gh_pages_docs):
-            # Won't exist on the first build
-            shutil.rmtree(gh_pages_docs)
-        os.rename(tmp_dir, gh_pages_docs)
-        run(['git', 'add', '-A', gh_pages_docs])
+    added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
+        log_file=log_file)
+    for f in added:
+        run(['git', 'add', f])
+    for f in removed:
+        run(['git', 'rm', f])
+    run(['git', 'add', log_file])
 
     # Only commit if there were changes
     if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],

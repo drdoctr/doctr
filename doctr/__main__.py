@@ -60,8 +60,8 @@ options available.
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
         help="""Directory to deploy the html documentation to on gh-pages. The
         default is %(default)r.""")
-    deploy_parser.add_argument('--tmp-dir', default='_docs',
-        help="""Temporary directory used on gh-pages. The default is %(default)r.""")
+    deploy_parser.add_argument('--tmp-dir', default=None,
+        help=argparse.SUPPRESS)
     deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
@@ -106,6 +106,9 @@ def deploy(args, parser):
         parser.error("doctr does not appear to be running on Travis. Use "
             "doctr deploy --force to run anyway.")
 
+    if args.tmp_dir:
+        parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
+
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
@@ -113,7 +116,7 @@ def deploy(args, parser):
                          'deploy_key', full_key_path=args.key_path,
                          require_master=args.require_master):
         changes = commit_docs(built_docs=args.built_docs,
-            gh_pages_docs=args.gh_pages_docs, tmp_dir=args.tmp_dir)
+            gh_pages_docs=args.gh_pages_docs)
         if changes:
             push_docs()
         else:
