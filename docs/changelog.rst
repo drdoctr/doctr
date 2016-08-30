@@ -2,6 +2,27 @@
  Doctr Changelog
 =================
 
+1.3 (????-??-??)
+================
+
+Major Changes
+-------------
+
+- Remove the ``--tmp-dir`` flag from the command line (doctr now always
+  deploys using a log file).
+- Python API: Change ``commit_docs`` to actually commit the docs (previously,
+  it was done in ``push_docs``).
+- Python API: Don't sync files or get the build dir in ``commit_docs``. This
+  is done separately in ``__main__.py``. The Python API for ``commit_docs`` is
+  now ``commit_docs(*, added, removed)``. ``sync_from_log`` automatically
+  includes the log file in the list of added files.
+
+Minor Changes
+-------------
+
+- Correctly commit the log file.
+- Fix sync_from_log to create dst if it doesn't exist, and add tests for this.
+
 1.2 (2016-08-29)
 ================
 
