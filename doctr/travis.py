@@ -284,8 +284,6 @@ def sync_from_log(src, dst, log_file):
     files = glob.iglob(join(src, '**'), recursive=True)
     # sorted makes this easier to test
     for f in sorted(files):
-        if f == src:
-            continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
             os.makedirs(new_f, exist_ok=True)
