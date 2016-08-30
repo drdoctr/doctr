@@ -24,6 +24,7 @@ Minor Changes
 - Fix sync_from_log to create dst if it doesn't exist, and add tests for this.
 - Don't assume that doctr is being run from master when creating gh-pages.
 - Return to the previous branch after deploying.
+- Remove extra space before options in configure help text.
 
 1.2 (2016-08-29)
 ================
