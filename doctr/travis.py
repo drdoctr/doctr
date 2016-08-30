@@ -258,7 +258,7 @@ def sync_from_log(src, dst, log_file):
     Returns ``(added, removed)``, where added is a list of all files synced from
     ``src`` (even if it already existed in ``dst``), and ``removed`` is every
     file from ``log_file`` that was removed from ``dst`` because it wasn't in
-    ``src``.
+    ``src``. ``added`` also includes the log file.
     """
     from os.path import join, exists, isdir
     if not src.endswith(os.sep):
@@ -296,9 +296,11 @@ def sync_from_log(src, dst, log_file):
     with open(log_file, 'w') as f:
         f.write('\n'.join(added))
 
+    added.append(log_file)
+
     return added, removed
 
-def commit_docs(*, built_docs=None, gh_pages_docs='docs', log_file='.doctr-files'):
+def commit_docs(*, added, removed):
     """
     Commit the docs to ``gh-pages``
 
@@ -310,16 +312,10 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', log_file='.doctr-files
     """
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
-    if not built_docs:
-        built_docs = find_sphinx_build_dir()
-    print("Moving built docs into place")
-    added, removed = sync_from_log(src=built_docs, dst=gh_pages_docs,
-        log_file=log_file)
     for f in added:
         run(['git', 'add', f])
     for f in removed:
         run(['git', 'rm', f])
-    run(['git', 'add', log_file])
 
     # Only commit if there were changes
     if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
