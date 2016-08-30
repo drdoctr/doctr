@@ -27,6 +27,7 @@ script:
       cd docs;
       make html;
       cd ..;
+    fi
     if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
       python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
       python -m doctr deploy --gh-pages-docs docs --key-path deploy_key.enc;
