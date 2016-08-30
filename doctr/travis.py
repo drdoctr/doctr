@@ -187,7 +187,8 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
     new_gh_pages = create_gh_pages()
     print("Checking out gh-pages")
-    if new_gh_pages:
+    local_gh_pages_exists = 'gh-pages' in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if new_gh_pages or local_gh_pages_exists:
         run(['git', 'checkout', 'gh-pages'])
     else:
         run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
