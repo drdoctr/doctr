@@ -307,7 +307,11 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
     Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
     remote, has been run and returned True.
 
+    Returns True if changes were committed and False if no changes were
+    committed.
     """
+    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
+
     if not built_docs:
         built_docs = find_sphinx_build_dir()
     print("Moving built docs into place")
@@ -327,6 +331,15 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
         os.rename(tmp_dir, gh_pages_docs)
         run(['git', 'add', '-A', gh_pages_docs])
 
+    # Only commit if there were changes
+    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+        print("Committing")
+        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
+        return True
+
+    return False
+
 def push_docs():
     """
     Push the changes to the `gh-pages` branch.
@@ -336,17 +349,8 @@ def push_docs():
     were made.
 
     """
-    TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
 
-    # Only push if there were changes
-    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
-
-        print("Committing")
-        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
-        print("Pulling")
-        run(["git", "pull"])
-        print("Pushing commit")
-        run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
-    else:
-        print("The docs have not changed. Not updating")
+    print("Pulling")
+    run(["git", "pull"])
+    print("Pushing commit")
+    run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])

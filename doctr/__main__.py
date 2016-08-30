@@ -112,9 +112,12 @@ def deploy(args, parser):
     if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                          'deploy_key', full_key_path=args.key_path,
                          require_master=args.require_master):
-        commit_docs(built_docs=args.built_docs,
+        changes = commit_docs(built_docs=args.built_docs,
             gh_pages_docs=args.gh_pages_docs, tmp_dir=args.tmp_dir)
-        push_docs()
+        if changes:
+            push_docs()
+        else:
+            print("The docs have not changed. Not updating")
 
 class IncrementingInt:
     def __init__(self, i=0):
