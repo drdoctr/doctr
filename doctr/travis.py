@@ -318,6 +318,7 @@ def commit_docs(*, built_docs=None, gh_pages_docs='docs', tmp_dir='_docs', log_f
             run(['git', 'add', f])
         for f in removed:
             run(['git', 'rm', f])
+        run(['git', 'add', log_file])
     else:
         shutil.copytree(built_docs, tmp_dir)
         if os.path.exists(gh_pages_docs):
