@@ -38,7 +38,10 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'custom_autoprogram',
+    'sphinx_issues',
 ]
+
+issues_github_path = 'drdoctr/doctr'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
