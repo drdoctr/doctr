@@ -25,6 +25,7 @@ import sys
 import os
 import argparse
 import shlex
+import subprocess
 
 from textwrap import dedent
 
@@ -122,6 +123,7 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
+    current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     try:
         if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
@@ -146,7 +148,7 @@ def deploy(args, parser):
             else:
                 print("The docs have not changed. Not updating")
     finally:
-        run(['git', 'checkout', '-'])
+        run(['git', 'checkout', current_commit])
 
 class IncrementingInt:
     def __init__(self, i=0):
