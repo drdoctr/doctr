@@ -69,7 +69,9 @@ options available.
     deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
     deploy_parser.add_argument('--command', default=None, help="""Command to
-        be run before committing and pushing.""")
+        be run before committing and pushing. If the command creates
+        additional files that should be deployed, they should be added to the
+        index.""")
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
