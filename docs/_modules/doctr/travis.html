@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.3.1+5.g10db33f documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.3.1+10.g7f068f4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.3.1+5.g10db33f',
+        VERSION:     '1.3.1+10.g7f068f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.3.1+5.g10db33f documentation" href="../../index.html" />
+    <link rel="top" title="Doctr 1.3.1+10.g7f068f4 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -133,9 +133,9 @@
 
 <div class="viewcode-block" id="get_token"><a class="viewcode-back" href="../../api.html#doctr.travis.get_token">[docs]</a><span class="k">def</span> <span class="nf">get_token</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the encrypted GitHub token in Travis</span>
+<span class="sd">    Get the encrypted GitHub token in Travis.</span>
 
-<span class="sd">    Make sure the contents this variable do not link. The ``run()`` function</span>
+<span class="sd">    Make sure the contents this variable do not leak. The ``run()`` function</span>
 <span class="sd">    will remove this from the output, so always use it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GH_TOKEN&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -146,7 +146,7 @@
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../api.html#doctr.travis.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Run the command args</span>
+<span class="sd">    Run the command ``args``.</span>
 
 <span class="sd">    Automatically hides the secret GitHub token from the output.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -376,7 +376,7 @@
 
 <div class="viewcode-block" id="push_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.push_docs">[docs]</a><span class="k">def</span> <span class="nf">push_docs</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Push the changes to the `gh-pages` branch.</span>
+<span class="sd">    Push the changes to the ``gh-pages`` branch.</span>
 
 <span class="sd">    Assumes that :func:`setup_GitHub_push` has been run and returned True, and</span>
 <span class="sd">    that :func:`commit_docs` has been run. Does not push anything if no changes</span>
