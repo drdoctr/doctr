@@ -24,6 +24,8 @@ For more information, see https://drdoctr.github.io/doctr/docs/
 import sys
 import os
 import argparse
+import shlex
+import subprocess
 
 from textwrap import dedent
 
@@ -67,6 +69,15 @@ options available.
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
+    deploy_parser.add_argument('--command', default=None, help="""Command to
+        be run before committing and pushing. If the command creates
+        additional files that should be deployed, they should be added to the
+        index.""")
+    deploy_parser.add_argument('--no-sync', dest='sync', action='store_false',
+        default=True, help="""Don't sync any files. This is generally used in
+        conjunction with the --command flag, for instance, if the command syncs
+        the files for you. Any files you wish to commit should be added to the
+        index.""")
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -112,19 +123,27 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
+    current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
         if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
                              require_master=args.require_master):
 
-            if not args.built_docs:
-                built_docs = find_sphinx_build_dir()
+            if args.sync:
+                if not args.built_docs:
+                    built_docs = find_sphinx_build_dir()
 
-            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
+                log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
-            print("Moving built docs into place")
-            added, removed = sync_from_log(src=built_docs,
-                dst=args.gh_pages_docs, log_file=log_file)
+                print("Moving built docs into place")
+                added, removed = sync_from_log(src=built_docs,
+                    dst=args.gh_pages_docs, log_file=log_file)
+
+            else:
+                added, removed = [], []
+
+            if args.command:
+                run(shlex.split(args.command))
 
             changes = commit_docs(added=added, removed=removed)
             if changes:
@@ -132,7 +151,7 @@ def deploy(args, parser):
             else:
                 print("The docs have not changed. Not updating")
     finally:
-        run(['git', 'checkout', '-'])
+        run(['git', 'checkout', current_commit])
 
 class IncrementingInt:
     def __init__(self, i=0):
