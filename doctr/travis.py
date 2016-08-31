@@ -90,9 +90,9 @@ def run_command_hiding_token(args, token):
 
 def get_token():
     """
-    Get the encrypted GitHub token in Travis
+    Get the encrypted GitHub token in Travis.
 
-    Make sure the contents this variable do not link. The ``run()`` function
+    Make sure the contents this variable do not leak. The ``run()`` function
     will remove this from the output, so always use it.
     """
     token = os.environ.get("GH_TOKEN", None)
@@ -103,7 +103,7 @@ def get_token():
 
 def run(args):
     """
-    Run the command args
+    Run the command ``args``.
 
     Automatically hides the secret GitHub token from the output.
     """
@@ -333,7 +333,7 @@ def commit_docs(*, added, removed):
 
 def push_docs():
     """
-    Push the changes to the `gh-pages` branch.
+    Push the changes to the ``gh-pages`` branch.
 
     Assumes that :func:`setup_GitHub_push` has been run and returned True, and
     that :func:`commit_docs` has been run. Does not push anything if no changes

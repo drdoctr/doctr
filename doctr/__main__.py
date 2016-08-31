@@ -48,7 +48,7 @@ options available.
     parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
-    deploy_parser = subcommand.add_parser('deploy', help=""""Deploy the docs to GitHub from Travis.""")
+    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
