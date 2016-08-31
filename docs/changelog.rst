@@ -2,6 +2,15 @@
  Doctr Changelog
 =================
 
+1.3.1 (2016-08-31)
+==================
+
+Major Changes
+-------------
+
+- Fix a bug that would cause doctr to fail if run on a pull request from a
+  fork. (#101)
+
 1.3 (2016-08-30)
 ================
 
