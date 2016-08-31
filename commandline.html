@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Command Line Help &#8212; Doctr 1.2+42.g301c52b documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.2+55.gbf7a1e3 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2+42.g301c52b',
+        VERSION:     '1.2+55.gbf7a1e3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Doctr 1.2+42.g301c52b documentation" href="index.html" />
+    <link rel="top" title="Doctr 1.2+55.gbf7a1e3 documentation" href="index.html" />
     <link rel="next" title="Recipes" href="recipes.html" />
     <link rel="prev" title="Welcome to the Doctr documentation!" href="index.html" />
    
@@ -176,6 +176,24 @@ options available.</p>
 <dt id="cmdoption-doctr-deploy--no-require-master">
 <code class="descname">--no-require-master</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy--no-require-master" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allow docs to be pushed from a branch other than master</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-deploy--command">
+<code class="descname">--command</code><code class="descclassname"> &lt;command&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy--command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Command to   
+        be run before committing and pushing. If the command creates   
+        additional files that should be deployed, they should be added to the   
+        index.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-deploy--no-sync">
+<code class="descname">--no-sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy--no-sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don&#8217;t sync any files. This is generally used in   
+        conjunction with the &#8211;command flag, for instance, if the command syncs   
+        the files for you. Any files you wish to commit should be added to the   
+        index.</p>
 </dd></dl>
 
 </div>
