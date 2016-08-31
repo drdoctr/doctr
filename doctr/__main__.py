@@ -123,7 +123,7 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
-    current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8')
     try:
         if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
