@@ -90,9 +90,9 @@ def run_command_hiding_token(args, token):
 
 def get_token():
     """
-    Get the encrypted GitHub token in Travis
+    Get the encrypted GitHub token in Travis.
 
-    Make sure the contents this variable do not link. The ``run()`` function
+    Make sure the contents this variable do not leak. The ``run()`` function
     will remove this from the output, so always use it.
     """
     token = os.environ.get("GH_TOKEN", None)
