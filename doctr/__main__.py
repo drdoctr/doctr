@@ -151,7 +151,7 @@ def deploy(args, parser):
             else:
                 print("The docs have not changed. Not updating")
     finally:
-        run(['git', 'checkout', current_commit])
+        subprocess.run(['git', 'checkout', current_commit])
 
 class IncrementingInt:
     def __init__(self, i=0):
