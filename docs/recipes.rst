@@ -85,3 +85,21 @@ the repo (doctr will also print the url where they can add this). Don't worry,
 the key is a public SSH key, so it's OK to post it publicly in the pull
 request. If you lose the output of ``doctr configure``, you can also use the
 file ``github_deploy_key.pub`` (you should not commit this file).
+
+Post-processing the docs on gh-pages
+====================================
+
+Sometimes you may want to post-process your docs on the ``gh-pages`` branch.
+For example, you may want to add some links to other versions in your
+index.html.
+
+You can run any command on the ``gh-pages`` branch with the ``doctr deploy
+--command`` flag. This is run after the docs are synced to ``gh-pages`` but
+before they are committed and uploaded.
+
+For example, if you have a script in ``gh-pages`` called ``post-process.py``,
+you can run
+
+.. code:: bash
+
+   doctr deploy --command 'post-process.py'
