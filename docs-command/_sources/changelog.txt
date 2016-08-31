@@ -19,6 +19,8 @@ Major Changes
 - Support running doctr multiple times in the same build. (#93, #95)
 - Add ``doctr deploy --command`` to allow running a command before committing
   and deploying. (#97)
+- Add ``doctr deploy --no-sync`` to allow disabling syncing (useful with
+  ``doctr deploy --command``). (#97)
 
 Minor Changes
 -------------
