@@ -24,6 +24,7 @@ For more information, see https://drdoctr.github.io/doctr/docs/
 import sys
 import os
 import argparse
+import shlex
 
 from textwrap import dedent
 
@@ -67,6 +68,8 @@ options available.
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
+    deploy_parser.add_argument('--command', default=None, help="""Command to
+        be run before committing and pushing.""")
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -125,6 +128,9 @@ def deploy(args, parser):
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
                 dst=args.gh_pages_docs, log_file=log_file)
+
+            if args.command:
+                run(shlex.split(args.command))
 
             changes = commit_docs(added=added, removed=removed)
             if changes:
