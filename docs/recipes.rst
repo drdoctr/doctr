@@ -103,3 +103,16 @@ you can run
 .. code:: bash
 
    doctr deploy --command 'post-process.py'
+
+Using a separate command to deploy to gh-pages
+==============================================
+
+If you already have an existing tool to deploy to ``gh-pages``, you can still
+use Doctr to manage your deploy key and only pushing on master. Use
+
+.. code:: bash
+
+   doctr deploy --no-sync --command 'command to deploy'
+
+The command to deploy should add any files that you want committed to the
+index.

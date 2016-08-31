@@ -72,6 +72,11 @@ options available.
         be run before committing and pushing. If the command creates
         additional files that should be deployed, they should be added to the
         index.""")
+    deploy_parser.add_argument('--no-sync', dest='sync', action='store_false',
+        default=True, help="""Don't sync any files. This is generally used in
+        conjunction with the --command flag, for instance, if the command syncs
+        the files for you. Any files you wish to commit should be added to the
+        index.""")
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -122,14 +127,15 @@ def deploy(args, parser):
                              'deploy_key', full_key_path=args.key_path,
                              require_master=args.require_master):
 
-            if not args.built_docs:
-                built_docs = find_sphinx_build_dir()
+            if args.sync:
+                if not args.built_docs:
+                    built_docs = find_sphinx_build_dir()
 
-            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
+                log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
-            print("Moving built docs into place")
-            added, removed = sync_from_log(src=built_docs,
-                dst=args.gh_pages_docs, log_file=log_file)
+                print("Moving built docs into place")
+                added, removed = sync_from_log(src=built_docs,
+                    dst=args.gh_pages_docs, log_file=log_file)
 
             if args.command:
                 run(shlex.split(args.command))
