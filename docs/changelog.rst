@@ -17,6 +17,8 @@ Major Changes
   now ``commit_docs(*, added, removed)``. ``sync_from_log`` automatically
   includes the log file in the list of added files. (#92)
 - Support running doctr multiple times in the same build. (#93, #95)
+- Add ``doctr deploy --command`` to allow running a command before committing
+  and deploying. (#97)
 
 Minor Changes
 -------------
