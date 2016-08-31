@@ -108,7 +108,7 @@ Using a separate command to deploy to gh-pages
 ==============================================
 
 If you already have an existing tool to deploy to ``gh-pages``, you can still
-use Doctr to manage your deploy key and only pushing on master. Use
+use Doctr to manage your deploy key. Use
 
 .. code:: bash
 
