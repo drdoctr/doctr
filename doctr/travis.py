@@ -103,7 +103,7 @@ def get_token():
 
 def run(args):
     """
-    Run the command args
+    Run the command ``args``.
 
     Automatically hides the secret GitHub token from the output.
     """
@@ -333,7 +333,7 @@ def commit_docs(*, added, removed):
 
 def push_docs():
     """
-    Push the changes to the `gh-pages` branch.
+    Push the changes to the ``gh-pages`` branch.
 
     Assumes that :func:`setup_GitHub_push` has been run and returned True, and
     that :func:`commit_docs` has been run. Does not push anything if no changes
