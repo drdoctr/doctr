@@ -35,8 +35,9 @@ Run
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
 
-That repo should already be setup with Travis. We recommend enabling branch
-protection for the ``gh-pages`` branch and other branches, as the deploy key
+That repo should already be setup with Travis. We recommend enabling
+`branch protection <https://help.github.com/articles/about-protected-branches/>`_ 
+for the ``gh-pages`` branch and other branches, as the deploy key
 used by Doctr has the ability to push to any branch in your repo.
 
 Then add the stuff to your ``.travis.yml`` and commit the encrypted deploy
