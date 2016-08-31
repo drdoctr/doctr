@@ -139,6 +139,9 @@ def deploy(args, parser):
                 added, removed = sync_from_log(src=built_docs,
                     dst=args.gh_pages_docs, log_file=log_file)
 
+            else:
+                added, removed = [], []
+
             if args.command:
                 run(shlex.split(args.command))
 
