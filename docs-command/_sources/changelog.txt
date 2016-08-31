@@ -14,8 +14,9 @@ Major Changes
   it was done in ``push_docs``). (#92)
 - Python API: Don't sync files or get the build dir in ``commit_docs``. This
   is done separately in ``__main__.py``. The Python API for ``commit_docs`` is
-  now ``commit_docs(*, added, removed)``. ``sync_from_log`` automatically
-  includes the log file in the list of added files. (#92)
+  now ``commit_docs(*, added, removed)``. (#92)
+- ``sync_from_log`` automatically includes the log file in the list of added
+  files. (#92)
 - Support running doctr multiple times in the same build. (#93, #95)
 - Add ``doctr deploy --command`` to allow running a command before committing
   and deploying. (#97)
