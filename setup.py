@@ -11,7 +11,7 @@ setup(
     name='doctr',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description='''Deploy docs from Travis to GitHub pages.''',
+    description=open("README.rst").read(),
     author='Aaron Meurer and Gil Forsyth',
     author_email='asmeurer@gmail.com',
     url='https://github.com/drdoctr/doctr',
