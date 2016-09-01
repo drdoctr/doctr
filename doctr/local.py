@@ -187,12 +187,10 @@ def check_repo_exists(deploy_repo):
         raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
 
     user, repo = deploy_repo.split('/')
-    search = 'https://api.github.com/search/repositories?q={repo}+user:{user}'
-    r = requests.get(search.format(user=user, repo=repo))
+    REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
+    r = requests.get(REPO_URL.format(user=user, repo=repo))
 
-    if r.status_code == requests.codes.unprocessable_entity:
-        raise RuntimeError('User/org "{user}" not found on GitHub.  Exiting'.format(user=user))
-    elif not r.json()['items']:
-        raise RuntimeError('No repo named "{repo}" found for user/org "{user}"'.format(repo=repo, user=user))
+    if r.status_code == requests.codes.not_found:
+        raise RuntimeError('"{user}/{repo}" not found on GitHub. Exiting'.format(user=user, repo=repo))
 
     return True
