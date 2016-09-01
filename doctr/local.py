@@ -193,4 +193,6 @@ def check_repo_exists(deploy_repo):
     if r.status_code == requests.codes.not_found:
         raise RuntimeError('"{user}/{repo}" not found on GitHub. Exiting'.format(user=user, repo=repo))
 
+    r.raise_for_status()
+
     return True
