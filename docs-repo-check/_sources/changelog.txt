@@ -2,6 +2,20 @@
  Doctr Changelog
 =================
 
+1.3.2 (2016-09-01)
+==================
+
+Major Changes
+-------------
+
+- Fix the --built-docs option. (#111)
+
+Minor Changes
+-------------
+
+- Get the setup.py description from the README. (#103)
+- Add link to GitHub docs for branch protection (thanks @willingc). (#100)
+
 1.3.1 (2016-08-31)
 ==================
 
