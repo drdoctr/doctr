@@ -130,8 +130,7 @@ def deploy(args, parser):
                              require_master=args.require_master):
 
             if args.sync:
-                if not args.built_docs:
-                    built_docs = find_sphinx_build_dir()
+                built_docs = args.built_docs or find_sphinx_build_dir()
 
                 log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
