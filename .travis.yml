@@ -30,7 +30,7 @@ script:
       cd ..;
       python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
       python -m doctr deploy --gh-pages-docs docs --key-path deploy_key.enc;
-      python -m doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH" --built-docs docs --key-path deploy_key.enc;
+      python -m doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH" --built-docs docs/_build/html --key-path deploy_key.enc;
       python -m doctr deploy --no-require-master --key-path deploy_key.enc --no-sync --command "echo test";
     fi
   - if [[ "${TESTS}" == "true" ]]; then
