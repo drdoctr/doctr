@@ -23,6 +23,7 @@ install:
 
 script:
   - set -e
+  - set -x
   - if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
