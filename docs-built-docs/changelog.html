@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Doctr Changelog &#8212; Doctr 1.3.1+15.g151ef84 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3.1+15.g151ef84',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Doctr 1.3.1+15.g151ef84 documentation" href="index.html" />
+    <link rel="next" title="Releasing" href="releasing.html" />
+    <link rel="prev" title="API" href="api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="doctr-changelog">
+<h1>Doctr Changelog<a class="headerlink" href="#doctr-changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.3.1 (2016-08-31)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="major-changes">
+<h3>Major Changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix a bug that would cause doctr to fail if run on a pull request from a
+fork. (#101)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>1.3 (2016-08-30)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Major Changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Remove the <code class="docutils literal"><span class="pre">--tmp-dir</span></code> flag from the command line (doctr now always
+deploys using a log file). (#92)</li>
+<li>Python API: Change <code class="docutils literal"><span class="pre">commit_docs</span></code> to actually commit the docs (previously,
+it was done in <code class="docutils literal"><span class="pre">push_docs</span></code>). (#92)</li>
+<li>Python API: Don&#8217;t sync files or get the build dir in <code class="docutils literal"><span class="pre">commit_docs</span></code>. This
+is done separately in <code class="docutils literal"><span class="pre">__main__.py</span></code>. The Python API for <code class="docutils literal"><span class="pre">commit_docs</span></code> is
+now <code class="docutils literal"><span class="pre">commit_docs(*,</span> <span class="pre">added,</span> <span class="pre">removed)</span></code>. (#92)</li>
+<li>Python API: <code class="docutils literal"><span class="pre">sync_from_log</span></code> automatically includes the log file in the list of added
+files. (#92)</li>
+<li>Support running doctr multiple times in the same build. (#93, #95)</li>
+<li>Add <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">--command</span></code> to allow running a command before committing
+and deploying. (#97)</li>
+<li>Add <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">--no-sync</span></code> to allow disabling syncing (useful with
+<code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">--command</span></code>). (#97)</li>
+</ul>
+</div>
+<div class="section" id="minor-changes">
+<h3>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Correctly commit the log file. (#92)</li>
+<li>Fix sync_from_log to create dst if it doesn&#8217;t exist, and add tests for this. (#92)</li>
+<li>Don&#8217;t assume that doctr is being run from master when creating gh-pages. (#93)</li>
+<li>Return to the previous branch after deploying. (#93)</li>
+<li>Remove extra space before options in configure help text. (#90)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>1.2 (2016-08-29)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Major Changes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Allow <code class="docutils literal"><span class="pre">--gh-pages-docs</span> <span class="pre">.</span></code> (deploying to the root directory of the
+<code class="docutils literal"><span class="pre">gh-pages</span></code> branch). (#73)</li>
+<li>Allow deploying to a separate repo (via <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">--deploy-repo</span> <span class="pre">&lt;repo&gt;</span></code>). (#63)</li>
+<li>Automatically detect Sphinx build directory. (#6)</li>
+<li>Add <code class="docutils literal"><span class="pre">--no-require-master</span></code> flag to allow pushing from branches other than master. (#70)</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>Minor Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add a GitHub banner to the docs. (#64)</li>
+<li>Move to the GitHub organization <a class="reference external" href="https://github.com/drdoctr">drdoctr</a>. (#67)</li>
+<li>Check if user/org and repo are valid before generating ssh keys or pinging Travis. (#87)</li>
+<li>Various improvements to documentation.</li>
+<li>Various improvements to error checking.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>1.1.1 (2016-08-09)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>Minor Changes<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add installation instructions to the documentation. (#60)</li>
+<li>Fix some lingering &#8220;Travis docs builder&#8221; -&gt; &#8220;Doctr&#8221;, including in the git
+attributes on Travis. (#60)</li>
+<li>Better error message when the repo doesn&#8217;t exist in doctr configure. (#59)</li>
+<li>Indicate that repo should be org/reponame in doctr configure. (#59)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>1.1 (2016-08-09)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Major Changes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add a real command line interface with argparse. (#23)</li>
+<li>Split the command line into <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> and <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. (#28)</li>
+<li>Add support for using GitHub deploy keys (now the default) (#30)</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>Minor Changes<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add flags to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> to change the build and deploy locations of
+the docs. (#52)</li>
+<li>Print more helpful instructions from <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code>. (#46)</li>
+<li>Add more documentation. (#47)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>1.0 (2016-07-22)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Major Changes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>First release. Basic support for configuring doctr to push to Travis (using
+a token) and deploying to gh-pages from Travis.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Doctr Changelog</a><ul>
+<li><a class="reference internal" href="#id1">1.3.1 (2016-08-31)</a><ul>
+<li><a class="reference internal" href="#major-changes">Major Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">1.3 (2016-08-30)</a><ul>
+<li><a class="reference internal" href="#id3">Major Changes</a></li>
+<li><a class="reference internal" href="#minor-changes">Minor Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">1.2 (2016-08-29)</a><ul>
+<li><a class="reference internal" href="#id5">Major Changes</a></li>
+<li><a class="reference internal" href="#id6">Minor Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">1.1.1 (2016-08-09)</a><ul>
+<li><a class="reference internal" href="#id8">Minor Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">1.1 (2016-08-09)</a><ul>
+<li><a class="reference internal" href="#id10">Major Changes</a></li>
+<li><a class="reference internal" href="#id11">Minor Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12">1.0 (2016-07-22)</a><ul>
+<li><a class="reference internal" href="#id13">Major Changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API</a></li>
+      <li>Next: <a href="releasing.html" title="next chapter">Releasing</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/changelog.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Aaron Meurer and Gil Forsyth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/changelog.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/drdoctr/doctr" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
