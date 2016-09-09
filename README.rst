@@ -144,10 +144,10 @@ FAQ
 Projects using Doctr
 --------------------
 
-- `SymPy<http://www.sympy.org/en/index.html>`_
+- `SymPy <http://www.sympy.org/en/index.html>`_
 
-- `conda<http://conda.pydata.org/docs/>`_
+- `conda <http://conda.pydata.org/docs/>`_
 
-- `PyGBe<https://barbagroup.github.io/pygbe/docs/>`_
+- `PyGBe <https://barbagroup.github.io/pygbe/docs/>`_
 
 Are you using doctr?  Please add your project to the list!
