@@ -148,6 +148,8 @@ Projects using Doctr
 
 - `conda <http://conda.pydata.org/docs/>`_
 
+- `doctr <https://drdoctr.github.io/doctr/>`_
+
 - `PyGBe <https://barbagroup.github.io/pygbe/docs/>`_
 
 Are you using doctr?  Please add your project to the list!
