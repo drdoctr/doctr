@@ -48,7 +48,7 @@ options available.
     parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
-    deploy_parser = subcommand.add_parser('deploy', help=""""Deploy the docs to GitHub from Travis.""")
+    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
@@ -130,8 +130,7 @@ def deploy(args, parser):
                              require_master=args.require_master):
 
             if args.sync:
-                if not args.built_docs:
-                    built_docs = find_sphinx_build_dir()
+                built_docs = args.built_docs or find_sphinx_build_dir()
 
                 log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
@@ -151,7 +150,7 @@ def deploy(args, parser):
             else:
                 print("The docs have not changed. Not updating")
     finally:
-        run(['git', 'checkout', current_commit])
+        subprocess.run(['git', 'checkout', current_commit])
 
 class IncrementingInt:
     def __init__(self, i=0):

@@ -35,8 +35,9 @@ Run
 and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
 
-That repo should already be setup with Travis. We recommend enabling branch
-protection for the ``gh-pages`` branch and other branches, as the deploy key
+That repo should already be setup with Travis. We recommend enabling
+`branch protection <https://help.github.com/articles/about-protected-branches/>`_ 
+for the ``gh-pages`` branch and other branches, as the deploy key
 used by Doctr has the ability to push to any branch in your repo.
 
 Then add the stuff to your ``.travis.yml`` and commit the encrypted deploy
@@ -139,3 +140,16 @@ FAQ
 
   Because it deploys **doc**\ umentation from **Tr**\ avis. And it makes you
   feel good.
+
+Projects using Doctr
+--------------------
+
+- `SymPy <http://www.sympy.org/en/index.html>`_
+
+- `conda <http://conda.pydata.org/docs/>`_
+
+- `doctr <https://drdoctr.github.io/doctr/>`_
+
+- `PyGBe <https://barbagroup.github.io/pygbe/docs/>`_
+
+Are you using doctr?  Please add your project to the list!
