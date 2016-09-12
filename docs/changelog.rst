@@ -8,13 +8,13 @@
 Major Changes
 -------------
 
-- Fix the --built-docs option. (#111)
+- Fix the --built-docs option. (:issue:`111`)
 
 Minor Changes
 -------------
 
-- Get the setup.py description from the README. (#103)
-- Add link to GitHub docs for branch protection (thanks @willingc). (#100)
+- Get the setup.py description from the README. (:issue:`103`)
+- Add link to GitHub docs for branch protection (thanks @willingc). (:issue:`100`)
 
 1.3.1 (2016-08-31)
 ==================
@@ -23,7 +23,7 @@ Major Changes
 -------------
 
 - Fix a bug that would cause doctr to fail if run on a pull request from a
-  fork. (#101)
+  fork. (:issue:`101`)
 
 1.3 (2016-08-30)
 ================
