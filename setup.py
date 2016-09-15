@@ -11,19 +11,12 @@ setup(
     name='doctr',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description=open("README.rst").read(),
     author='Aaron Meurer and Gil Forsyth',
     author_email='asmeurer@gmail.com',
     url='https://github.com/drdoctr/doctr',
     packages=['doctr', 'doctr.tests'],
-    long_description="""
-doctr
-
-Deploy docs from Travis to GitHub pages.
-
-License: MIT
-
-""",
+    description='Deploy docs from Travis to GitHub pages.',
+    long_description=open("README.rst").read(),
     entry_points={'console_scripts': [ 'doctr = doctr.__main__:main']},
     install_requires=[
         'requests',
