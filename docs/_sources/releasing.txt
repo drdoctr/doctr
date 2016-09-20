@@ -4,7 +4,9 @@ Releasing
 Here is how to do a release:
 
 - Create a release branch (branch protection makes it impossible to push
-  directly to master, so you have to release from a branch).
+  directly to master, so you have to release from a branch). I recommend
+  naming the branch something other than the release number, as that makes the
+  below commands not work until you delete the branch.
 - Update ``docs/changelog.rst``. Add the release date.
 - Make a pull request with the release branch.
 - Make sure all the Travis checks pass on the commit you plan to tag.
