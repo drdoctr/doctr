@@ -89,7 +89,9 @@ options available.
         public repositories for the user. This option is not recommended
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
-        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub.""")
+        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
+        option, you will not be prompted for your GitHub credentials, so this option is not compatible with
+        private repositories.""")
     configure_parser.add_argument('--key-path', default='github_deploy_key',
         help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
@@ -167,7 +169,10 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
-    login_kwargs = GitHub_login()
+    if args.upload_key:
+        login_kwargs = GitHub_login()
+    else:
+        login_kwargs = {'auth': None, 'headers': None}
 
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
     is_private = check_repo_exists(build_repo, **login_kwargs)
