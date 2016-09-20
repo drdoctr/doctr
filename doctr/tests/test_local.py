@@ -11,7 +11,7 @@ def test_bad_repo():
         check_repo_exists('drdoctr/---')
 
 def test_repo_exists():
-    assert check_repo_exists('drdoctr/doctr')
+    assert not check_repo_exists('drdoctr/doctr')
 
 def test_invalid_repo():
     with raises(RuntimeError):

@@ -30,7 +30,7 @@ import subprocess
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
@@ -90,7 +90,8 @@ options available.
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
         dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
-        option, you will not be prompted for your GitHub credentials. """)
+        option, you will not be prompted for your GitHub credentials, so this option is not compatible with
+        private repositories.""")
     configure_parser.add_argument('--key-path', default='github_deploy_key',
         help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
     The .enc extension is added to the file automatically.""")
@@ -168,24 +169,29 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
+    if args.upload_key:
+        login_kwargs = GitHub_login()
+    else:
+        login_kwargs = {'auth': None, 'headers': None}
+
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    check_repo_exists(build_repo)
+    is_private = check_repo_exists(build_repo, **login_kwargs)
 
     deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
     if not deploy_repo:
         deploy_repo = build_repo
 
     if deploy_repo != build_repo:
-        check_repo_exists(deploy_repo)
+        check_repo_exists(deploy_repo, **login_kwargs)
 
     N = IncrementingInt(1)
 
     header = "\n================== You should now do the following ==================\n"
 
     if args.token:
-        token = generate_GitHub_token()
+        token = generate_GitHub_token(**login_kwargs)['token']
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-            build_repo=build_repo)
+            build_repo=build_repo, is_private=is_private, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -195,13 +201,13 @@ def configure(args, parser):
     else:
         ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
         key = encrypt_file(args.key_path, delete=True)
-        encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, build_repo=build_repo)
+        encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, build_repo=build_repo, is_private=is_private, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_repo)
 
         if args.upload_key:
 
-            upload_GitHub_deploy_key(deploy_repo, ssh_key)
+            upload_GitHub_deploy_key(deploy_repo, ssh_key, **login_kwargs)
 
             print(dedent("""
             The deploy key has been added for {deploy_repo}.
