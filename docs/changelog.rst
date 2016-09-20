@@ -2,6 +2,15 @@
  Doctr Changelog
 =================
 
+1.3.3 (2016-09-20)
+==================
+
+- Add support for private GitHub repositories using travis-ci.com (thanks
+  @dan-blanchard). (:issue:`121`)
+- Add a list of projects using doctr to the docs. (:issue:`116`)
+- Use the sphinx-issues extension in the changelog. (:issue:`99`)
+- Swap "description" and "long_description" in setup.py. (:issue:`120`)
+
 1.3.2 (2016-09-01)
 ==================
 
