@@ -19,7 +19,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
-def encrypt_variable(variable, build_repo, public_key=None):
+def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
 
@@ -30,7 +30,6 @@ def encrypt_variable(variable, build_repo, public_key=None):
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
-
     """
     if not isinstance(variable, bytes):
         raise TypeError("variable should be bytes")
@@ -39,12 +38,30 @@ def encrypt_variable(variable, build_repo, public_key=None):
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
     if not public_key:
-        r = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo),
-            headers={'Accept': 'application/vnd.travis-ci.2+json'})
-        if r.status_code == requests.codes.not_found:
+        headers = {'Accept': 'application/vnd.travis-ci.2+json',
+                   'Content-Type': 'application/json',
+                   'User-Agent': 'MyClient/1.0.0'}
+        if is_private:
+            tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+                                             note="temporary token to auth against travis",
+                                             **login_kwargs)
+            data = {'github_token': tok_dict['token']}
+            token_id = tok_dict['id']
+            res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headers)
+            res.raise_for_status()
+            headers['Authorization'] = 'token {}'.format(res.json()['access_token'])
+            tld = 'com'
+        else:
+            tld = 'org'
+        res = requests.get('https://api.travis-ci.{tld}/repos/{build_repo}/key'.format(build_repo=build_repo, tld=tld),
+            headers=headers)
+        if res.status_code == requests.codes.not_found:
             raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
-        r.raise_for_status()
-        public_key = r.json()['key']
+        res.raise_for_status()
+        public_key = res.json()['key']
+        # Remove temporary GH token
+        if is_private:
+            delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
     key = serialization.load_pem_public_key(public_key, backend=default_backend())
@@ -84,15 +101,15 @@ def encrypt_file(file, delete=False):
 class AuthenticationFailed(Exception):
     pass
 
-def GitHub_post(data, url, *, username=None, password=None, OTP=None, headers=None):
+def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
     """
-    POST the data ``data`` to GitHub.
+    Login to GitHub.
 
     If no username, password, or OTP (2-factor authentication code) are
     provided, they will be requested from the command line.
 
-    Returns the json response from the server, or raises on error status.
-
+    Returns a dict of kwargs that can be passed to functions that require
+    authenticated connections to GitHub.
     """
     if not username:
         username = input("What is your GitHub username? ")
@@ -107,21 +124,33 @@ def GitHub_post(data, url, *, username=None, password=None, OTP=None, headers=No
 
     auth = HTTPBasicAuth(username, password)
 
-    r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
+    r = requests.get('https://api.github.com/', auth=auth, headers=headers)
     if r.status_code == 401:
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
             print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
             OTP = input("Authentication code: ")
-            return GitHub_post(data, url, username=username, password=password,
-                OTP=OTP, headers=headers)
+            return GitHub_login(username=username, password=password, OTP=OTP, headers=headers)
 
         raise AuthenticationFailed("invalid username or password")
 
     r.raise_for_status()
+    return {'auth': auth, 'headers': headers}
+
+
+def GitHub_post(data, url, *, auth, headers):
+    """
+    POST the data ``data`` to GitHub.
+
+    Returns the json response from the server, or raises on error status.
+
+    """
+    r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
+    r.raise_for_status()
     return r.json()
 
-def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Travis"):
+
+def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Travis", scopes=None, **login_kwargs):
     """
     Generate a GitHub token for pushing from Travis
 
@@ -133,17 +162,26 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
     The token created here can be revoked at
     https://github.com/settings/tokens.
     """
+    if scopes is None:
+        scopes = ['public_repo']
     AUTH_URL = "https://api.github.com/authorizations"
     data = {
-        "scopes": ["public_repo"],
+        "scopes": scopes,
         "note": note,
         "note_url": "https://github.com/drdoctr/doctr",
         "fingerprint": str(uuid.uuid4()),
     }
-    return GitHub_post(data, AUTH_URL)['token']
+    return GitHub_post(data, AUTH_URL, **login_kwargs)
+
+
+def delete_GitHub_token(token_id, *, auth, headers):
+    """Delete a temporary GitHub token"""
+    r = requests.delete('https://api.github.com/authorizations/{id}'.format(id=token_id), auth=auth, headers=headers)
+    r.raise_for_status()
+
 
 def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
-    title="Doctr deploy key for pushing to gh-pages from Travis"):
+    title="Doctr deploy key for pushing to gh-pages from Travis", **login_kwargs):
     """
     Uploads a GitHub deploy key to ``deploy_repo``.
 
@@ -157,7 +195,7 @@ def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
         "key": ssh_key,
         "read_only": read_only,
     }
-    return GitHub_post(data, DEPLOY_KEY_URL)
+    return GitHub_post(data, DEPLOY_KEY_URL, **login_kwargs)
 
 def generate_ssh_key(note, keypath='github_deploy_key'):
     """
@@ -174,7 +212,7 @@ def generate_ssh_key(note, keypath='github_deploy_key'):
     with open(keypath + ".pub") as f:
         return f.read()
 
-def check_repo_exists(deploy_repo):
+def check_repo_exists(deploy_repo, *, auth=None, headers=None):
     """
     Checks that the repository exists on GitHub.
 
@@ -182,17 +220,19 @@ def check_repo_exists(deploy_repo):
     repo.
 
     Raises ``RuntimeError`` if the repo is not valid.
+
+    Returns whether or not the repo is private
     """
     if deploy_repo.count("/") != 1:
         raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
 
     user, repo = deploy_repo.split('/')
     REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
-    r = requests.get(REPO_URL.format(user=user, repo=repo))
+    r = requests.get(REPO_URL.format(user=user, repo=repo), auth=auth, headers=headers)
 
     if r.status_code == requests.codes.not_found:
         raise RuntimeError('"{user}/{repo}" not found on GitHub. Exiting'.format(user=user, repo=repo))
 
     r.raise_for_status()
 
-    return True
+    return r.json().get('private', False)
