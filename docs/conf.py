@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'custom_autoprogram',
+    'sphinxcontrib.autoprogram',
     'sphinx_issues',
 ]
 
