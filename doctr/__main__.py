@@ -78,6 +78,8 @@ options available.
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
+    deploy_parser.add_argument('--deploy-branch', default='gh-pages',
+        help="""Branch to deploy docs to on deploy repo.  Default is %(default)r.""")
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -123,12 +125,14 @@ def deploy(args, parser):
 
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
+    deploy_branch = args.deploy_branch
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
         if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
-                             require_master=args.require_master):
+                             require_master=args.require_master,
+                             deploy_branch=deploy_branch):
 
             if args.sync:
                 built_docs = args.built_docs or find_sphinx_build_dir()
@@ -147,7 +151,7 @@ def deploy(args, parser):
 
             changes = commit_docs(added=added, removed=removed)
             if changes:
-                push_docs()
+                push_docs(deploy_branch)
             else:
                 print("The docs have not changed. Not updating")
     finally:
@@ -180,6 +184,10 @@ def configure(args, parser):
     deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
     if not deploy_repo:
         deploy_repo = build_repo
+
+    deploy_branch = input("What branch do you want to deploy the docs to? ['gh-pages'] ")
+    if not deploy_branch:
+        deploy_branch = 'gh-pages'
 
     if deploy_repo != build_repo:
         check_repo_exists(deploy_repo, **login_kwargs)
@@ -238,6 +246,8 @@ def configure(args, parser):
         options += ' --key-path {keypath}.enc'.format(keypath=args.key_path)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
+    if deploy_branch != 'gh-pages':
+        options += ' --deploy-branch {deploy_branch}'.format(deploy_branch=deploy_branch)
 
     print(dedent("""\
     {N}. Add
