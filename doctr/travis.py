@@ -151,13 +151,14 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
     if TRAVIS_BRANCH != "master" and require_master:
-        print("The docs are only pushed to gh-pages from master. To allow pushing from "
-        "a non-master branch, use the --no-require-master flag", file=sys.stderr)
+        print("The docs are only pushed to {} from master. To allow pushing from "
+        "a non-master branch, use the --no-require-master flag".format(deploy_branch), file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         return False
 
     if TRAVIS_PULL_REQUEST != "false":
-        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        print("The website and docs are not pushed to {} on pull requests".format(deploy_branch),
+              file=sys.stderr)
         return False
 
     print("Setting git attributes")
@@ -184,7 +185,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
 
-    #create gh-pages empty branch with .nojekyll if it doesn't already exist
+    #create empty branch with .nojekyll if it doesn't already exist
     new_deploy_branch = create_deploy_branch(deploy_branch)
     print("Checking out {}".format(deploy_branch))
     local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
@@ -198,12 +199,10 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     return True
 
 def deploy_branch_exists(deploy_branch='gh-pages'):
-    """
-    Check if there is a remote gh-pages branch.
+    """Check if the remote deploy branch exists
 
-    This isn't completely robust. If there are multiple remotes and you have a
-    ``gh-pages`` branch on the non-default remote, this won't see it.
-
+    This isn't completely robust. If there are multiple remotes and the branch
+    is created on the non-default remote, this won't see it.
     """
     remote_name = 'doctr_remote'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
@@ -309,7 +308,7 @@ def sync_from_log(src, dst, log_file):
 
 def commit_docs(*, added, removed):
     """
-    Commit the docs to ``gh-pages``
+    Commit the docs to ``gh-pages`` or a specified deploy branch.
 
     Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
     remote, has been run and returned True.
@@ -333,9 +332,9 @@ def commit_docs(*, added, removed):
 
     return False
 
-def push_docs():
+def push_docs(deploy_branch='gh-pages'):
     """
-    Push the changes to the ``gh-pages`` branch.
+    Push the changes to the ``gh-pages`` branch or specified deploy branch.
 
     Assumes that :func:`setup_GitHub_push` has been run and returned True, and
     that :func:`commit_docs` has been run. Does not push anything if no changes
@@ -346,4 +345,4 @@ def push_docs():
     print("Pulling")
     run(["git", "pull"])
     print("Pushing commit")
-    run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
+    run(['git', 'push', '-q', 'doctr_remote', deploy_branch])
