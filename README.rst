@@ -36,7 +36,7 @@ and enter your data. You will need your GitHub username and password, and the
 repo you want to build the docs for.
 
 That repo should already be setup with Travis. We recommend enabling
-`branch protection <https://help.github.com/articles/about-protected-branches/>`_ 
+`branch protection <https://help.github.com/articles/about-protected-branches/>`_
 for the ``gh-pages`` branch and other branches, as the deploy key
 used by Doctr has the ability to push to any branch in your repo.
 
@@ -71,7 +71,7 @@ itself for example.
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
 
-Another suggestion: Add
+Another suggestion: If you use Sphinx, add
 
 .. code::
 
@@ -79,6 +79,10 @@ Another suggestion: Add
 
 to your Sphinx ``Makefile``. This will make Sphinx error even if there are
 warnings, keeping your docs more accurate.
+
+**Note: Doctr does not require Sphinx. It will work with deploying anything to
+GitHub pages.** However, if you do use Sphinx, doctr will find your Sphinx
+docs automatically (otherwise use ``doctr deploy --built-docs <DOCS PATH>``).
 
 FAQ
 ---
