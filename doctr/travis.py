@@ -132,7 +132,7 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True, deploy_branch='gh-pages'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -185,18 +185,19 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     run(['git', 'fetch', 'doctr_remote'])
 
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
-    new_gh_pages = create_gh_pages()
-    print("Checking out gh-pages")
-    local_gh_pages_exists = 'gh-pages' in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
-    if new_gh_pages or local_gh_pages_exists:
-        run(['git', 'checkout', 'gh-pages'])
+    new_deploy_branch = create_deploy_branch(deploy_branch)
+    print("Checking out {}".format(deploy_branch))
+    local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if new_deploy_branch or local_deploy_branch_exists:
+        run(['git', 'checkout', deploy_branch])
     else:
-        run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
+        run(['git', 'checkout', '-b', deploy_branch, '--track',
+             'doctr_remote/{}'.format(deploy_branch)])
     print("Done")
 
     return True
 
-def gh_pages_exists():
+def deploy_branch_exists(deploy_branch='gh-pages'):
     """
     Check if there is a remote gh-pages branch.
 
@@ -207,26 +208,27 @@ def gh_pages_exists():
     remote_name = 'doctr_remote'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
 
-    return '{}/gh-pages'.format(remote_name) in branch_names
+    return '{remote}/{branch}'.format(remote=remote_name,
+                                      branch=deploy_branch) in branch_names
 
-def create_gh_pages():
+def create_deploy_branch(deploy_branch):
     """
-    If there is no remote ``gh-pages`` branch, create one.
-
-    Return True if ``gh-pages`` was created, False if not.
+    If there is no remote deploy branch, create one.
+    Return True if branch was created, False if not.
+    Default value for deploy_branch is ``gh-pages``
     """
-    if not gh_pages_exists():
-        print("Creating gh-pages branch")
-        run(['git', 'checkout', '--orphan', 'gh-pages'])
+    if not deploy_branch_exists():
+        print("Creating {} branch".format(deploy_branch))
+        run(['git', 'checkout', '--orphan', deploy_branch])
         # delete everything in the new ref.  this is non-destructive to existing
         # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
-        print("Adding .nojekyll file to gh-pages branch")
+        print("Adding .nojekyll file to {}".format(deploy_branch))
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
-        run(['git', 'commit', '-m', 'Create new gh-pages branch with .nojekyll'])
-        print("Pushing gh-pages branch to remote")
-        run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
+        run(['git', 'commit', '-m', 'Create new branch {} with .nojekyll'.format(deploy_branch)])
+        print("Pushing branch {} to remote".format(deploy_branch))
+        run(['git', 'push', '-u', 'doctr_remote', deploy_branch])
         # return to master branch
         run(['git', 'checkout', '-'])
 
