@@ -126,30 +126,33 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
+        can_push = setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
-                             require_master=args.require_master):
+                             require_master=args.require_master)
 
-            if args.sync:
-                built_docs = args.built_docs or find_sphinx_build_dir()
+        if args.sync:
+            built_docs = args.built_docs or find_sphinx_build_dir()
 
-                log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
+            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
-                print("Moving built docs into place")
-                added, removed = sync_from_log(src=built_docs,
-                    dst=args.gh_pages_docs, log_file=log_file)
+            print("Moving built docs into place")
+            added, removed = sync_from_log(src=built_docs,
+                dst=args.gh_pages_docs, log_file=log_file)
 
-            else:
-                added, removed = [], []
+        else:
+            added, removed = [], []
 
-            if args.command:
-                run(shlex.split(args.command))
+        if args.command:
+            run(shlex.split(args.command))
 
-            changes = commit_docs(added=added, removed=removed)
+        changes = commit_docs(added=added, removed=removed)
+        if can_push:
             if changes:
                 push_docs()
             else:
                 print("The docs have not changed. Not updating")
+        else:
+            print("Not pushing the docs")
     finally:
         subprocess.run(['git', 'checkout', current_commit])
 
