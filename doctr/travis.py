@@ -97,7 +97,7 @@ def get_token():
     """
     token = os.environ.get("GH_TOKEN", None)
     if not token:
-        raise RuntimeError("GH_TOKEN environment variable not set")
+        token = "GH_TOKEN environment variable not set"
     token = token.encode('utf-8')
     return token
 
