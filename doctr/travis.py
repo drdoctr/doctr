@@ -159,7 +159,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-        canpush False
+        canpush = False
 
     print("Setting git attributes")
     # Should we add some user.email?

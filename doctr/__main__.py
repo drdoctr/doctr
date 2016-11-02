@@ -78,6 +78,10 @@ options available.
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
+    deploy_parser.add_argument('--no-push', dest='push', action='store_false',
+        default=True, help="Run all the steps except the last push step."
+        "Useful for debugging")
+        
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -147,7 +151,7 @@ def deploy(args, parser):
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
-            if can_push:
+            if can_push and args.push:
                 push_docs()
             else:
                 print("Don't have permission to push. Not trying.")
