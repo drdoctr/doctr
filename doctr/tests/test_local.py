@@ -4,22 +4,24 @@ from ..local import check_repo_exists
 
 from pytest import raises
 
-TEST_AUTH = os.environ.get('TESTING_TOKEN')
+TEST_TOKEN = os.environ.get('TESTING_TOKEN')
+HEADERS = {'Authorization': 'token {}'.format(TEST_TOKEN)}
+
 
 def test_bad_user():
     with raises(RuntimeError):
-        check_repo_exists('---/invaliduser', auth=TEST_AUTH)
+        check_repo_exists('---/invaliduser', headers=HEADERS)
 
 def test_bad_repo():
     with raises(RuntimeError):
-        check_repo_exists('drdoctr/---', auth=TEST_AUTH)
+        check_repo_exists('drdoctr/---', headers=HEADERS)
 
 def test_repo_exists():
-    assert not check_repo_exists('drdoctr/doctr', auth=TEST_AUTH)
+    assert not check_repo_exists('drdoctr/doctr', headers=HEADERS)
 
 def test_invalid_repo():
     with raises(RuntimeError):
-        check_repo_exists('fdsf', auth=TEST_AUTH)
+        check_repo_exists('fdsf', headers=HEADERS)
 
     with raises(RuntimeError):
-        check_repo_exists('fdsf/fdfs/fd', auth=TEST_AUTH)
+        check_repo_exists('fdsf/fdfs/fd', headers=HEADERS)
