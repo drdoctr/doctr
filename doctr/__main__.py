@@ -182,14 +182,15 @@ def configure(args, parser):
         login_kwargs = {'auth': None, 'headers': None}
 
     build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    is_private = check_repo_exists(build_repo, **login_kwargs)
+    is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
+    check_repo_exists(build_repo, service='travis')
 
     deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
     if not deploy_repo:
         deploy_repo = build_repo
 
     if deploy_repo != build_repo:
-        check_repo_exists(deploy_repo, **login_kwargs)
+        check_repo_exists(deploy_repo, service='github', **login_kwargs)
 
     N = IncrementingInt(1)
 
