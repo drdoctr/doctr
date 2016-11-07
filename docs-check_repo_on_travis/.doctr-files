@@ -7,6 +7,7 @@ docs-check_repo_on_travis/_sources/commandline.txt
 docs-check_repo_on_travis/_sources/index.txt
 docs-check_repo_on_travis/_sources/recipes.txt
 docs-check_repo_on_travis/_sources/releasing.txt
+docs-check_repo_on_travis/_sources/tests.txt
 docs-check_repo_on_travis/_static/ajax-loader.gif
 docs-check_repo_on_travis/_static/alabaster.css
 docs-check_repo_on_travis/_static/basic.css
@@ -40,3 +41,4 @@ docs-check_repo_on_travis/recipes.html
 docs-check_repo_on_travis/releasing.html
 docs-check_repo_on_travis/search.html
 docs-check_repo_on_travis/searchindex.js
+docs-check_repo_on_travis/tests.html

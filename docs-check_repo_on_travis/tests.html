@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Releasing &#8212; Doctr 1.3.3+20.g2a08896 documentation</title>
+    <title>GitHub Test Authentication &#8212; Doctr 1.3.3+20.g2a08896 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="Doctr 1.3.3+20.g2a08896 documentation" href="index.html" />
-    <link rel="next" title="GitHub Test Authentication" href="tests.html" />
-    <link rel="prev" title="Doctr Changelog" href="changelog.html" />
+    <link rel="prev" title="Releasing" href="releasing.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -43,28 +42,22 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="releasing">
-<h1>Releasing<a class="headerlink" href="#releasing" title="Permalink to this headline">¶</a></h1>
-<p>Here is how to do a release:</p>
-<ul class="simple">
-<li>Create a release branch (branch protection makes it impossible to push
-directly to master, so you have to release from a branch). I recommend
-naming the branch something other than the release number, as that makes the
-below commands not work until you delete the branch.</li>
-<li>Update <code class="docutils literal"><span class="pre">docs/changelog.rst</span></code>. Add the release date.</li>
-<li>Make a pull request with the release branch.</li>
-<li>Make sure all the Travis checks pass on the commit you plan to tag.</li>
-<li>Tag the release. The tag name should be the version number of the release,
-like <code class="docutils literal"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">2.0</span> <span class="pre">-a</span></code>. Include the <code class="docutils literal"><span class="pre">-a</span></code> flag. This will ask for some
-commit message for the tag (you can just use something like &#8220;Doctr 2.0
-release&#8221;, or you can put the changelog in there if you want).</li>
-<li>Do <code class="docutils literal"><span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
-you need to do this after you tag.</li>
-<li>Push up the tag (<code class="docutils literal"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">2.0</span></code>).</li>
-<li>Merge the pull request.</li>
-<li>Create a pull request to the <a class="reference external" href="https://github.com/conda-forge/doctr-feedstock">conda-forge feedstock</a> to update it. Make sure
-to do a pull request from a fork. Merge it once those tests pass.</li>
-</ul>
+  <div class="section" id="github-test-authentication">
+<h1>GitHub Test Authentication<a class="headerlink" href="#github-test-authentication" title="Permalink to this headline">¶</a></h1>
+<p>Many of the <code class="docutils literal"><span class="pre">doctr</span></code> tests in <code class="docutils literal"><span class="pre">doctr/tests/test_local.py</span></code> contact GitHub to
+check that invalid repo names raise errors, etc. However, the GitHub API has a
+hard limit of 60 requests / hour for unauthenticated requests and it is very
+easy to run over this when pushing many changes.</p>
+<p>In order to avoid this limit, there is a GitHub Personal Access Token stored in
+the <code class="docutils literal"><span class="pre">doctr</span></code> Travis account that is available as the environment variable
+<code class="docutils literal"><span class="pre">$TESTING_TOKEN</span></code>.</p>
+<p>To regenerate / change this token, first go to <a class="reference external" href="https://github.com/settings/tokens">GitHub Settings</a> and create a Personal Access Token. Make
+sure that all of the checkboxes are unchecked (this token should only have
+privileges to check in with the GitHub API).</p>
+<p>You can add the updated token to Travis on the <a class="reference external" href="https://travis-ci.org/drdoctr/doctr/settings">doctr Travis Settings Page</a>.</p>
+<p>Paste the token string into the <code class="docutils literal"><span class="pre">Value</span></code> field and <code class="docutils literal"><span class="pre">TESTING_TOKEN</span></code> in the
+<code class="docutils literal"><span class="pre">Name</span></code> field (unless you have changed this value in
+<code class="docutils literal"><span class="pre">doctr/tests/test_local.py</span></code>).</p>
 </div>
 
 
@@ -76,15 +69,14 @@ to do a pull request from a fork. Merge it once those tests pass.</li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="changelog.html" title="previous chapter">Doctr Changelog</a></li>
-      <li>Next: <a href="tests.html" title="next chapter">GitHub Test Authentication</a></li>
+      <li>Previous: <a href="releasing.html" title="previous chapter">Releasing</a></li>
   </ul></li>
 </ul>
 </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/releasing.txt"
+      <li><a href="_sources/tests.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -110,7 +102,7 @@ to do a pull request from a fork. Merge it once those tests pass.</li>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="_sources/releasing.txt"
+      <a href="_sources/tests.txt"
           rel="nofollow">Page source</a>
     </div>
 
