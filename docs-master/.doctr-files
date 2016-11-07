@@ -7,6 +7,7 @@ docs-master/_sources/commandline.txt
 docs-master/_sources/index.txt
 docs-master/_sources/recipes.txt
 docs-master/_sources/releasing.txt
+docs-master/_sources/tests.txt
 docs-master/_static/ajax-loader.gif
 docs-master/_static/alabaster.css
 docs-master/_static/basic.css
@@ -40,3 +41,4 @@ docs-master/recipes.html
 docs-master/releasing.html
 docs-master/search.html
 docs-master/searchindex.js
+docs-master/tests.html
