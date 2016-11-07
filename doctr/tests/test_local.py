@@ -4,8 +4,11 @@ from ..local import check_repo_exists
 
 from pytest import raises
 
-TEST_TOKEN = os.environ.get('TESTING_TOKEN')
-HEADERS = {'Authorization': 'token {}'.format(TEST_TOKEN)}
+TEST_TOKEN = os.environ.get('TESTING_TOKEN', None)
+if TEST_TOKEN:
+    HEADERS = {'Authorization': 'token {}'.format(TEST_TOKEN)}
+else:
+    HEADERS = None
 
 
 def test_bad_user():
