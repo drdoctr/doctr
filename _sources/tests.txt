@@ -20,4 +20,4 @@ You can add the updated token to Travis on the `doctr Travis Settings Page
 
 Paste the token string into the ``Value`` field and ``TESTING_TOKEN`` in the
 ``Name`` field (unless you have changed this value in
-``doctr/tests/test_local.py``
+``doctr/tests/test_local.py``).
