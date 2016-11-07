@@ -7,6 +7,7 @@
 ./_sources/index.txt
 ./_sources/recipes.txt
 ./_sources/releasing.txt
+./_sources/tests.txt
 ./_static/ajax-loader.gif
 ./_static/alabaster.css
 ./_static/basic.css
@@ -40,3 +41,4 @@
 ./releasing.html
 ./search.html
 ./searchindex.js
+./tests.html
