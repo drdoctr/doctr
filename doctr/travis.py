@@ -97,7 +97,7 @@ def get_token():
     """
     token = os.environ.get("GH_TOKEN", None)
     if not token:
-        raise RuntimeError("GH_TOKEN environment variable not set")
+        token = "GH_TOKEN environment variable not set"
     token = token.encode('utf-8')
     return token
 
@@ -144,6 +144,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
+    canpush = True
     if auth_type not in ['deploy_key', 'token']:
         raise ValueError("auth_type must be 'deploy_key' or 'token'")
 
@@ -154,11 +155,11 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
         print("The docs are only pushed to gh-pages from master. To allow pushing from "
         "a non-master branch, use the --no-require-master flag", file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
-        return False
+        canpush = False
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-        return False
+        canpush = False
 
     print("Setting git attributes")
     # Should we add some user.email?
@@ -169,17 +170,23 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
         print("doctr_remote already exists, removing")
         run(['git', 'remote', 'remove', 'doctr_remote'])
     print("Adding doctr remote")
-    if auth_type == 'token':
-        token = get_token()
-        run(['git', 'remote', 'add', 'doctr_remote',
-            'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
-                deploy_repo=deploy_repo)])
+    if canpush:
+        if auth_type == 'token':
+            token = get_token()
+            run(['git', 'remote', 'add', 'doctr_remote',
+                'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
+                    deploy_repo=deploy_repo)])
+        else:
+            keypath, key_ext = full_key_path.rsplit('.', 1)
+            key_ext = '.' + key_ext
+            setup_deploy_key(keypath=keypath, key_ext=key_ext)
+            run(['git', 'remote', 'add', 'doctr_remote',
+                'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
     else:
-        keypath, key_ext = full_key_path.rsplit('.', 1)
-        key_ext = '.' + key_ext
-        setup_deploy_key(keypath=keypath, key_ext=key_ext)
+        print('setting a read-only GitHub doctr_remote')
         run(['git', 'remote', 'add', 'doctr_remote',
-            'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
+                'https://github.com/{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
+
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
@@ -194,7 +201,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
         run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
     print("Done")
 
-    return True
+    return canpush
 
 def gh_pages_exists():
     """

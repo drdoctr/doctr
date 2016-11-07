@@ -78,6 +78,10 @@ options available.
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
+    deploy_parser.add_argument('--no-push', dest='push', action='store_false',
+        default=True, help="Run all the steps except the last push step."
+        "Useful for debugging")
+        
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -126,30 +130,33 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        if setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
+        can_push = setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
                              'deploy_key', full_key_path=args.key_path,
-                             require_master=args.require_master):
+                             require_master=args.require_master)
 
-            if args.sync:
-                built_docs = args.built_docs or find_sphinx_build_dir()
+        if args.sync:
+            built_docs = args.built_docs or find_sphinx_build_dir()
 
-                log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
+            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
 
-                print("Moving built docs into place")
-                added, removed = sync_from_log(src=built_docs,
-                    dst=args.gh_pages_docs, log_file=log_file)
+            print("Moving built docs into place")
+            added, removed = sync_from_log(src=built_docs,
+                dst=args.gh_pages_docs, log_file=log_file)
 
-            else:
-                added, removed = [], []
+        else:
+            added, removed = [], []
 
-            if args.command:
-                run(shlex.split(args.command))
+        if args.command:
+            run(shlex.split(args.command))
 
-            changes = commit_docs(added=added, removed=removed)
-            if changes:
+        changes = commit_docs(added=added, removed=removed)
+        if changes:
+            if can_push and args.push:
                 push_docs()
             else:
-                print("The docs have not changed. Not updating")
+                print("Don't have permission to push. Not trying.")
+        else:
+            print("The docs have not changed. Not updating")
     finally:
         subprocess.run(['git', 'checkout', current_commit])
 
