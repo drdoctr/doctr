@@ -7,6 +7,7 @@ docs-auth_for_testing/_sources/commandline.txt
 docs-auth_for_testing/_sources/index.txt
 docs-auth_for_testing/_sources/recipes.txt
 docs-auth_for_testing/_sources/releasing.txt
+docs-auth_for_testing/_sources/tests.txt
 docs-auth_for_testing/_static/ajax-loader.gif
 docs-auth_for_testing/_static/alabaster.css
 docs-auth_for_testing/_static/basic.css
@@ -40,3 +41,4 @@ docs-auth_for_testing/recipes.html
 docs-auth_for_testing/releasing.html
 docs-auth_for_testing/search.html
 docs-auth_for_testing/searchindex.js
+docs-auth_for_testing/tests.html
