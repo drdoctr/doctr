@@ -18,6 +18,7 @@ Contents:
    api
    changelog
    releasing
+   tests
 
 Indices and tables
 ==================
