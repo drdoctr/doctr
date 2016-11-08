@@ -212,7 +212,7 @@ def generate_ssh_key(note, keypath='github_deploy_key'):
     with open(keypath + ".pub") as f:
         return f.read()
 
-def check_repo_exists(deploy_repo, *, auth=None, headers=None):
+def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None):
     """
     Checks that the repository exists on GitHub.
 
@@ -227,11 +227,19 @@ def check_repo_exists(deploy_repo, *, auth=None, headers=None):
         raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
 
     user, repo = deploy_repo.split('/')
-    REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
+    if service == 'github':
+        REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
+    elif service == 'travis':
+        REPO_URL = 'https://api.travis-ci.org/repos/{user}/{repo}'
+    else:
+        raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
+
     r = requests.get(REPO_URL.format(user=user, repo=repo), auth=auth, headers=headers)
 
     if r.status_code == requests.codes.not_found:
-        raise RuntimeError('"{user}/{repo}" not found on GitHub. Exiting'.format(user=user, repo=repo))
+        raise RuntimeError('"{user}/{repo}" not found on {service}. Exiting'.format(user=user,
+                                                                                    repo=repo,
+                                                                                    service=service))
 
     r.raise_for_status()
 
