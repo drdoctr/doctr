@@ -338,13 +338,15 @@ def commit_docs(*, added, removed):
 Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
 {TRAVIS_REPO_SLUG}
 
-The docs were built from the branch {TRAVIS_BRANCH} against commit
+The docs were built from the branch '{TRAVIS_BRANCH}' against the commit
 {TRAVIS_COMMIT}.
 
 The Travis build that generated this commit is at
 https://travis-ci.org/{TRAVIS_REPO_SLUG}/jobs/{TRAVIS_JOB_ID}.
 
-The doctr command that was run is {DOCTR_COMMAND}.
+The doctr command that was run is
+
+    {DOCTR_COMMAND}
 """.format(
     TRAVIS_BUILD_NUMBER=TRAVIS_BUILD_NUMBER,
     TRAVIS_BRANCH=TRAVIS_BRANCH,
