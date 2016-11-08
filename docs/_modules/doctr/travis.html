@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.3.3+22.g601afcd documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.3.3+23.g2282f3d documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.3.3+22.g601afcd',
+        VERSION:     '1.3.3+23.g2282f3d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="Doctr 1.3.3+22.g601afcd documentation" href="../../index.html" />
+    <link rel="top" title="Doctr 1.3.3+23.g2282f3d documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -368,17 +368,31 @@
 <span class="sd">    committed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">TRAVIS_BUILD_NUMBER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BUILD_NUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_COMMIT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_COMMIT&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_REPO_SLUG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_REPO_SLUG&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">added</span><span class="p">:</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">removed</span><span class="p">:</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">])</span>
 
+    <span class="n">commit_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">Update docs after building Travis build </span><span class="si">{TRAVIS_BUILD_NUMBER}</span><span class="s2"> of </span><span class="si">{TRAVIS_REPO_SLUG}</span><span class="s2"></span>
+
+<span class="s2">The docs were built from the branch </span><span class="si">{TRAVIS_BRANCH}</span><span class="s2"> against commit </span><span class="si">{TRAVIS_COMMIT}</span><span class="s2">.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">TRAVIS_BUILD_NUMBER</span><span class="o">=</span><span class="n">TRAVIS_BUILD_NUMBER</span><span class="p">,</span>
+    <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+    <span class="n">TRAVIS_COMMIT</span><span class="o">=</span><span class="n">TRAVIS_COMMIT</span><span class="p">,</span>
+    <span class="n">TRAVIS_REPO_SLUG</span><span class="o">=</span><span class="n">TRAVIS_REPO_SLUG</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="c1"># Only commit if there were changes</span>
     <span class="k">if</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;diff-index&#39;</span><span class="p">,</span> <span class="s1">&#39;--quiet&#39;</span><span class="p">,</span> <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Committing&quot;</span><span class="p">)</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-am&#39;</span><span class="p">,</span> <span class="s2">&quot;Update docs after building Travis build &quot;</span> <span class="o">+</span> <span class="n">TRAVIS_BUILD_NUMBER</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-am&#39;</span><span class="p">,</span> <span class="n">commit_message</span><span class="p">])</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="kc">False</span></div>
