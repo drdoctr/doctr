@@ -323,17 +323,44 @@ def commit_docs(*, added, removed):
     committed.
     """
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
+    TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "<unknown>")
+    TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
+    TRAVIS_REPO_SLUG = os.environ.get("TRAVIS_REPO_SLUG", "<unknown>")
+    TRAVIS_JOB_ID = os.environ.get("TRAVIS_JOB_ID", "")
+    DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
     for f in added:
         run(['git', 'add', f])
     for f in removed:
         run(['git', 'rm', f])
 
+    commit_message = """\
+Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
+{TRAVIS_REPO_SLUG}
+
+The docs were built from the branch '{TRAVIS_BRANCH}' against the commit
+{TRAVIS_COMMIT}.
+
+The Travis build that generated this commit is at
+https://travis-ci.org/{TRAVIS_REPO_SLUG}/jobs/{TRAVIS_JOB_ID}.
+
+The doctr command that was run is
+
+    {DOCTR_COMMAND}
+""".format(
+    TRAVIS_BUILD_NUMBER=TRAVIS_BUILD_NUMBER,
+    TRAVIS_BRANCH=TRAVIS_BRANCH,
+    TRAVIS_COMMIT=TRAVIS_COMMIT,
+    TRAVIS_REPO_SLUG=TRAVIS_REPO_SLUG,
+    TRAVIS_JOB_ID=TRAVIS_JOB_ID,
+    DOCTR_COMMAND=DOCTR_COMMAND,
+    )
+
     # Only commit if there were changes
     if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
         print("Committing")
-        run(['git', 'commit', '-am', "Update docs after building Travis build " + TRAVIS_BUILD_NUMBER])
+        run(['git', 'commit', '-am', commit_message])
         return True
 
     return False
