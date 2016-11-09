@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import glob
+import re
 
 from cryptography.fernet import Fernet
 
@@ -132,7 +133,7 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=None, branch_whitelist=None):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -144,6 +145,17 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
+
+    if branch_whitelist is None:
+        branch_whitelist={'master'}
+
+    if require_master is not None:
+        import warnings
+        warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch_whitelist=['master']`", 
+                DeprecationWarning,
+                stacklevel=2)
+        branch_whitelist.add('master')
+
     canpush = True
     if auth_type not in ['deploy_key', 'token']:
         raise ValueError("auth_type must be 'deploy_key' or 'token'")
@@ -151,7 +163,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    if TRAVIS_BRANCH != "master" and require_master:
+    if any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
         print("The docs are only pushed to gh-pages from master. To allow pushing from "
         "a non-master branch, use the --no-require-master flag", file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)

@@ -2,6 +2,17 @@
  Doctr Changelog
 =================
 
+Master
+======
+
+- ``setup_GitHub_push`` now takes a ``branch_whitelist`` parameter instead of
+  of a ``require_master``
+- ``.travis.yml`` can be used to store some of doctr configuration in addition
+  to the command line flags. Write doctr configuration under the ``doctr`` key.
+  :issue:`137`
+- All boolean command line flags now have a their counterpart that can overwrite
+  the config values set in ``.travis.yml``
+
 1.4.1 (2017-01-11)
 ==================
 - Fix Travis API endpoint when checking if a repo exists. (:issue:`143`)
