@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &#8212; Doctr 1.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Doctr 1.4.0 documentation" href="index.html" />
+    <link rel="next" title="Doctr Changelog" href="changelog.html" />
+    <link rel="prev" title="Recipes" href="recipes.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<p>This is the Python API. We recommend that most users use doctr from the
+command line.</p>
+<div class="section" id="module-doctr.local">
+<span id="local"></span><h2>Local<a class="headerlink" href="#module-doctr.local" title="Permalink to this headline">¶</a></h2>
+<p>The code that should be run locally</p>
+<dl class="function">
+<dt id="doctr.local.GitHub_login">
+<code class="descclassname">doctr.local.</code><code class="descname">GitHub_login</code><span class="sig-paren">(</span><em>*</em>, <em>username=None</em>, <em>password=None</em>, <em>OTP=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#GitHub_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.GitHub_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Login to GitHub.</p>
+<p>If no username, password, or OTP (2-factor authentication code) are
+provided, they will be requested from the command line.</p>
+<p>Returns a dict of kwargs that can be passed to functions that require
+authenticated connections to GitHub.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.GitHub_post">
+<code class="descclassname">doctr.local.</code><code class="descname">GitHub_post</code><span class="sig-paren">(</span><em>data</em>, <em>url</em>, <em>*</em>, <em>auth</em>, <em>headers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#GitHub_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.GitHub_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST the data <code class="docutils literal"><span class="pre">data</span></code> to GitHub.</p>
+<p>Returns the json response from the server, or raises on error status.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.check_repo_exists">
+<code class="descclassname">doctr.local.</code><code class="descname">check_repo_exists</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>service='github'</em>, <em>*</em>, <em>auth=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#check_repo_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.check_repo_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the repository exists on GitHub.</p>
+<p>This should be done before attempting generate a key to deploy to that
+repo.</p>
+<p>Raises <code class="docutils literal"><span class="pre">RuntimeError</span></code> if the repo is not valid.</p>
+<p>Returns whether or not the repo is private</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.delete_GitHub_token">
+<code class="descclassname">doctr.local.</code><code class="descname">delete_GitHub_token</code><span class="sig-paren">(</span><em>token_id</em>, <em>*</em>, <em>auth</em>, <em>headers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#delete_GitHub_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.delete_GitHub_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a temporary GitHub token</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.encrypt_file">
+<code class="descclassname">doctr.local.</code><code class="descname">encrypt_file</code><span class="sig-paren">(</span><em>file</em>, <em>delete=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the file <code class="docutils literal"><span class="pre">file</span></code>.</p>
+<p>The encrypted file is saved to the same location with the <code class="docutils literal"><span class="pre">.enc</span></code>
+extension.</p>
+<p>If <code class="docutils literal"><span class="pre">delete=True</span></code>, the unencrypted file is deleted after encryption.</p>
+<p>Returns the secret key used for the encryption.</p>
+<p>Decrypt the file with <a class="reference internal" href="#doctr.travis.decrypt_file" title="doctr.travis.decrypt_file"><code class="xref py py-func docutils literal"><span class="pre">doctr.travis.decrypt_file()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.encrypt_variable">
+<code class="descclassname">doctr.local.</code><code class="descname">encrypt_variable</code><span class="sig-paren">(</span><em>variable</em>, <em>build_repo</em>, <em>*</em>, <em>public_key=None</em>, <em>is_private=False</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt an environment variable for <code class="docutils literal"><span class="pre">build_repo</span></code> for Travis</p>
+<p><code class="docutils literal"><span class="pre">variable</span></code> should be a bytes object, of the form <code class="docutils literal"><span class="pre">b'ENV=value'</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">build_repo</span></code> is the repo that <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> will be run from. It
+should be like &#8216;drdoctr/doctr&#8217;.</p>
+<p><code class="docutils literal"><span class="pre">public_key</span></code> should be a pem format public key, obtained from Travis if
+not provided.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.generate_GitHub_token">
+<code class="descclassname">doctr.local.</code><code class="descname">generate_GitHub_token</code><span class="sig-paren">(</span><em>*</em>, <em>note='Doctr token for pushing to gh-pages from Travis'</em>, <em>scopes=None</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_GitHub_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_GitHub_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a GitHub token for pushing from Travis</p>
+<p>The scope requested is public_repo.</p>
+<p>If no password or OTP are provided, they will be requested from the
+command line.</p>
+<p>The token created here can be revoked at
+<a class="reference external" href="https://github.com/settings/tokens">https://github.com/settings/tokens</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.generate_ssh_key">
+<code class="descclassname">doctr.local.</code><code class="descname">generate_ssh_key</code><span class="sig-paren">(</span><em>note</em>, <em>keypath='github_deploy_key'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_ssh_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_ssh_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an SSH deploy public and private key.</p>
+<p>Returns the public key as a str.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.local.upload_GitHub_deploy_key">
+<code class="descclassname">doctr.local.</code><code class="descname">upload_GitHub_deploy_key</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>ssh_key</em>, <em>*</em>, <em>read_only=False</em>, <em>title='Doctr deploy key for pushing to gh-pages from Travis'</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#upload_GitHub_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.upload_GitHub_deploy_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a GitHub deploy key to <code class="docutils literal"><span class="pre">deploy_repo</span></code>.</p>
+<p>If <code class="docutils literal"><span class="pre">read_only=True</span></code>, the deploy_key will not be able to write to the
+repo.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-doctr.travis">
+<span id="travis"></span><h2>Travis<a class="headerlink" href="#module-doctr.travis" title="Permalink to this headline">¶</a></h2>
+<p>The code that should be run on Travis</p>
+<dl class="function">
+<dt id="doctr.travis.commit_docs">
+<code class="descclassname">doctr.travis.</code><code class="descname">commit_docs</code><span class="sig-paren">(</span><em>*</em>, <em>added</em>, <em>removed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#commit_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.commit_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit the docs to <code class="docutils literal"><span class="pre">gh-pages</span></code></p>
+<p>Assumes that <a class="reference internal" href="#doctr.travis.setup_GitHub_push" title="doctr.travis.setup_GitHub_push"><code class="xref py py-func docutils literal"><span class="pre">setup_GitHub_push()</span></code></a>, which sets up the <code class="docutils literal"><span class="pre">doctr_remote</span></code>
+remote, has been run and returned True.</p>
+<p>Returns True if changes were committed and False if no changes were
+committed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.create_gh_pages">
+<code class="descclassname">doctr.travis.</code><code class="descname">create_gh_pages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#create_gh_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.create_gh_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is no remote <code class="docutils literal"><span class="pre">gh-pages</span></code> branch, create one.</p>
+<p>Return True if <code class="docutils literal"><span class="pre">gh-pages</span></code> was created, False if not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.decrypt_file">
+<code class="descclassname">doctr.travis.</code><code class="descname">decrypt_file</code><span class="sig-paren">(</span><em>file</em>, <em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#decrypt_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.decrypt_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the file <code class="docutils literal"><span class="pre">file</span></code>.</p>
+<p>The encrypted file is assumed to end with the <code class="docutils literal"><span class="pre">.enc</span></code> extension. The
+decrypted file is saved to the same location without the <code class="docutils literal"><span class="pre">.enc</span></code>
+extension.</p>
+<p>The permissions on the decrypted file are automatically set to 0o600.</p>
+<p>See also <a class="reference internal" href="#doctr.local.encrypt_file" title="doctr.local.encrypt_file"><code class="xref py py-func docutils literal"><span class="pre">doctr.local.encrypt_file()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.find_sphinx_build_dir">
+<code class="descclassname">doctr.travis.</code><code class="descname">find_sphinx_build_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#find_sphinx_build_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.find_sphinx_build_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find build subfolder within sphinx docs directory.</p>
+<p>This is called by <a class="reference internal" href="#doctr.travis.commit_docs" title="doctr.travis.commit_docs"><code class="xref py py-func docutils literal"><span class="pre">commit_docs()</span></code></a> if keyword arg <code class="docutils literal"><span class="pre">built_docs</span></code> is not
+specified on the command line.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.get_current_repo">
+<code class="descclassname">doctr.travis.</code><code class="descname">get_current_repo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#get_current_repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.get_current_repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the GitHub repo name for the current directory.</p>
+<p>Assumes that the repo is in the <code class="docutils literal"><span class="pre">origin</span></code> remote.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.get_token">
+<code class="descclassname">doctr.travis.</code><code class="descname">get_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#get_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.get_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the encrypted GitHub token in Travis.</p>
+<p>Make sure the contents this variable do not leak. The <code class="docutils literal"><span class="pre">run()</span></code> function
+will remove this from the output, so always use it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.gh_pages_exists">
+<code class="descclassname">doctr.travis.</code><code class="descname">gh_pages_exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#gh_pages_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.gh_pages_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if there is a remote gh-pages branch.</p>
+<p>This isn&#8217;t completely robust. If there are multiple remotes and you have a
+<code class="docutils literal"><span class="pre">gh-pages</span></code> branch on the non-default remote, this won&#8217;t see it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.push_docs">
+<code class="descclassname">doctr.travis.</code><code class="descname">push_docs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#push_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.push_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push the changes to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch.</p>
+<p>Assumes that <a class="reference internal" href="#doctr.travis.setup_GitHub_push" title="doctr.travis.setup_GitHub_push"><code class="xref py py-func docutils literal"><span class="pre">setup_GitHub_push()</span></code></a> has been run and returned True, and
+that <a class="reference internal" href="#doctr.travis.commit_docs" title="doctr.travis.commit_docs"><code class="xref py py-func docutils literal"><span class="pre">commit_docs()</span></code></a> has been run. Does not push anything if no changes
+were made.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.run">
+<code class="descclassname">doctr.travis.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the command <code class="docutils literal"><span class="pre">args</span></code>.</p>
+<p>Automatically hides the secret GitHub token from the output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.setup_GitHub_push">
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the remote to push to GitHub (to be run on Travis).</p>
+<p><code class="docutils literal"><span class="pre">auth_type</span></code> should be either <code class="docutils literal"><span class="pre">'deploy_key'</span></code> or <code class="docutils literal"><span class="pre">'token'</span></code>.</p>
+<p>For <code class="docutils literal"><span class="pre">auth_type='token'</span></code>, this sets up the remote with the token and
+checks out the gh-pages branch. The token to push to GitHub is assumed to be in the <code class="docutils literal"><span class="pre">GH_TOKEN</span></code> environment
+variable.</p>
+<p>For <code class="docutils literal"><span class="pre">auth_type='deploy_key'</span></code>, this sets up the remote with ssh access.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.setup_deploy_key">
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the deploy key and configures it with ssh</p>
+<p>The key is assumed to be encrypted as keypath + key_ext, and the
+encryption key is assumed to be set in the environment variable
+DOCTR_DEPLOY_ENCRYPTION_KEY.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.sync_from_log">
+<code class="descclassname">doctr.travis.</code><code class="descname">sync_from_log</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>log_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#sync_from_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.sync_from_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync the files in <code class="docutils literal"><span class="pre">src</span></code> to <code class="docutils literal"><span class="pre">dst</span></code>.</p>
+<p>The files that are synced are logged to <code class="docutils literal"><span class="pre">log_file</span></code>. If <code class="docutils literal"><span class="pre">log_file</span></code>
+exists, the files in <code class="docutils literal"><span class="pre">log_file</span></code> are removed first.</p>
+<p>Returns <code class="docutils literal"><span class="pre">(added,</span> <span class="pre">removed)</span></code>, where added is a list of all files synced from
+<code class="docutils literal"><span class="pre">src</span></code> (even if it already existed in <code class="docutils literal"><span class="pre">dst</span></code>), and <code class="docutils literal"><span class="pre">removed</span></code> is every
+file from <code class="docutils literal"><span class="pre">log_file</span></code> that was removed from <code class="docutils literal"><span class="pre">dst</span></code> because it wasn&#8217;t in
+<code class="docutils literal"><span class="pre">src</span></code>. <code class="docutils literal"><span class="pre">added</span></code> also includes the log file.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API</a><ul>
+<li><a class="reference internal" href="#module-doctr.local">Local</a></li>
+<li><a class="reference internal" href="#module-doctr.travis">Travis</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="recipes.html" title="previous chapter">Recipes</a></li>
+      <li>Next: <a href="changelog.html" title="next chapter">Doctr Changelog</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Aaron Meurer and Gil Forsyth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/api.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/drdoctr/doctr" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
