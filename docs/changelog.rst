@@ -2,6 +2,22 @@
  Doctr Changelog
 =================
 
+1.4.0 (2016-11-11)
+==================
+
+- Set the git ``user.email`` configuration option. This is now required by the
+  latest versions of git. (:issue:`138`, :issue:`139`)
+- Add more information to the automated commit messages. (:issue:`134`)
+- Run doctr tests on Travis with a personal access token, avoiding rate
+  limiting errors. (:issue:`133`)
+- Run all doctr steps except for the push on every build. Add ``--no-push``
+  option. Thanks @Carreau. (:issue:`125`, :issue:`126`, :issue:`132`)
+- Clarify in docs that doctr is not just for Sphinx. (:issue:`129`,
+  :issue:`130`)
+- Use the latest version of sphinxcontrib.autoprogram to build the doctr docs.
+  (:issue:`127`)
+- Check that the build repo exists on Travis. (:issue:`114`, :issue:`123`)
+
 1.3.3 (2016-09-20)
 ==================
 
