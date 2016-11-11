@@ -162,8 +162,11 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
         canpush = False
 
     print("Setting git attributes")
-    # Should we add some user.email?
+
     run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
+    # We need a dummy email or git will fail. We use this one as per
+    # https://help.github.com/articles/keeping-your-email-address-private/.
+    run(['git', 'config', '--global', 'user.email', 'drdoctr@users.noreply.github.com'])
 
     remotes = subprocess.check_output(['git', 'remote']).decode('utf-8').split('\n')
     if 'doctr_remote' in remotes:
