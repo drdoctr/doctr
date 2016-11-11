@@ -65,7 +65,10 @@ something like
 
 in your ``.travis.yml``. See `the one
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
-itself for example.
+itself for example. Warning, if you put ``doctr deploy`` in ``after_success``
+instead of ``script``, it will `not cause
+<https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
+the build to fail if it fails.
 
 **Heads up:** Doctr requires Python 3.5 or newer. Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
