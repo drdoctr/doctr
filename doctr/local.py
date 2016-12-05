@@ -236,7 +236,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     r = requests.get(REPO_URL.format(user=user, repo=repo), auth=auth, headers=headers)
 
-    if r.status_code == requests.codes.not_found:
+    if (r.status_code == requests.codes.not_found or
+        'PNG'.encode('UTF-8') in r.content):
         raise RuntimeError('"{user}/{repo}" not found on {service}. Exiting'.format(user=user,
                                                                                     repo=repo,
                                                                                     service=service))
