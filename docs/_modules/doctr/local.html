@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.local &#8212; Doctr 1.4.0+5.gc303f04 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.4.0+5.g5990f57 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.0+5.gc303f04',
+        VERSION:     '1.4.0+5.g5990f57',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -274,14 +274,13 @@
     <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
         <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/repos/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&#39;</span>
     <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span><span class="p">:</span>
-        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/repos/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&#39;</span>
+        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Invalid service specified for repo check (neither &quot;travis&quot; nor &quot;github&quot;)&#39;</span><span class="p">)</span>
 
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">REPO_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">),</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span> <span class="ow">or</span>
-        <span class="s1">&#39;PNG&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on </span><span class="si">{service}</span><span class="s1">. Exiting&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
                                                                                     <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
                                                                                     <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">))</span>
