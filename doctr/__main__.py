@@ -81,9 +81,10 @@ options available.
     deploy_parser.add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step."
         "Useful for debugging")
-        
 
-    configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
+
+    configure_parser = subcommand.add_parser('configure', aliases=['init'],
+        help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
     if we appear to be on Travis.""")
