@@ -159,4 +159,6 @@ Projects using Doctr
 
 - `PyGBe <https://barbagroup.github.io/pygbe/docs/>`_
 
+- `xonsh <http://xon.sh>`_
+
 Are you using doctr?  Please add your project to the list!
