@@ -230,7 +230,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     if service == 'github':
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
     elif service == 'travis':
-        REPO_URL = 'https://api.travis-ci.org/repos/{user}/{repo}'
+        REPO_URL = 'https://api.travis-ci.org/{user}/{repo}'
     else:
         raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
 
