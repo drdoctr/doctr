@@ -68,8 +68,11 @@ in your ``.travis.yml``. See `the one
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
 itself for example.
 
-**Warning: ** To stop a Travis build when the docs fail to build, you must add
- ``set -e`` in ``script``.
+**Warning:** To stop a Travis build when the docs fail to build, you must add
+ ``set -e`` in ``script``. If you put ``doctr deploy`` in ``after_success``
+ instead of ``script``, it will `not cause
+ <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
+ the build to fail.
 
 
 
