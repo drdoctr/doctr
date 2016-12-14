@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.0+9.gae0c25f documentation</title>
+    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.0+11.ga10f88b documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.0+9.gae0c25f',
+        VERSION:     '1.4.0+11.ga10f88b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -86,6 +86,7 @@ something like</p>
     <span class="n">secure</span><span class="p">:</span> <span class="s2">&quot;&lt;your secure key from doctr here&gt;&quot;</span>
 
 <span class="n">script</span><span class="p">:</span>
+  <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
   <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span> <span class="n">doctr</span>
   <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
   <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
@@ -94,9 +95,13 @@ something like</p>
 </pre></div>
 </div>
 <p>in your <code class="docutils literal"><span class="pre">.travis.yml</span></code>. See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the one</a> used by Doctr
-itself for example. Warning, if you put <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> in <code class="docutils literal"><span class="pre">after_success</span></code>
+itself for example.</p>
+<dl class="docutils">
+<dt><strong>Warning:</strong> To stop a Travis build when the docs fail to build, you must add</dt>
+<dd><code class="docutils literal"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal"><span class="pre">script</span></code>. If you put <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> in <code class="docutils literal"><span class="pre">after_success</span></code>
 instead of <code class="docutils literal"><span class="pre">script</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
-the build to fail if it fails.</p>
+the build to fail.</dd>
+</dl>
 <p><strong>Heads up:</strong> Doctr requires Python 3.5 or newer. Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.</p>
