@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.0+11.ga10f88b documentation</title>
+    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.0+12.ge0b2076 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.0+11.ga10f88b',
+        VERSION:     '1.4.0+12.ge0b2076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -96,12 +96,17 @@ something like</p>
 </div>
 <p>in your <code class="docutils literal"><span class="pre">.travis.yml</span></code>. See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the one</a> used by Doctr
 itself for example.</p>
-<dl class="docutils">
-<dt><strong>Warning:</strong> To stop a Travis build when the docs fail to build, you must add</dt>
-<dd><code class="docutils literal"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal"><span class="pre">script</span></code>. If you put <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> in <code class="docutils literal"><span class="pre">after_success</span></code>
-instead of <code class="docutils literal"><span class="pre">script</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
-the build to fail.</dd>
-</dl>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Be sure to add <code class="docutils literal"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal"><span class="pre">script</span></code>, to prevent <code class="docutils literal"><span class="pre">doctr</span></code> from running
+when the docs build fails.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Put <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code> in the <code class="docutils literal"><span class="pre">script</span></code> section of your <code class="docutils literal"><span class="pre">.travis.yml</span></code>. If
+you use <code class="docutils literal"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
+the build to fail.</p>
+</div>
 <p><strong>Heads up:</strong> Doctr requires Python 3.5 or newer. Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.</p>
