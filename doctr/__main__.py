@@ -81,7 +81,7 @@ options available.
     deploy_parser.add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step."
         "Useful for debugging")
-        
+
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -250,10 +250,15 @@ def configure(args, parser):
     print(dedent("""\
     {N}. Add
 
-        - pip install doctr
-        - doctr deploy{options}
+        script:
+          - set -e
+          - # Command to build your docs
+          - pip install doctr
+          - doctr deploy{options}
 
-    to the docs build of your .travis.yml.
+    to the docs build of your .travis.yml.  The 'set -e' prevents doctr from
+    running when the docs build fails. Use the 'script' section so that if
+    doctr fails it causes the build to fail.
     """.format(options=options, N=N)))
 
     print(dedent("""\
