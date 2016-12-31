@@ -379,6 +379,6 @@ def push_docs():
     """
 
     print("Pulling")
-    run(["git", "pull"])
+    run(['git', 'pull', 'doctr_remote', 'gh-pages'])
     print("Pushing commit")
     run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
