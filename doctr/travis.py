@@ -195,7 +195,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     run(['git', 'fetch', 'doctr_remote'])
 
     #create gh-pages empty branch with .nojekyll if it doesn't already exist
-    new_gh_pages = create_gh_pages()
+    new_gh_pages = create_gh_pages(push=canpush)
     print("Checking out gh-pages")
     local_gh_pages_exists = 'gh-pages' in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
     if new_gh_pages or local_gh_pages_exists:
@@ -219,7 +219,7 @@ def gh_pages_exists():
 
     return '{}/gh-pages'.format(remote_name) in branch_names
 
-def create_gh_pages():
+def create_gh_pages(push=True):
     """
     If there is no remote ``gh-pages`` branch, create one.
 
@@ -235,8 +235,9 @@ def create_gh_pages():
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', 'Create new gh-pages branch with .nojekyll'])
-        print("Pushing gh-pages branch to remote")
-        run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
+        if push:
+            print("Pushing gh-pages branch to remote")
+            run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
         # return to master branch
         run(['git', 'checkout', '-'])
 
@@ -320,7 +321,7 @@ def commit_docs(*, added, removed):
     Commit the docs to ``gh-pages``
 
     Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
-    remote, has been run and returned True.
+    remote, has been run.
 
     Returns True if changes were committed and False if no changes were
     committed.
