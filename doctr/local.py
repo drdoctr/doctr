@@ -210,7 +210,11 @@ def generate_ssh_key(note, keypath='github_deploy_key'):
         raise RuntimeError("SSH key generation failed")
 
     with open(keypath + ".pub") as f:
-        return f.read()
+        key = f.read()
+
+    os.remove(keypath + ".pub")
+
+    return key
 
 def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None):
     """
