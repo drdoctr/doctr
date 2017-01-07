@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.4.0+23.g4883ca3 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.4.0+18.gde53568 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.0+23.g4883ca3',
+        VERSION:     '1.4.0+18.gde53568',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -239,7 +239,7 @@
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
 
     <span class="c1">#create gh-pages empty branch with .nojekyll if it doesn&#39;t already exist</span>
-    <span class="n">new_gh_pages</span> <span class="o">=</span> <span class="n">create_gh_pages</span><span class="p">(</span><span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
+    <span class="n">new_gh_pages</span> <span class="o">=</span> <span class="n">create_gh_pages</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out gh-pages&quot;</span><span class="p">)</span>
     <span class="n">local_gh_pages_exists</span> <span class="o">=</span> <span class="s1">&#39;gh-pages&#39;</span> <span class="ow">in</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">new_gh_pages</span> <span class="ow">or</span> <span class="n">local_gh_pages_exists</span><span class="p">:</span>
@@ -263,7 +263,7 @@
 
     <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/gh-pages&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">branch_names</span></div>
 
-<div class="viewcode-block" id="create_gh_pages"><a class="viewcode-back" href="../../api.html#doctr.travis.create_gh_pages">[docs]</a><span class="k">def</span> <span class="nf">create_gh_pages</span><span class="p">(</span><span class="n">push</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="create_gh_pages"><a class="viewcode-back" href="../../api.html#doctr.travis.create_gh_pages">[docs]</a><span class="k">def</span> <span class="nf">create_gh_pages</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If there is no remote ``gh-pages`` branch, create one.</span>
 
@@ -279,9 +279,8 @@
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;touch&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new gh-pages branch with .nojekyll&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">push</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing gh-pages branch to remote&quot;</span><span class="p">)</span>
-            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing gh-pages branch to remote&quot;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
         <span class="c1"># return to master branch</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">])</span>
 
@@ -365,7 +364,7 @@
 <span class="sd">    Commit the docs to ``gh-pages``</span>
 
 <span class="sd">    Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``</span>
-<span class="sd">    remote, has been run.</span>
+<span class="sd">    remote, has been run and returned True.</span>
 
 <span class="sd">    Returns True if changes were committed and False if no changes were</span>
 <span class="sd">    committed.</span>
