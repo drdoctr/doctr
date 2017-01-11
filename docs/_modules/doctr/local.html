@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.local &#8212; Doctr 1.4.0+18.gde53568 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.4.0+24.gc8a79f0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.0+18.gde53568',
+        VERSION:     '1.4.0+24.gc8a79f0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -254,7 +254,11 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SSH key generation failed&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="s2">&quot;.pub&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="s2">&quot;.pub&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="check_repo_exists"><a class="viewcode-back" href="../../api.html#doctr.local.check_repo_exists">[docs]</a><span class="k">def</span> <span class="nf">check_repo_exists</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s1">&#39;github&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -321,7 +325,7 @@
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
     </div>
