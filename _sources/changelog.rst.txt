@@ -2,6 +2,15 @@
  Doctr Changelog
 =================
 
+1.4.1 (2017-01-11)
+==================
+- Fix Travis API endpoint when checking if a repo exists. (:issue:`143`)
+- Add warnings about needing ``set -e`` in ``.travis.yml``. (:issue:`146`)
+- Explicitly pull from ``doctr_remote`` on Travis. (:issue:`147`)
+- Don't attempt to push ``gh-pages`` to the remote when pushing is disallowed
+  (e.g., on a pull request). (:issue:`150`)
+- ``doctr configure`` now deletes the public key automatically. (:issue:`151`)
+
 1.4.0 (2016-11-11)
 ==================
 

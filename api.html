@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &#8212; Doctr 1.4.0+18.gde53568 documentation</title>
+    <title>API &#8212; Doctr 1.4.0+24.gc8a79f0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.0+18.gde53568',
+        VERSION:     '1.4.0+24.gc8a79f0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -140,14 +140,14 @@ repo.</p>
 <code class="descclassname">doctr.travis.</code><code class="descname">commit_docs</code><span class="sig-paren">(</span><em>*</em>, <em>added</em>, <em>removed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#commit_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.commit_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Commit the docs to <code class="docutils literal"><span class="pre">gh-pages</span></code></p>
 <p>Assumes that <a class="reference internal" href="#doctr.travis.setup_GitHub_push" title="doctr.travis.setup_GitHub_push"><code class="xref py py-func docutils literal"><span class="pre">setup_GitHub_push()</span></code></a>, which sets up the <code class="docutils literal"><span class="pre">doctr_remote</span></code>
-remote, has been run and returned True.</p>
+remote, has been run.</p>
 <p>Returns True if changes were committed and False if no changes were
 committed.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="doctr.travis.create_gh_pages">
-<code class="descclassname">doctr.travis.</code><code class="descname">create_gh_pages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#create_gh_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.create_gh_pages" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">create_gh_pages</code><span class="sig-paren">(</span><em>push=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#create_gh_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.create_gh_pages" title="Permalink to this definition">¶</a></dt>
 <dd><p>If there is no remote <code class="docutils literal"><span class="pre">gh-pages</span></code> branch, create one.</p>
 <p>Return True if <code class="docutils literal"><span class="pre">gh-pages</span></code> was created, False if not.</p>
 </dd></dl>
@@ -293,7 +293,7 @@ file from <code class="docutils literal"><span class="pre">log_file</span></code
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
