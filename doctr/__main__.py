@@ -60,9 +60,8 @@ options available.
     deploy_parser.add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser.add_argument('--gh-pages-docs', default='docs',
-        help="""Directory to deploy the html documentation to on gh-pages. The
-        default is %(default)r.""")
+    deploy_parser.add_argument('deploy_directory', type=str,
+        help="""Directory to deploy the html documentation to on gh-pages.""")
     deploy_parser.add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
@@ -251,7 +250,7 @@ def configure(args, parser):
           - set -e
           - # Command to build your docs
           - pip install doctr
-          - doctr deploy{options}
+          - doctr deploy{options} {deploy_directory}
 
     to the docs build of your .travis.yml.  The 'set -e' prevents doctr from
     running when the docs build fails. Use the 'script' section so that if
