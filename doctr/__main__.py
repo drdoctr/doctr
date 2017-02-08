@@ -50,6 +50,8 @@ options available.
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
     deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
+    deploy_parser.add_argument('deploy_directory', type=str, nargs='?',
+        help="""Directory to deploy the html documentation to on gh-pages.""")
     deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
     deploy_parser.add_argument('--token', action='store_true', default=False,
@@ -60,8 +62,6 @@ options available.
     deploy_parser.add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser.add_argument('deploy_directory', type=str,
-        help="""Directory to deploy the html documentation to on gh-pages.""")
     deploy_parser.add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
@@ -80,6 +80,9 @@ options available.
     deploy_parser.add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step."
         "Useful for debugging")
+    deploy_parser.add_argument('--gh-pages-docs', default='docs',
+        help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages. The
+        default is %(default)r.""")
 
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
