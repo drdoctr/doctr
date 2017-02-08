@@ -257,26 +257,31 @@ def update_travis_yml(yml_file, encrypted_variable):
     """
 
     if os.path.isfile(yml_file):
-        with open(yml_file, 'r') as f:
-            config = ruamel.yaml.round_trip_load(f)
+        try:
+            with open(yml_file, 'r') as f:
+                config = ruamel.yaml.round_trip_load(f)
+        except ScannerError:
+            raise RuntimeError('Cannot parse `.travis.yml`. There might be something wrong in there.')
     else:
-        base_config = 'env:\n    global:\n    - secure: "{encrypted_variable}"\n'.format(encrypted_variable)
+        base_config = 'env:\n    global:\n    - secure: "{encrypted_variable}"\n'.format(encrypted_variable.decode('utf-8'))
         config = ruamel.yaml.round_trip_load(base_config)
 
-    KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable)])
+    KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable.decode('utf-8'))])
 
     if not config.get('env'):
         config.insert(1, 'env',
                       ruamel.yaml.comments.CommentedMap([('global',
                                                           KEY_ENTRY)]))
+    elif not type(config['env']) == ruamel.yaml.comments.CommentedMap:
+        return False
     elif not 'global' in config['env']:
-        config['env'].insert(0, 'global', KEY_ENTRY)
+        config['env']['global'] = [KEY_ENTRY]
     elif 'secure' not in config['env']['global']:
         config['env']['global'].append(KEY_ENTRY)
     else:
         return False
 
     with open(yml_file, 'w') as f:
-        ruamel.yaml.round_trip_dump(config, f)
+        ruamel.yaml.round_trip_dump(config, f, default_flow_style=False, line_break=None, block_seq_indent=2, width=1000)
 
     return True
