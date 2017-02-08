@@ -8,6 +8,7 @@ import uuid
 import base64
 import subprocess
 from getpass import getpass
+import ruamel.yaml
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -248,3 +249,34 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     r.raise_for_status()
 
     return r.json().get('private', False)
+
+def update_travis_yml(yml_file, encrypted_variable):
+    """Add the encrypted deploy key variable to the ``.travis.yml``
+
+    Returns True if parsing and writing ``.travis.yml`` is successful
+    """
+
+    if os.path.isfile(yml_file):
+        with open(yml_file, 'r') as f:
+            config = ruamel.yaml.round_trip_load(f)
+    else:
+        base_config = 'env:\n    global:\n    - secure: "{encrypted_variable}"\n'.format(encrypted_variable)
+        config = ruamel.yaml.round_trip_load(base_config)
+
+    KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable)])
+
+    if not config.get('env'):
+        config.insert(1, 'env',
+                      ruamel.yaml.comments.CommentedMap([('global',
+                                                          KEY_ENTRY)]))
+    elif not 'global' in config['env']:
+        config['env'].insert(0, 'global', KEY_ENTRY)
+    elif 'secure' not in config['env']['global']:
+        config['env']['global'].append(KEY_ENTRY)
+    else:
+        return False
+
+    with open(yml_file, 'w') as f:
+        ruamel.yaml.round_trip_dump(config, f)
+
+    return True
