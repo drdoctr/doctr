@@ -260,10 +260,10 @@ def update_travis_yml(yml_file, encrypted_variable):
         try:
             with open(yml_file, 'r') as f:
                 config = ruamel.yaml.round_trip_load(f)
-        except ScannerError:
+        except ruamel.yaml.scanner.ScannerError:
             raise RuntimeError('Cannot parse `.travis.yml`. There might be something wrong in there.')
     else:
-        base_config = 'env:\n    global:\n    - secure: "{encrypted_variable}"\n'.format(encrypted_variable.decode('utf-8'))
+        base_config = 'env:\n    global:\n    - secure: "{}"\n'.format(encrypted_variable.decode('utf-8'))
         config = ruamel.yaml.round_trip_load(base_config)
 
     KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable.decode('utf-8'))])
@@ -282,6 +282,7 @@ def update_travis_yml(yml_file, encrypted_variable):
         return False
 
     with open(yml_file, 'w') as f:
-        ruamel.yaml.round_trip_dump(config, f, default_flow_style=False, line_break=None, block_seq_indent=2, width=1000)
+        ruamel.yaml.round_trip_dump(config, f, default_flow_style=False,
+                                    block_seq_indent=2, width=1000)
 
     return True
