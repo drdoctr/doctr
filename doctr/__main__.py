@@ -30,7 +30,8 @@ import subprocess
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login,
+    update_travis_yml)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
@@ -258,15 +259,19 @@ def configure(args, parser):
     doctr fails it causes the build to fail.
     """.format(options=options, N=N)))
 
-    print(dedent("""\
-    {N}. Put
+    auto_write_travis = update_travis_yml('.travis.yml', encrypted_variable)
+    if auto_write_travis:
+        print("The encrypted variable has been automatically added to your `.travis.yml`")
+    else:
+        print(dedent("""\
+        {N}. Put
 
-        env:
-          global:
-            - secure: "{encrypted_variable}"
+            env:
+            global:
+                - secure: "{encrypted_variable}"
 
-    in your .travis.yml.
-    """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
+        in your .travis.yml.
+        """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
 
 def main():
     return process_args(get_parser())
