@@ -266,12 +266,12 @@ def configure(args, parser):
         print(dedent("""\
         {N}. Put
 
-            env:
-            global:
-                - secure: "{encrypted_variable}"
+        env:
+          global:
+            - secure: "{encrypted_variable}"
 
-        in your .travis.yml.
-        """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
+    in your .travis.yml.
+    """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
 
 def main():
     return process_args(get_parser())
