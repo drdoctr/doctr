@@ -80,7 +80,7 @@ options available.
     deploy_parser.add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step."
         "Useful for debugging")
-    deploy_parser.add_argument('--gh-pages-docs', default='docs',
+    deploy_parser.add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
@@ -129,6 +129,17 @@ def deploy(args, parser):
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
 
+    if args.gh_pages_docs:
+        print("The --gh-pages-docs flag is deprecated and will be removed in the next release. Instead pass the deploy directory as an argument, e.g. `doctr deploy .`")
+
+    if args.gh_pages_docs and args.deploy_directory:
+        parser.error("The --gh-pages-docs flag is deprecated. Specify the directory to deploy to using `doctr deploy <dir>`")
+
+    if not args.gh_pages_docs and not args.deploy_directory:
+        parser.error("No deploy directory specified. Specify the directory to deploy to using `doctr deploy <dir>`")
+
+    deploy_dir = args.gh_pages_docs or args.deploy_directory
+
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
@@ -141,11 +152,11 @@ def deploy(args, parser):
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
 
-            log_file = os.path.join(args.gh_pages_docs, '.doctr-files')
+            log_file = os.path.join(deploy_dir, '.doctr-files')
 
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
-                dst=args.gh_pages_docs, log_file=log_file)
+                dst=deploy_dir, log_file=log_file)
 
         else:
             added, removed = [], []
