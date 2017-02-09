@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.local &#8212; Doctr 1.4.1+9.ge59672c documentation</title>
+    <title>doctr.local &#8212; Doctr 1.4.1+8.gd1ee9ba documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.1+9.ge59672c',
+        VERSION:     '1.4.1+8.gd1ee9ba',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -52,7 +52,6 @@
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">getpass</span> <span class="k">import</span> <span class="n">getpass</span>
-<span class="kn">import</span> <span class="nn">ruamel.yaml</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">requests.auth</span> <span class="k">import</span> <span class="n">HTTPBasicAuth</span>
@@ -293,43 +292,6 @@
     <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="update_travis_yml"><a class="viewcode-back" href="../../api.html#doctr.local.update_travis_yml">[docs]</a><span class="k">def</span> <span class="nf">update_travis_yml</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="n">encrypted_variable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the encrypted deploy key variable to the ``.travis.yml``</span>
-
-<span class="sd">    Returns True if parsing and writing ``.travis.yml`` is successful</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">yml_file</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">config</span> <span class="o">=</span> <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">round_trip_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">scanner</span><span class="o">.</span><span class="n">ScannerError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Cannot parse `.travis.yml`. There might be something wrong in there.&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">base_config</span> <span class="o">=</span> <span class="s1">&#39;env:</span><span class="se">\n</span><span class="s1">    global:</span><span class="se">\n</span><span class="s1">    - secure: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">encrypted_variable</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">round_trip_load</span><span class="p">(</span><span class="n">base_config</span><span class="p">)</span>
-
-    <span class="n">KEY_ENTRY</span> <span class="o">=</span> <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">CommentedMap</span><span class="p">([(</span><span class="s1">&#39;secure&#39;</span><span class="p">,</span> <span class="n">encrypted_variable</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))])</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;env&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;env&#39;</span><span class="p">,</span>
-                      <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">CommentedMap</span><span class="p">([(</span><span class="s1">&#39;global&#39;</span><span class="p">,</span>
-                                                          <span class="n">KEY_ENTRY</span><span class="p">)]))</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;env&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">CommentedMap</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="s1">&#39;global&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;env&#39;</span><span class="p">]:</span>
-        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;env&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">KEY_ENTRY</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="s1">&#39;secure&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;env&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">]:</span>
-        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;env&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">KEY_ENTRY</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">ruamel</span><span class="o">.</span><span class="n">yaml</span><span class="o">.</span><span class="n">round_trip_dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                    <span class="n">block_seq_indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
 
           </div>
