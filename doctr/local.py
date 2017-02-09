@@ -288,7 +288,7 @@ def update_travis_yml(yml_file, encrypted_variable):
 
     with open(yml_file, 'w') as f:
         ruamel.yaml.round_trip_dump(config, f, default_flow_style=False,
-                                    indent=indent, block_seq_indent=2,
+                                    indent=indent, block_seq_indent=block_seq,
                                     width=1000)
 
     return True
