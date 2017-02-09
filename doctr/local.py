@@ -9,6 +9,7 @@ import base64
 import subprocess
 from getpass import getpass
 import ruamel.yaml
+import ruamel.yaml.util
 from datetime import date
 
 import requests
@@ -260,12 +261,14 @@ def update_travis_yml(yml_file, encrypted_variable):
     if os.path.isfile(yml_file):
         try:
             with open(yml_file, 'r') as f:
-                config = ruamel.yaml.round_trip_load(f)
+                config, indent, block_seq = ruamel.yaml.util.load_yaml_guess_indent(f)
         except ruamel.yaml.scanner.ScannerError:
             raise RuntimeError('Cannot parse `.travis.yml`. There might be something wrong in there.')
     else:
         base_config = 'env:\n    global:\n    - secure: "{}"\n'.format(encrypted_variable.decode('utf-8'))
         config = ruamel.yaml.round_trip_load(base_config)
+        indent = 4
+        block_seq = 2
 
     KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable.decode('utf-8'))])
     KEY_ENTRY.yaml_add_eol_comment('Added by doctr {}'.format(str(date.today())), 'secure')
@@ -285,6 +288,7 @@ def update_travis_yml(yml_file, encrypted_variable):
 
     with open(yml_file, 'w') as f:
         ruamel.yaml.round_trip_dump(config, f, default_flow_style=False,
-                                    block_seq_indent=2, width=1000)
+                                    indent=indent, block_seq_indent=2,
+                                    width=1000)
 
     return True
