@@ -9,6 +9,7 @@ import base64
 import subprocess
 from getpass import getpass
 import ruamel.yaml
+from datetime import date
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -267,6 +268,7 @@ def update_travis_yml(yml_file, encrypted_variable):
         config = ruamel.yaml.round_trip_load(base_config)
 
     KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable.decode('utf-8'))])
+    KEY_ENTRY.yaml_add_eol_comment('Added by doctr {}'.format(str(date.today())), 'secure')
 
     if not config.get('env'):
         config.insert(1, 'env',
