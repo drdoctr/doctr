@@ -8,6 +8,9 @@ import uuid
 import base64
 import subprocess
 from getpass import getpass
+import ruamel.yaml
+import ruamel.yaml.util
+from datetime import date
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -248,3 +251,53 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     r.raise_for_status()
 
     return r.json().get('private', False)
+
+def update_travis_yml(yml_file, encrypted_variable):
+    """Add the encrypted deploy key variable to the ``.travis.yml``
+
+    Returns True if parsing and writing ``.travis.yml`` is successful
+    """
+
+    if os.path.isfile(yml_file):
+        try:
+            with open(yml_file, 'r') as f:
+                config, indent, block_seq = ruamel.yaml.util.load_yaml_guess_indent(f)
+        except ruamel.yaml.scanner.ScannerError:
+            raise RuntimeError('Cannot parse `.travis.yml`. There might be something wrong in there.')
+    else:
+        base_config = 'language: python'#env:\n    global:\n    - secure: "{}"\n'.format(encrypted_variable.decode('utf-8'))
+        config = ruamel.yaml.round_trip_load(base_config)
+        indent = 4
+        block_seq = 2
+
+    KEY_ENTRY = ruamel.yaml.comments.CommentedMap([('secure', encrypted_variable.decode('utf-8'))])
+    KEY_ENTRY.yaml_add_eol_comment('Added by doctr {}'.format(str(date.today())), 'secure')
+
+    if not config.get('env'):
+        config.insert(1, 'env',
+                      ruamel.yaml.comments.CommentedMap([('global',
+                                                          [KEY_ENTRY])]))
+    elif not type(config['env']) == ruamel.yaml.comments.CommentedMap:
+        return False
+    elif not 'global' in config['env']:
+        config['env']['global'] = [KEY_ENTRY]
+    elif 'secure' not in config['env']['global'][0]:
+        config['env']['global'].append(KEY_ENTRY)
+    elif 'secure' in config['env']['global'][0]:
+        message = ("There is already a secure key in your `.travis.yml`.\n"
+            "doctr will append the generated key but it may override\n"
+            "the previous key if they refer to the same variable.")
+
+        print('{:=^80}'.format('WARNING'))
+        print('\n'.join('{:^80}'.format(s) for s in message.split('\n')))
+        print('{:=^80}\n'.format('WARNING'))
+        config['env']['global'].append(KEY_ENTRY)
+    else:
+        return False
+
+    with open(yml_file, 'w') as f:
+        ruamel.yaml.round_trip_dump(config, f, default_flow_style=False,
+                                    indent=indent, block_seq_indent=block_seq,
+                                    width=1000)
+
+    return True
