@@ -81,8 +81,10 @@ options available.
         default=True, help="Run all the steps except the last push step."
         "Useful for debugging")
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
-        help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages. The
-        default is %(default)r.""")
+        help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
+        The default is %(default)r. The deploy directory should be passed as
+        the first argument to 'doctr deploy'. This flag is kept for backwards
+        compatibility.""")
 
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
