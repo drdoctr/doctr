@@ -47,7 +47,7 @@ def test_travis_repo_exists():
 comment = '  # Added by doctr {}\n'.format(str(date.today()))
 
 @mark.parametrize('travis_in, travis_add',[
-    ('language: python3\n', 'env:\n  global:\n    secure: mykey' + comment),
+    ('language: python3\n', 'env:\n  global:\n  - secure: mykey' + comment),
     ('language: python3\nenv:\n  matrix:\n  - foo="bar"\n', '  global:\n  - secure: mykey' + comment),
     ('language: python3\nenv:\n  global:\n  - FOO=bar\n', '  - secure: mykey' + comment),
 ])

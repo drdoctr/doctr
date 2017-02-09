@@ -265,7 +265,7 @@ def update_travis_yml(yml_file, encrypted_variable):
         except ruamel.yaml.scanner.ScannerError:
             raise RuntimeError('Cannot parse `.travis.yml`. There might be something wrong in there.')
     else:
-        base_config = 'env:\n    global:\n    - secure: "{}"\n'.format(encrypted_variable.decode('utf-8'))
+        base_config = 'language: python'#env:\n    global:\n    - secure: "{}"\n'.format(encrypted_variable.decode('utf-8'))
         config = ruamel.yaml.round_trip_load(base_config)
         indent = 4
         block_seq = 2
@@ -276,12 +276,21 @@ def update_travis_yml(yml_file, encrypted_variable):
     if not config.get('env'):
         config.insert(1, 'env',
                       ruamel.yaml.comments.CommentedMap([('global',
-                                                          KEY_ENTRY)]))
+                                                          [KEY_ENTRY])]))
     elif not type(config['env']) == ruamel.yaml.comments.CommentedMap:
         return False
     elif not 'global' in config['env']:
         config['env']['global'] = [KEY_ENTRY]
-    elif 'secure' not in config['env']['global']:
+    elif 'secure' not in config['env']['global'][0]:
+        config['env']['global'].append(KEY_ENTRY)
+    elif 'secure' in config['env']['global'][0]:
+        message = ("There is already a secure key in your `.travis.yml`.\n"
+            "doctr will append the generated key but it may override\n"
+            "the previous key if they refer to the same variable.")
+
+        print('{:=^80}'.format('WARNING'))
+        print('\n'.join('{:^80}'.format(s) for s in message.split('\n')))
+        print('{:=^80}\n'.format('WARNING'))
         config['env']['global'].append(KEY_ENTRY)
     else:
         return False
