@@ -8,6 +8,9 @@ env:
   global:
     - secure: "Q4/CS/5/BhPbZdH7hjJooF0ucmlSMyM+iDJsmrAsZPI4lBccIEWHoWrqReCWn8AgxvfUMvZ1+PwIsPn47lftfX0zdOsJ92p8P8QovM9BRRf1I+/3imNWvWrAvwkRKWiNblfHPddjcv6TYwl/eQhNS56+wwabAcVmkPljc0iZS6MLCxwdkmcfrwA6DM7nNtofeb60XKBxOVXZ4ASUitIqUyH6CyVmTkV3bvjbeTPpp6vCxybAj/HsgaiqG1q8vbUWGK9Ie5eqm18CJ03M/yVd/St6cwApPcBhSzAnQDSAySKqC0Xesp8nDVC0HQ9S8NxtZyG36+PK7v3shiosvkZR7x7pJUBUZiMV7Bb5DNEUCUqdnXlZ3E5cBHwF7hRM2e4GGM47aQWAhCBwRwr7wowDz5oORfj4oei7bI32xLE0i3DKU1D3IXUFiartqjIZqzky4IGm8wdEWOroN1fd1uR1DPLkNgt9QPlNpX8BrWXUd89iSe+n+QUVoalZciR/QH7MSOXbFBwaUFacPm8b1bTxTFGalqfeMvrJNoBJqcHX0WlXlszAoOFnlwQguBoiVnmxT5KAlmskukHAa1cdHVrGGFei5ucTieeR/U+OZMbL4nrziMYIjyT4BFyI05QiS4D8CqcnJm4TZsejVlptZpEWwYI7e/w/y2J0yXaM7S8cf1g="
 
+python:
+  - 3.5
+  - 3.6
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -18,7 +21,7 @@ install:
   - conda config --add channels conda-forge # For sphinxcontrib.autoprogram
   - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment python=3.5 requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues
   - source activate test-environment
 
 script:
