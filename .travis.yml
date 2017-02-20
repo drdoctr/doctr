@@ -31,7 +31,7 @@ script:
       python -m doctr deploy --key-path deploy_key.enc .;
       python -m doctr deploy --key-path deploy_key.enc --gh-pages-docs docs;
       python -m doctr deploy --no-require-master  --built-docs docs/_build/html --key-path deploy_key.enc "docs-$TRAVIS_BRANCH";
-      python -m doctr deploy --no-require-master --key-path deploy_key.enc --no-sync --command "echo test";
+      python -m doctr deploy --no-require-master --key-path deploy_key.enc --no-sync --command "echo test" docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
