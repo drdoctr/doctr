@@ -21,7 +21,7 @@ or conda
 
    conda install -c conda-forge doctr
 
-**Note that doctr requires Python 3.5.**
+**Note that doctr requires Python 3.5 or newer.**
 
 Usage
 -----
@@ -48,7 +48,7 @@ something like
 
    language: python
    python:
-     - 3.5
+     - 3.6
 
    sudo: false
    env:
@@ -136,7 +136,7 @@ FAQ
   In general, you should already be building your docs on Travis anyway (to
   test that they build), so it seems natural to deploy them from there.
 
-- **Why does Doctr require Python 3.5?**
+- **Why does Doctr require Python 3.5 or newer?**
 
   There are several language features of Python that we wanted to make use of
   that are not available in earlier versions of Python, such as `keyword-only
@@ -146,8 +146,8 @@ FAQ
   `recursive globs <https://docs.python.org/3/library/glob.html>`_. These
   features help keep the Doctr code cleaner and more maintainable.
 
-  If you cannot build your documentation in Python 3.5, you will need to
-  install Python 3.5 in Travis to run Doctr.
+  If you cannot build your documentation in Python 3, you will need to
+  install Python 3.6 in Travis to run Doctr.
 
 - **I would use this, but it's missing a feature that I want.**
 
