@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.1+9.ge457414 documentation</title>
+    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.4.1+15.g4c60ff6 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+9.ge457414',
+        VERSION:     '1.4.1+15.g4c60ff6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -59,7 +59,7 @@
 <div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
 </pre></div>
 </div>
-<p><strong>Note that doctr requires Python 3.5.</strong></p>
+<p><strong>Note that doctr requires Python 3.5 or newer.</strong></p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
@@ -78,7 +78,7 @@ key. The command above will tell you what to do. You should also have
 something like</p>
 <div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">language</span><span class="p">:</span> <span class="n">python</span>
 <span class="n">python</span><span class="p">:</span>
-  <span class="o">-</span> <span class="mf">3.5</span>
+  <span class="o">-</span> <span class="mf">3.6</span>
 
 <span class="n">sudo</span><span class="p">:</span> <span class="n">false</span>
 <span class="n">env</span><span class="p">:</span>
@@ -153,15 +153,15 @@ website materials for your project on GitHub pages.</li>
 <p>In general, you should already be building your docs on Travis anyway (to
 test that they build), so it seems natural to deploy them from there.</p>
 </li>
-<li><p class="first"><strong>Why does Doctr require Python 3.5?</strong></p>
+<li><p class="first"><strong>Why does Doctr require Python 3.5 or newer?</strong></p>
 <p>There are several language features of Python that we wanted to make use of
 that are not available in earlier versions of Python, such as <a class="reference external" href="https://www.python.org/dev/peps/pep-3102/">keyword-only
 arguments</a>,
 <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.run">subprocess.run</a>, and
 <a class="reference external" href="https://docs.python.org/3/library/glob.html">recursive globs</a>. These
 features help keep the Doctr code cleaner and more maintainable.</p>
-<p>If you cannot build your documentation in Python 3.5, you will need to
-install Python 3.5 in Travis to run Doctr.</p>
+<p>If you cannot build your documentation in Python 3, you will need to
+install Python 3.6 in Travis to run Doctr.</p>
 </li>
 <li><p class="first"><strong>I would use this, but it&#8217;s missing a feature that I want.</strong></p>
 <p>Doctr is still very new. We welcome all <a class="reference external" href="https://github.com/drdoctr/doctr/issues">feature requests</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/pulls">pull requests</a>.</p>
