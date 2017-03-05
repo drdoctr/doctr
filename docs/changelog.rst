@@ -4,7 +4,8 @@
 
 Current
 =======
-- Change deploy directory to required argument. This is a backwards incompatible change. Default deploy without arguments should now read ``doctr deploy .`` (:issue:`128`)
+- There is no longer a default deploy directory. Specify the deploy directory 
+  like ``doctr deploy .`` or ``doctr deploy docs``. (:issue:`128`)
 
 
 1.4.1 (2017-01-11)
