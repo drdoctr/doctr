@@ -4,8 +4,9 @@
 
 Current
 =======
-- There is no longer a default deploy directory. Specify the deploy directory 
-  like ``doctr deploy .`` or ``doctr deploy docs``. (:issue:`128`)
+- The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
+  Specify the deploy directory like ``doctr deploy .`` or ``doctr deploy docs``.
+  There is also no longer a default deploy directory. (:issue:`128`)
 
 
 1.4.1 (2017-01-11)
