@@ -2,6 +2,11 @@
  Doctr Changelog
 =================
 
+Current
+=======
+- Error/warn user if ``doctr configure`` is run not at root of git repo
+  (:issue:`162`)
+
 1.4.1 (2017-01-11)
 ==================
 - Fix Travis API endpoint when checking if a repo exists. (:issue:`143`)
