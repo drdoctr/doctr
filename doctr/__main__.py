@@ -63,6 +63,8 @@ options available.
     deploy_parser.add_argument('--gh-pages-docs', default='docs',
         help="""Directory to deploy the html documentation to on gh-pages. The
         default is %(default)r.""")
+    deploy_parser.add_argument('--deploy-branch-name', default='gh-pages',
+                               help="""Name of branch to deploy to""")
     deploy_parser.add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
@@ -128,11 +130,14 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
+    deploy_branch = args.deploy_branch_name
+    
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        can_push = setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
-                             'deploy_key', full_key_path=args.key_path,
-                             require_master=args.require_master)
+        can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
+                                     auth_type='token' if args.token else
+                                     'deploy_key', full_key_path=args.key_path,
+                                     require_master=args.require_master)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
@@ -152,7 +157,7 @@ def deploy(args, parser):
         changes = commit_docs(added=added, removed=removed)
         if changes:
             if can_push and args.push:
-                push_docs()
+                push_docs(deploy_branch)
             else:
                 print("Don't have permission to push. Not trying.")
         else:

@@ -132,7 +132,7 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
+def setup_GitHub_push(deploy_repo, deploy_branch='gh-pages', auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -152,8 +152,9 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
     if TRAVIS_BRANCH != "master" and require_master:
-        print("The docs are only pushed to gh-pages from master. To allow pushing from "
-        "a non-master branch, use the --no-require-master flag", file=sys.stderr)
+        print("The docs are only pushed to {deploy_branch} from master. To allow pushing from "
+              "a non-master branch, use the --no-require-master flag".format(
+                  deploy_branch=deploy_branch), file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         canpush = False
 
@@ -194,50 +195,50 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
 
-    #create gh-pages empty branch with .nojekyll if it doesn't already exist
-    new_gh_pages = create_gh_pages(push=canpush)
-    print("Checking out gh-pages")
-    local_gh_pages_exists = 'gh-pages' in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
-    if new_gh_pages or local_gh_pages_exists:
-        run(['git', 'checkout', 'gh-pages'])
+    #create empty branch with .nojekyll if it doesn't already exist
+    new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
+    print("Checking out {}".format(deploy_branch)
+    local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if new_deploy_branch or local_deploy_branch_exists:
+        run(['git', 'checkout', deploy_branch])
     else:
-        run(['git', 'checkout', '-b', 'gh-pages', '--track', 'doctr_remote/gh-pages'])
+        run(['git', 'checkout', '-b', deploy_branch, '--track', 'doctr_remote/{}'.format(deploy_branch)])
     print("Done")
 
     return canpush
 
-def gh_pages_exists():
+def deploy_branch_exists(deploy_branch):
     """
-    Check if there is a remote gh-pages branch.
+    Check if there is a remote branch named ``deploy_branch``.
 
     This isn't completely robust. If there are multiple remotes and you have a
-    ``gh-pages`` branch on the non-default remote, this won't see it.
+    ``deploy_branch`` branch on the non-default remote, this won't see it.
 
     """
     remote_name = 'doctr_remote'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
 
-    return '{}/gh-pages'.format(remote_name) in branch_names
+    return '{}/{}'.format(remote_name, deploy_branch) in branch_names
 
-def create_gh_pages(push=True):
+def create_deploy_branch(deploy_branch, push=True):
     """
-    If there is no remote ``gh-pages`` branch, create one.
+    If there is no remote branch named ``deploy_branch``, create one.
 
-    Return True if ``gh-pages`` was created, False if not.
+    Return True if ``deploy_branch`` was created, False if not.
     """
-    if not gh_pages_exists():
-        print("Creating gh-pages branch")
-        run(['git', 'checkout', '--orphan', 'gh-pages'])
+    if not deploy_branch_exists(deploy_branch):
+        print("Creating {} branch".format(deploy_branch))
+        run(['git', 'checkout', '--orphan', deploy_branch])
         # delete everything in the new ref.  this is non-destructive to existing
         # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
-        print("Adding .nojekyll file to gh-pages branch")
+        print("Adding .nojekyll file to {} branch".format(deploy_branch))
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
-        run(['git', 'commit', '-m', 'Create new gh-pages branch with .nojekyll'])
+        run(['git', 'commit', '-m', 'Create new {} branch with .nojekyll'.format(deploy_branch)])
         if push:
-            print("Pushing gh-pages branch to remote")
-            run(['git', 'push', '-u', 'doctr_remote', 'gh-pages'])
+            print("Pushing {} branch to remote".format(deploy_branch))
+            run(['git', 'push', '-u', 'doctr_remote', deploy_branch])
         # return to master branch
         run(['git', 'checkout', '-'])
 
@@ -318,7 +319,7 @@ def sync_from_log(src, dst, log_file):
 
 def commit_docs(*, added, removed):
     """
-    Commit the docs to ``gh-pages``
+    Commit the docs to the current branch
 
     Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``
     remote, has been run.
@@ -369,9 +370,9 @@ The doctr command that was run is
 
     return False
 
-def push_docs():
+def push_docs(deploy_branch='gh-pages'):
     """
-    Push the changes to the ``gh-pages`` branch.
+    Push the changes to the branch named ``deploy_branch``.
 
     Assumes that :func:`setup_GitHub_push` has been run and returned True, and
     that :func:`commit_docs` has been run. Does not push anything if no changes
@@ -380,6 +381,6 @@ def push_docs():
     """
 
     print("Pulling")
-    run(['git', 'pull', 'doctr_remote', 'gh-pages'])
+    run(['git', 'pull', 'doctr_remote', deploy_branch])
     print("Pushing commit")
-    run(['git', 'push', '-q', 'doctr_remote', 'gh-pages'])
+    run(['git', 'push', '-q', 'doctr_remote', deploy_branch])
