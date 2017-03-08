@@ -197,7 +197,7 @@ def setup_GitHub_push(deploy_repo, deploy_branch='gh-pages', auth_type='deploy_k
 
     #create empty branch with .nojekyll if it doesn't already exist
     new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
-    print("Checking out {}".format(deploy_branch)
+    print("Checking out {}".format(deploy_branch))
     local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
     if new_deploy_branch or local_deploy_branch_exists:
         run(['git', 'checkout', deploy_branch])
