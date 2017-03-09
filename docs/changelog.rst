@@ -2,6 +2,13 @@
  Doctr Changelog
 =================
 
+Current
+=======
+- The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
+  Specify the deploy directory like ``doctr deploy .`` or ``doctr deploy docs``.
+  There is also no longer a default deploy directory. (:issue:`128`)
+
+
 1.4.1 (2017-01-11)
 ==================
 - Fix Travis API endpoint when checking if a repo exists. (:issue:`143`)
