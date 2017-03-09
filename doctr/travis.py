@@ -132,7 +132,7 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
-def setup_GitHub_push(deploy_repo, deploy_branch='gh-pages', auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=True, deploy_branch='gh-pages'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
