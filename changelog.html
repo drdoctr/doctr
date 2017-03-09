@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Changelog &#8212; Doctr 1.4.1+10.gd2bd84e documentation</title>
+    <title>Doctr Changelog &#8212; Doctr 1.4.1+11.g08b31cc documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+10.gd2bd84e',
+        VERSION:     '1.4.1+11.g08b31cc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,6 +45,16 @@
             
   <div class="section" id="doctr-changelog">
 <h1>Doctr Changelog<a class="headerlink" href="#doctr-changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="master">
+<h2>Master<a class="headerlink" href="#master" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">setup_GitHub_push</span></code> now takes a <code class="docutils literal"><span class="pre">branch_whitelist</span></code> parameter instead of
+of a <code class="docutils literal"><span class="pre">require_master</span></code></li>
+<li><code class="docutils literal"><span class="pre">.travis.yml</span></code> can be used to store some of doctr configuration in addition
+to the command line flags. Write doctr configuration under the <code class="docutils literal"><span class="pre">doctr</span></code> key.
+<a class="reference external" href="https://github.com/drdoctr/doctr/issues/137">#137</a></li>
+</ul>
+</div>
 <div class="section" id="id1">
 <h2>1.4.1 (2017-01-11)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -218,6 +228,7 @@ a token) and deploying to gh-pages from Travis.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Doctr Changelog</a><ul>
+<li><a class="reference internal" href="#master">Master</a></li>
 <li><a class="reference internal" href="#id1">1.4.1 (2017-01-11)</a></li>
 <li><a class="reference internal" href="#id2">1.4.0 (2016-11-11)</a></li>
 <li><a class="reference internal" href="#id3">1.3.3 (2016-09-20)</a></li>

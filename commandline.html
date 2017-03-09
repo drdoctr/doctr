@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Command Line Help &#8212; Doctr 1.4.1+10.gd2bd84e documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.4.1+11.g08b31cc documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+10.gd2bd84e',
+        VERSION:     '1.4.1+11.g08b31cc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -126,7 +126,7 @@ options available.</p>
 </div>
 <div class="section" id="doctr-deploy">
 <h3>doctr deploy<a class="headerlink" href="#doctr-deploy" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force] [--token] [--key-path KEY_PATH]</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--token] [--force] [--key-path KEY_PATH]</span>
 <span class="go">                        [--built-docs BUILT_DOCS] [--gh-pages-docs GH_PAGES_DOCS]</span>
 <span class="go">                        [--deploy-repo DEPLOY_REPO] [--no-require-master]</span>
 <span class="go">                        [--command COMMAND] [--no-sync] [--no-push]</span>
@@ -139,17 +139,16 @@ options available.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-doctr-deploy-force">
-<code class="descname">--force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-force" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the deploy command even   
-    if we do not appear to be on Travis.</p>
-</dd></dl>
-
-<dl class="option">
 <dt id="cmdoption-doctr-deploy-token">
 <code class="descname">--token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push to GitHub using a personal access token. Use this if you   
         used &#8216;doctr configure &#8211;token&#8217;.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-deploy-force">
+<code class="descname">--force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the deploy command even if we do not appear to be on Travis.</p>
 </dd></dl>
 
 <dl class="option">
@@ -211,6 +210,41 @@ options available.</p>
 
 </div>
 </div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>In addition to command line arguments you can configure <code class="docutils literal"><span class="pre">doctr</span></code> using the
+<code class="docutils literal"><span class="pre">.travis.yml</span></code> files. Command line arguments take precedence over the value
+present in the configuration file.</p>
+<p>The configuration parameters available from the <code class="docutils literal"><span class="pre">.travis.yml</span></code> file mirror
+their command line siblings except dashes <code class="docutils literal"><span class="pre">-</span></code> are replaced by underscores
+<code class="docutils literal"><span class="pre">_</span></code>, and <code class="docutils literal"><span class="pre">no-</span></code> prefixed are dropped. Some parameters are not available from
+configuration files for security reasons. For example <code class="docutils literal"><span class="pre">--token</span></code> is only
+available as a command line flag to be passed as an encrypted variable, and not
+hard-coded in <code class="docutils literal"><span class="pre">.travis.yml</span></code></p>
+<p>Use a <code class="docutils literal"><span class="pre">doctr</span></code> section in your <code class="docutils literal"><span class="pre">travis.yml</span></code> file to store your doctr
+configuration:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
+<span class="o">-</span> <span class="n">script</span><span class="p">:</span>
+    <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
+    <span class="o">-</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span>
+    <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
+    <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
+    <span class="o">-</span> <span class="n">cd</span> <span class="o">..</span>
+    <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span>
+<span class="o">-</span> <span class="n">doctr</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">key_path</span> <span class="p">:</span> <span class="s1">&#39;path/to/key/from/repo/root/path.key&#39;</span>
+    <span class="o">-</span> <span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="p">:</span> <span class="s1">&#39;myorg/myrepo&#39;</span>
+</pre></div>
+</div>
+<p>The following options are available from the configuration file and not from
+the command line:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">branches</span></code>:</dt>
+<dd>A list of regular expression that matches branches on which <code class="docutils literal"><span class="pre">doctr</span></code> should
+still deploy the documentation. For example <code class="docutils literal"><span class="pre">.*\.x</span></code> will deploy all
+branches like <code class="docutils literal"><span class="pre">3.x</span></code>, <code class="docutils literal"><span class="pre">4.x</span></code> ...</dd>
+</dl>
+</div>
 </div>
 
 
@@ -227,6 +261,7 @@ options available.</p>
 <li><a class="reference internal" href="#doctr-deploy">doctr deploy</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>
