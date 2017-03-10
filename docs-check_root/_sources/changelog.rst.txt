@@ -6,6 +6,10 @@ Current
 =======
 - Error/warn user if ``doctr configure`` is run not at root of git repo
   (:issue:`162`)
+- The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
+  Specify the deploy directory like ``doctr deploy .`` or ``doctr deploy docs``.
+  There is also no longer a default deploy directory. (:issue:`128`)
+
 
 1.4.1 (2017-01-11)
 ==================
