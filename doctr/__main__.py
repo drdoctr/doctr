@@ -227,7 +227,7 @@ def deploy(args, parser):
     if not args.gh_pages_docs and not args.deploy_directory:
         parser.error("No deploy directory specified. Specify the directory to deploy to using `doctr deploy <dir>`")
 
-    deploy_dir = args.gh_pages_docs or args.deploy_directory or config.get('deploy_directory')
+    deploy_dir = args.gh_pages_docs or args.deploy_directory or config.get('deploy-directory')
 
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo

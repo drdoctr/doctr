@@ -43,5 +43,5 @@ script:
 doctr:
   key-path: deploy_key.enc
   require-master: true
-  gh-pages-docs: 'docs'
+  deploy-directory: 'docs'
   sync: False
