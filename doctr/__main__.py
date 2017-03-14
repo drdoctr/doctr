@@ -51,6 +51,9 @@ def make_parser_with_config_adder(parser, config):
     If the option is a boolean flag, automatically register an opposite,
     exclusive option by prepending or removing the `--no-`. This is useful
     to overwrite config in ``.travis.yml``
+
+    Mutate the config object and remove know keys in order to detect unused
+    options afterwoard.
     """
 
     def internal(arg, **kwargs):
@@ -63,8 +66,9 @@ def make_parser_with_config_adder(parser, config):
         else:
             key = arg[2:]
         if 'default' in kwargs:
-            old_default = kwargs['default']
-            kwargs['default'] = config.get(key, old_default)
+            if key in config:
+                kwargs['default'] = config[key]
+                del config[key]
         action = kwargs.get('action')
         if action in invert:
             exclusive_grp = parser.add_mutually_exclusive_group()
@@ -153,6 +157,9 @@ options available.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
+
+    if config:
+        print('warning, following option in `.travis.yml` not recognised', config)
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
