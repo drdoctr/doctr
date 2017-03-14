@@ -238,7 +238,7 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
-    deploy_branch = args.deploy_branch_name
+    deploy_branch = 'master' if deploy_dir.endswith('github.io') else args.deploy_branch_name
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
