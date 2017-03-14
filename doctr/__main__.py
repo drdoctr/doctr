@@ -134,8 +134,9 @@ options available.
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser.add_argument('--deploy-branch-name', default='gh-pages',
-                               help="""Name of branch to deploy to""")
+    deploy_parser.add_argument('--deploy-branch-name', default=None,
+                               help="""Name of the branch to deploy to (default: 'master' for *.github.io
+                               repos, 'gh-pages' otherwise""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
@@ -238,7 +239,10 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
-    deploy_branch = 'master' if deploy_dir.endswith('github.io') else args.deploy_branch_name
+    if args.deploy_branch_name:
+        deploy_branch = args.deploy_branch_name
+    else:
+        deploy_branch = 'master' if deploy_dir.endswith(('.github.io', '.github.com')) else 'gh-pages'
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
