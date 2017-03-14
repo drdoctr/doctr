@@ -43,5 +43,4 @@ script:
 doctr:
   key-path: deploy_key.enc
   require-master: true
-  deploy-directory: 'docs'
   sync: False

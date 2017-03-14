@@ -130,9 +130,6 @@ options available.
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser_add_argument('--gh-pages-docs', default='docs',
-        help="""Directory to deploy the html documentation to on gh-pages. The
-        default is %(default)r.""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
@@ -227,7 +224,7 @@ def deploy(args, parser):
     if not args.gh_pages_docs and not args.deploy_directory:
         parser.error("No deploy directory specified. Specify the directory to deploy to using `doctr deploy <dir>`")
 
-    deploy_dir = args.gh_pages_docs or args.deploy_directory or config.get('deploy-directory')
+    deploy_dir = args.gh_pages_docs or args.deploy_directory
 
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
