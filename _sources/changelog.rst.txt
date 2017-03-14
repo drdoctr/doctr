@@ -4,12 +4,16 @@
 
 Current
 =======
-- Error/warn user if ``doctr configure`` is run not at root of git repo
-  (:issue:`162`)
 - The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
   Specify the deploy directory like ``doctr deploy .`` or ``doctr deploy docs``.
   There is also no longer a default deploy directory. (:issue:`128`)
-
+- ``setup_GitHub_push`` now takes a ``branch_whitelist`` parameter instead of
+  of a ``require_master``
+- ``.travis.yml`` can be used to store some of doctr configuration in addition
+  to the command line flags. Write doctr configuration under the ``doctr`` key.
+  :issue:`137`
+- All boolean command line flags now have a their counterpart that can overwrite
+  the config values set in ``.travis.yml``
 
 1.4.1 (2017-01-11)
 ==================
