@@ -29,7 +29,7 @@ configuration:
       - cd docs
       - make html
       - cd ..
-      - doctr deploy
+      - doctr deploy .
   - doctr:
       - key-path : 'path/to/key/from/repo/root/path.key'
       - deploy-repo : 'myorg/myrepo'
