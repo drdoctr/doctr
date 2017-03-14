@@ -44,3 +44,4 @@ doctr:
   key-path: deploy_key.enc
   require-master: true
   sync: False
+  lubalubadubdub: False

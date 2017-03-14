@@ -28,6 +28,7 @@ import argparse
 import shlex
 import subprocess
 import yaml
+import json
 
 from pathlib import Path
 
@@ -159,7 +160,7 @@ options available.
         compatibility.""")
 
     if config:
-        print('warning, following option in `.travis.yml` not recognised', config)
+        print('Warning, The following options in `.travis.yml` were not recognised:\n%s' % json.dumps(config, indent=2))
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
