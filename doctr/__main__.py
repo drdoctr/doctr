@@ -23,9 +23,14 @@ For more information, see https://drdoctr.github.io/doctr/docs/
 
 import sys
 import os
+import os.path
 import argparse
 import shlex
 import subprocess
+import yaml
+import json
+
+from pathlib import Path
 
 from textwrap import dedent
 
@@ -35,7 +40,69 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
 
-def get_parser():
+def make_parser_with_config_adder(parser, config):
+    """factory function for a smarter parser:
+
+    return an utility function that pull default from the config as well.
+
+    Pull the default for parser not only from the ``default`` kwarg,
+    but also if an identical value is find in ``config`` where leading
+    ``--`` or ``--no`` is removed.
+
+    If the option is a boolean flag, automatically register an opposite,
+    exclusive option by prepending or removing the `--no-`. This is useful
+    to overwrite config in ``.travis.yml``
+
+    Mutate the config object and remove know keys in order to detect unused
+    options afterwoard.
+    """
+
+    def internal(arg, **kwargs):
+        invert = {
+            'store_true':'store_false',
+            'store_false':'store_true',
+        }
+        if arg.startswith('--no-'):
+            key = arg[5:]
+        else:
+            key = arg[2:]
+        if 'default' in kwargs:
+            if key in config:
+                kwargs['default'] = config[key]
+                del config[key]
+        action = kwargs.get('action')
+        if action in invert:
+            exclusive_grp = parser.add_mutually_exclusive_group()
+            exclusive_grp.add_argument(arg, **kwargs)
+            kwargs['action'] = invert[action]
+            kwargs['help'] = 'Inverse of "%s"' % arg
+            if arg.startswith('--no-'):
+                arg = '--%s' % arg[5:]
+            else:
+                arg = '--no-%s' % arg[2:]
+            exclusive_grp.add_argument(arg, **kwargs)
+        else:
+            parser.add_argument(arg, **kwargs)
+
+    return internal
+
+
+def get_parser(config=None):
+    """
+    return a parser suitable to parse CL arguments.
+
+    Parameters
+    ----------
+
+    config: dict
+        Default values to fall back on, if not given.
+
+    Returns
+    -------
+
+        An argparse parser configured to parse the command lines arguments of
+        sys.argv which will default on values present in ``config``.
+    """
     # This uses RawTextHelpFormatter so that the description (the docstring of
     # this module) is formatted correctly. Unfortunately, that means that
     # parser help is not text wrapped (but all other help is).
@@ -45,49 +112,56 @@ Run --help on the subcommands like 'doctr deploy --help' to see the
 options available.
         """,
         )
+
+    if not config:
+        config={}
     parser.add_argument('-V', '--version', action='version', version='doctr ' + __version__)
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
+
     deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
-    deploy_parser.add_argument('deploy_directory', type=str, nargs='?',
-        help="""Directory to deploy the html documentation to on gh-pages.""")
-    deploy_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
+    deploy_parser_add_argument = make_parser_with_config_adder(deploy_parser, config)
+    deploy_parser_add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
-    deploy_parser.add_argument('--token', action='store_true', default=False,
+    deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
+        help="""Directory to deploy the html documentation to on gh-pages.""")
+    deploy_parser_add_argument('--token', action='store_true', default=False,
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
-    deploy_parser.add_argument('--key-path', default='github_deploy_key.enc',
+    deploy_parser_add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
-    deploy_parser.add_argument('--built-docs', default=None,
+    deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
     deploy_parser.add_argument('--deploy-branch-name', default='gh-pages',
                                help="""Name of branch to deploy to""")
-    deploy_parser.add_argument('--tmp-dir', default=None,
+    deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
-    deploy_parser.add_argument('--deploy-repo', default=None, help="""Repo to
+    deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
-    deploy_parser.add_argument('--no-require-master', dest='require_master', action='store_false',
+    deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
-    deploy_parser.add_argument('--command', default=None, help="""Command to
+    deploy_parser_add_argument('--command', default=None, help="""Command to
         be run before committing and pushing. If the command creates
         additional files that should be deployed, they should be added to the
         index.""")
-    deploy_parser.add_argument('--no-sync', dest='sync', action='store_false',
+    deploy_parser_add_argument('--no-sync', dest='sync', action='store_false',
         default=True, help="""Don't sync any files. This is generally used in
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
-    deploy_parser.add_argument('--no-push', dest='push', action='store_false',
-        default=True, help="Run all the steps except the last push step."
+    deploy_parser_add_argument('--no-push', dest='push', action='store_false',
+        default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
-    deploy_parser.add_argument('--gh-pages-docs', default=None,
+    deploy_parser_add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
 
+    if config:
+        print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -107,6 +181,23 @@ options available.
     The .enc extension is added to the file automatically.""")
 
     return parser
+
+def get_config():
+    """
+    This load some configuration from the ``.travis.yml``, if file is present,
+    ``doctr`` key if present.
+    """
+    p = Path('.travis.yml')
+    if not p.exists():
+        return {}
+    with p.open() as f:
+        travis_config = yaml.safe_load(f.read())
+
+    config = travis_config.get('doctr', {})
+
+    if not isinstance(config, dict):
+        raise ValueError('config is not a dict: {}'.format(config))
+    return config
 
 def process_args(parser):
     args = parser.parse_args()
@@ -128,6 +219,8 @@ def deploy(args, parser):
         parser.error("doctr does not appear to be running on Travis. Use "
             "doctr deploy --force to run anyway.")
 
+    config = get_config()
+
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
 
@@ -146,13 +239,16 @@ def deploy(args, parser):
     deploy_repo = args.deploy_repo or build_repo
 
     deploy_branch = args.deploy_branch_name
-    
+
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
+        branch_whitelist = {'master'} if args.require_master else set({})
+        branch_whitelist.update(set(config.get('branches',set({}))))
+
         can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
-                                     auth_type='token' if args.token else
-                                     'deploy_key', full_key_path=args.key_path,
-                                     require_master=args.require_master)
+                                     auth_type='token' if args.token else 'deploy_key',
+                                     full_key_path=args.key_path,
+                                     branch_whitelist=branch_whitelist)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
@@ -289,7 +385,8 @@ def configure(args, parser):
     """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
 
 def main():
-    return process_args(get_parser())
+    config = get_config()
+    return process_args(get_parser(config=config))
 
 if __name__ == '__main__':
     sys.exit(main())
