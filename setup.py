@@ -20,6 +20,7 @@ setup(
     entry_points={'console_scripts': [ 'doctr = doctr.__main__:main']},
     python_requires= '>=3.5',
     install_requires=[
+        'pyyaml',
         'requests',
         'cryptography',
     ],

@@ -21,7 +21,7 @@ install:
   - conda config --add channels conda-forge # For sphinxcontrib.autoprogram
   - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues pyyaml
   - source activate test-environment
 
 script:
@@ -31,12 +31,17 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --key-path deploy_key.enc .;
-      python -m doctr deploy --key-path deploy_key.enc --gh-pages-docs docs;
-      python -m doctr deploy --no-require-master  --built-docs docs/_build/html --key-path deploy_key.enc "docs-$TRAVIS_BRANCH";
-      python -m doctr deploy --no-require-master --key-path deploy_key.enc --no-sync --command "echo test" docs;
+      python -m doctr deploy --sync .;
+      python -m doctr deploy --sync --gh-pages-docs docs;
+      python -m doctr deploy --sync --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH";
+      python -m doctr deploy --no-require-master  --command "echo test" docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
       py.test doctr;
     fi
+doctr:
+  key-path: deploy_key.enc
+  require-master: true
+  gh-pages-docs: 'docs'
+  sync: False
