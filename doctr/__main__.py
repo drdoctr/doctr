@@ -135,7 +135,7 @@ options available.
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
     deploy_parser.add_argument('--deploy-branch-name', default=None,
-                               help="""Name of the branch to deploy to (default: 'master' for *.github.io
+                               help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
                                repos, 'gh-pages' otherwise""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
