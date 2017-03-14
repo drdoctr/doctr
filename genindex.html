@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &#8212; Doctr 1.4.1+29.ga63f788 documentation</title>
+    <title>Index &#8212; Doctr 1.4.1+27.g7192a9b documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+29.ga63f788',
+        VERSION:     '1.4.1+27.g7192a9b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -76,6 +76,13 @@
 </li>
       </ul></li>
       <li>
+    --deploy-branch-name &lt;deploy_branch_name&gt;
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-doctr-deploy-deploy-branch-name">doctr-deploy command line option</a>
+</li>
+      </ul></li>
+      <li>
     --deploy-repo &lt;deploy_repo&gt;
 
       <ul>
@@ -107,13 +114,8 @@
         <li><a href="commandline.html#cmdoption-doctr-deploy-key-path">doctr-deploy command line option</a>
 </li>
       </ul></li>
-      <li>
-    --no-force
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-no-force">doctr-deploy command line option</a>
-</li>
-      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --no-push
 
@@ -128,8 +130,6 @@
         <li><a href="commandline.html#cmdoption-doctr-deploy-no-require-master">doctr-deploy command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --no-sync
 
@@ -138,38 +138,10 @@
 </li>
       </ul></li>
       <li>
-    --no-token
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-no-token">doctr-deploy command line option</a>
-</li>
-      </ul></li>
-      <li>
     --no-upload-key
 
       <ul>
         <li><a href="commandline.html#cmdoption-doctr-configure-no-upload-key">doctr-configure command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --push
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-push">doctr-deploy command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --require-master
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-require-master">doctr-deploy command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --sync
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-sync">doctr-deploy command line option</a>
 </li>
       </ul></li>
       <li>
@@ -211,7 +183,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#doctr.travis.commit_docs">commit_docs() (in module doctr.travis)</a>
 </li>
-      <li><a href="api.html#doctr.travis.create_gh_pages">create_gh_pages() (in module doctr.travis)</a>
+      <li><a href="api.html#doctr.travis.create_deploy_branch">create_deploy_branch() (in module doctr.travis)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -222,6 +194,8 @@
       <li><a href="api.html#doctr.travis.decrypt_file">decrypt_file() (in module doctr.travis)</a>
 </li>
       <li><a href="api.html#doctr.local.delete_GitHub_token">delete_GitHub_token() (in module doctr.local)</a>
+</li>
+      <li><a href="api.html#doctr.travis.deploy_branch_exists">deploy_branch_exists() (in module doctr.travis)</a>
 </li>
       <li>
     deploy_directory
@@ -262,6 +236,8 @@
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-command">--command &lt;command&gt;</a>
 </li>
+        <li><a href="commandline.html#cmdoption-doctr-deploy-deploy-branch-name">--deploy-branch-name &lt;deploy_branch_name&gt;</a>
+</li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-deploy-repo">--deploy-repo &lt;deploy_repo&gt;</a>
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-force">--force</a>
@@ -270,21 +246,11 @@
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-key-path">--key-path &lt;key_path&gt;</a>
 </li>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-no-force">--no-force</a>
-</li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-no-push">--no-push</a>
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-no-require-master">--no-require-master</a>
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-no-sync">--no-sync</a>
-</li>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-no-token">--no-token</a>
-</li>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-push">--push</a>
-</li>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-require-master">--require-master</a>
-</li>
-        <li><a href="commandline.html#cmdoption-doctr-deploy-sync">--sync</a>
 </li>
         <li><a href="commandline.html#cmdoption-doctr-deploy-token">--token</a>
 </li>
@@ -334,8 +300,6 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#doctr.travis.get_token">get_token() (in module doctr.travis)</a>
-</li>
-      <li><a href="api.html#doctr.travis.gh_pages_exists">gh_pages_exists() (in module doctr.travis)</a>
 </li>
       <li><a href="api.html#doctr.local.GitHub_login">GitHub_login() (in module doctr.local)</a>
 </li>

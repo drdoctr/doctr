@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.4.1+29.ga63f788 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.4.1+27.g7192a9b documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.1+29.ga63f788',
+        VERSION:     '1.4.1+27.g7192a9b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -52,7 +52,6 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="k">import</span> <span class="n">Fernet</span>
 
@@ -177,7 +176,7 @@
     <span class="n">_</span><span class="p">,</span> <span class="n">org</span><span class="p">,</span> <span class="n">git_repo</span> <span class="o">=</span> <span class="n">remote_url</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.git&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">org</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">git_repo</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the remote to push to GitHub (to be run on Travis).</span>
 
@@ -189,17 +188,6 @@
 
 <span class="sd">    For ``auth_type=&#39;deploy_key&#39;``, this sets up the remote with ssh access.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">branch_whitelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">branch_whitelist</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;master&#39;</span><span class="p">}</span>
-
-    <span class="k">if</span> <span class="n">require_master</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`setup_GitHub_push`&#39;s `require_master` argument in favor of `branch_whitelist=[&#39;master&#39;]`&quot;</span><span class="p">,</span> 
-                <span class="ne">DeprecationWarning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">branch_whitelist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;master&#39;</span><span class="p">)</span>
-
     <span class="n">canpush</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">auth_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;auth_type must be &#39;deploy_key&#39; or &#39;token&#39;&quot;</span><span class="p">)</span>
@@ -207,9 +195,10 @@
     <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_PULL_REQUEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">branch_whitelist</span><span class="p">]):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are only pushed to gh-pages from master. To allow pushing from &quot;</span>
-        <span class="s2">&quot;a non-master branch, use the --no-require-master flag&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">TRAVIS_BRANCH</span> <span class="o">!=</span> <span class="s2">&quot;master&quot;</span> <span class="ow">and</span> <span class="n">require_master</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are only pushed to </span><span class="si">{deploy_branch}</span><span class="s2"> from master. To allow pushing from &quot;</span>
+              <span class="s2">&quot;a non-master branch, use the --no-require-master flag&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                  <span class="n">deploy_branch</span><span class="o">=</span><span class="n">deploy_branch</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is the </span><span class="si">{TRAVIS_BRANCH}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -250,50 +239,50 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fetching doctr remote&quot;</span><span class="p">)</span>
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
 
-    <span class="c1">#create gh-pages empty branch with .nojekyll if it doesn&#39;t already exist</span>
-    <span class="n">new_gh_pages</span> <span class="o">=</span> <span class="n">create_gh_pages</span><span class="p">(</span><span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out gh-pages&quot;</span><span class="p">)</span>
-    <span class="n">local_gh_pages_exists</span> <span class="o">=</span> <span class="s1">&#39;gh-pages&#39;</span> <span class="ow">in</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">new_gh_pages</span> <span class="ow">or</span> <span class="n">local_gh_pages_exists</span><span class="p">:</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
+    <span class="c1">#create empty branch with .nojekyll if it doesn&#39;t already exist</span>
+    <span class="n">new_deploy_branch</span> <span class="o">=</span> <span class="n">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+    <span class="n">local_deploy_branch_exists</span> <span class="o">=</span> <span class="n">deploy_branch</span> <span class="ow">in</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">new_deploy_branch</span> <span class="ow">or</span> <span class="n">local_deploy_branch_exists</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span> <span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote/gh-pages&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">,</span> <span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">canpush</span></div>
 
-<div class="viewcode-block" id="gh_pages_exists"><a class="viewcode-back" href="../../api.html#doctr.travis.gh_pages_exists">[docs]</a><span class="k">def</span> <span class="nf">gh_pages_exists</span><span class="p">():</span>
+<div class="viewcode-block" id="deploy_branch_exists"><a class="viewcode-back" href="../../api.html#doctr.travis.deploy_branch_exists">[docs]</a><span class="k">def</span> <span class="nf">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if there is a remote gh-pages branch.</span>
+<span class="sd">    Check if there is a remote branch named ``deploy_branch``.</span>
 
 <span class="sd">    This isn&#39;t completely robust. If there are multiple remotes and you have a</span>
-<span class="sd">    ``gh-pages`` branch on the non-default remote, this won&#39;t see it.</span>
+<span class="sd">    ``deploy_branch`` branch on the non-default remote, this won&#39;t see it.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">remote_name</span> <span class="o">=</span> <span class="s1">&#39;doctr_remote&#39;</span>
     <span class="n">branch_names</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/gh-pages&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">branch_names</span></div>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_name</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)</span> <span class="ow">in</span> <span class="n">branch_names</span></div>
 
-<div class="viewcode-block" id="create_gh_pages"><a class="viewcode-back" href="../../api.html#doctr.travis.create_gh_pages">[docs]</a><span class="k">def</span> <span class="nf">create_gh_pages</span><span class="p">(</span><span class="n">push</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="create_deploy_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.create_deploy_branch">[docs]</a><span class="k">def</span> <span class="nf">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    If there is no remote ``gh-pages`` branch, create one.</span>
+<span class="sd">    If there is no remote branch named ``deploy_branch``, create one.</span>
 
-<span class="sd">    Return True if ``gh-pages`` was created, False if not.</span>
+<span class="sd">    Return True if ``deploy_branch`` was created, False if not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">gh_pages_exists</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating gh-pages branch&quot;</span><span class="p">)</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
         <span class="c1"># delete everything in the new ref.  this is non-destructive to existing</span>
         <span class="c1"># refs/branches, etc...</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-rf&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to gh-pages branch&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;touch&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new gh-pages branch with .nojekyll&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new </span><span class="si">{}</span><span class="s1"> branch with .nojekyll&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
         <span class="k">if</span> <span class="n">push</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing gh-pages branch to remote&quot;</span><span class="p">)</span>
-            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing </span><span class="si">{}</span><span class="s2"> branch to remote&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
         <span class="c1"># return to master branch</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">])</span>
 
@@ -374,7 +363,7 @@
 
 <div class="viewcode-block" id="commit_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.commit_docs">[docs]</a><span class="k">def</span> <span class="nf">commit_docs</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Commit the docs to ``gh-pages``</span>
+<span class="sd">    Commit the docs to the current branch</span>
 
 <span class="sd">    Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``</span>
 <span class="sd">    remote, has been run.</span>
@@ -425,9 +414,9 @@
 
     <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="push_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.push_docs">[docs]</a><span class="k">def</span> <span class="nf">push_docs</span><span class="p">():</span>
+<div class="viewcode-block" id="push_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.push_docs">[docs]</a><span class="k">def</span> <span class="nf">push_docs</span><span class="p">(</span><span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Push the changes to the ``gh-pages`` branch.</span>
+<span class="sd">    Push the changes to the branch named ``deploy_branch``.</span>
 
 <span class="sd">    Assumes that :func:`setup_GitHub_push` has been run and returned True, and</span>
 <span class="sd">    that :func:`commit_docs` has been run. Does not push anything if no changes</span>
@@ -436,9 +425,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pulling&quot;</span><span class="p">)</span>
-    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;pull&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span>
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;pull&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing commit&quot;</span><span class="p">)</span>
-    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">])</span></div>
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span></div>
 </pre></div>
 
           </div>
