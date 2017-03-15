@@ -220,11 +220,12 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
 def deploy_branch_exists(deploy_branch):
     """
-    Check if there is a remote branch named ``deploy_branch``.
+    Check if there is a remote branch with name specified in ``deploy_branch``.
+    Note that default ``deploy_branch`` is ``gh-pages`` for regular repos and
+    ``master`` for ``github.io`` repos.
 
     This isn't completely robust. If there are multiple remotes and you have a
     ``deploy_branch`` branch on the non-default remote, this won't see it.
-
     """
     remote_name = 'doctr_remote'
     branch_names = subprocess.check_output(['git', 'branch', '-r']).decode('utf-8').split()
@@ -233,7 +234,10 @@ def deploy_branch_exists(deploy_branch):
 
 def create_deploy_branch(deploy_branch, push=True):
     """
-    If there is no remote branch named ``deploy_branch``, create one.
+    If there is no remote branch with name specified in ``deploy_branch``,
+    create one.
+    Note that default ``deploy_branch`` is ``gh-pages`` for regular
+    repos and ``master`` for ``github.io`` repos.
 
     Return True if ``deploy_branch`` was created, False if not.
     """
