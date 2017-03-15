@@ -221,6 +221,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 def deploy_branch_exists(deploy_branch):
     """
     Check if there is a remote branch with name specified in ``deploy_branch``.
+
     Note that default ``deploy_branch`` is ``gh-pages`` for regular repos and
     ``master`` for ``github.io`` repos.
 
@@ -236,6 +237,7 @@ def create_deploy_branch(deploy_branch, push=True):
     """
     If there is no remote branch with name specified in ``deploy_branch``,
     create one.
+
     Note that default ``deploy_branch`` is ``gh-pages`` for regular
     repos and ``master`` for ``github.io`` repos.
 
