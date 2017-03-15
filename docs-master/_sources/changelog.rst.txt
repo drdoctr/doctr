@@ -4,6 +4,9 @@
 
 Current
 =======
+
+1.5.0 (2017-03-15)
+==================
 - The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
   Specify the deploy directory like ``doctr deploy .`` or ``doctr deploy docs``.
   There is also no longer a default deploy directory. (:issue:`128`)
@@ -11,9 +14,13 @@ Current
   of a ``require_master``
 - ``.travis.yml`` can be used to store some of doctr configuration in addition
   to the command line flags. Write doctr configuration under the ``doctr`` key.
-  :issue:`137`
-- All boolean command line flags now have a their counterpart that can overwrite
+  (:issue:`137`)
+- All boolean command line flags now have a counterpart that can overwrite
   the config values set in ``.travis.yml``
+- ``doctr`` can now deploy to organization accounts (``github.io``)
+  (:issue:`25`)
+- Added ``--deploy-branch-name`` flag to specify which branch docs will be
+  deployed to
 
 1.4.1 (2017-01-11)
 ==================
