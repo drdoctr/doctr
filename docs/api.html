@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &#8212; Doctr 1.4.1+39.g165ecdb documentation</title>
+    <title>API &#8212; Doctr 1.4.1+40.g65f1bb4 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+39.g165ecdb',
+        VERSION:     '1.4.1+40.g65f1bb4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -148,7 +148,10 @@ committed.</p>
 <dl class="function">
 <dt id="doctr.travis.create_deploy_branch">
 <code class="descclassname">doctr.travis.</code><code class="descname">create_deploy_branch</code><span class="sig-paren">(</span><em>deploy_branch</em>, <em>push=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#create_deploy_branch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.create_deploy_branch" title="Permalink to this definition">¶</a></dt>
-<dd><p>If there is no remote branch named <code class="docutils literal"><span class="pre">deploy_branch</span></code>, create one.</p>
+<dd><p>If there is no remote branch with name specified in <code class="docutils literal"><span class="pre">deploy_branch</span></code>,
+create one.
+Note that default <code class="docutils literal"><span class="pre">deploy_branch</span></code> is <code class="docutils literal"><span class="pre">gh-pages</span></code> for regular
+repos and <code class="docutils literal"><span class="pre">master</span></code> for <code class="docutils literal"><span class="pre">github.io</span></code> repos.</p>
 <p>Return True if <code class="docutils literal"><span class="pre">deploy_branch</span></code> was created, False if not.</p>
 </dd></dl>
 
@@ -166,7 +169,9 @@ extension.</p>
 <dl class="function">
 <dt id="doctr.travis.deploy_branch_exists">
 <code class="descclassname">doctr.travis.</code><code class="descname">deploy_branch_exists</code><span class="sig-paren">(</span><em>deploy_branch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#deploy_branch_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.deploy_branch_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if there is a remote branch named <code class="docutils literal"><span class="pre">deploy_branch</span></code>.</p>
+<dd><p>Check if there is a remote branch with name specified in <code class="docutils literal"><span class="pre">deploy_branch</span></code>.
+Note that default <code class="docutils literal"><span class="pre">deploy_branch</span></code> is <code class="docutils literal"><span class="pre">gh-pages</span></code> for regular repos and
+<code class="docutils literal"><span class="pre">master</span></code> for <code class="docutils literal"><span class="pre">github.io</span></code> repos.</p>
 <p>This isn&#8217;t completely robust. If there are multiple remotes and you have a
 <code class="docutils literal"><span class="pre">deploy_branch</span></code> branch on the non-default remote, this won&#8217;t see it.</p>
 </dd></dl>
