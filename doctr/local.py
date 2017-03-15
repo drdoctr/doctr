@@ -248,3 +248,20 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     r.raise_for_status()
 
     return r.json().get('private', False)
+
+def in_git_root():
+    """
+    Check if current working directory is root dir of git repo.
+    Return ``False`` if it isn't.
+    """
+    repo = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if repo.returncode == 0:
+        root_dir = repo.stdout.decode('utf-8').strip()
+        if os.getcwd() == root_dir:
+            return True
+        else:
+            return False
+    else:
+        raise RuntimeError('doctr should be run in the root directory of a '
+                           'git repository')

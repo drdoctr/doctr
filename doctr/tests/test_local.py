@@ -1,7 +1,10 @@
 import os
+import tempfile
+import subprocess
 
-from ..local import check_repo_exists
+from ..local import check_repo_exists, in_git_root
 
+import pytest
 from pytest import raises
 
 TEST_TOKEN = os.environ.get('TESTING_TOKEN', None)
@@ -41,3 +44,29 @@ def test_travis_bad_repo():
 
 def test_travis_repo_exists():
     assert not check_repo_exists('drdoctr/doctr', service='travis')
+
+@pytest.fixture(scope="module")
+def test_repo():
+    temp_dir = tempfile.mkdtemp()
+    os.chdir(temp_dir)
+    subprocess.call(['git', 'init'])
+    return {'repo_dir': temp_dir}
+
+@pytest.mark.parametrize('subdir, _bool', [
+    ('a_subdir', False),
+    ('.', True),
+])
+def test_in_git_root(subdir, _bool, test_repo):
+    os.chdir(test_repo['repo_dir'])
+    try:
+        os.mkdir(subdir)
+    except FileExistsError:
+        pass
+    os.chdir(subdir)
+    assert in_git_root() is _bool
+
+def test_not_in_git_repo():
+    temp_dir = tempfile.mkdtemp()
+    os.chdir(temp_dir)
+    with raises(RuntimeError):
+        in_git_root()

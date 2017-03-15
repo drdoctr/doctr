@@ -35,7 +35,8 @@ from pathlib import Path
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
+                    upload_GitHub_deploy_key, generate_ssh_key,
+                    check_repo_exists, GitHub_login, in_git_root)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
@@ -295,6 +296,11 @@ def configure(args, parser):
     if not args.force and on_travis():
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
+
+    if not args.force and not in_git_root():
+        parser.error("doctr should be run from the root directory "
+                     "of your repository. Use doctr configure --force "
+                     "to run anyway.")
 
     if args.upload_key:
         login_kwargs = GitHub_login()
