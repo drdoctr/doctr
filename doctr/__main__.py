@@ -83,7 +83,7 @@ def make_parser_with_config_adder(parser, config):
             exclusive_grp.add_argument(arg, **kwargs)
         else:
             parser.add_argument(arg, **kwargs)
-            
+
     return internal
 
 
@@ -126,7 +126,6 @@ options available.
     if we do not appear to be on Travis.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
         help="""Directory to deploy the html documentation to on gh-pages.""")
-
     deploy_parser_add_argument('--token', action='store_true', default=False,
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
@@ -135,6 +134,9 @@ options available.
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
+    deploy_parser.add_argument('--deploy-branch-name', default=None,
+                               help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
+                               repos, 'gh-pages' otherwise)""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
@@ -160,7 +162,7 @@ options available.
         compatibility.""")
 
     if config:
-        print('Warning, The following options in `.travis.yml` were not recognised:\n%s' % json.dumps(config, indent=2))
+        print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
 
     configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
     configure_parser.set_defaults(func=configure)
@@ -237,15 +239,20 @@ def deploy(args, parser):
     build_repo = get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
+    if args.deploy_branch_name:
+        deploy_branch = args.deploy_branch_name
+    else:
+        deploy_branch = 'master' if deploy_dir.endswith(('.github.io', '.github.com')) else 'gh-pages'
+
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-
         branch_whitelist = {'master'} if args.require_master else set({})
         branch_whitelist.update(set(config.get('branches',set({}))))
 
-        can_push = setup_GitHub_push(deploy_repo, auth_type='token' if args.token else
-                             'deploy_key', full_key_path=args.key_path,
-                             branch_whitelist=branch_whitelist)
+        can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
+                                     auth_type='token' if args.token else 'deploy_key',
+                                     full_key_path=args.key_path,
+                                     branch_whitelist=branch_whitelist)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
@@ -265,7 +272,7 @@ def deploy(args, parser):
         changes = commit_docs(added=added, removed=removed)
         if changes:
             if can_push and args.push:
-                push_docs()
+                push_docs(deploy_branch)
             else:
                 print("Don't have permission to push. Not trying.")
         else:
