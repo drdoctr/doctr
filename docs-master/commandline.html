@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Command Line Help &#8212; Doctr 1.4.1+29.ga63f788 documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.4.1+42.gb5a8bc0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1+29.ga63f788',
+        VERSION:     '1.4.1+42.gb5a8bc0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -128,6 +128,7 @@ options available.</p>
 <h3>doctr deploy<a class="headerlink" href="#doctr-deploy" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force | --no-force] [--token | --no-token]</span>
 <span class="go">                        [--key-path KEY_PATH] [--built-docs BUILT_DOCS]</span>
+<span class="go">                        [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
 <span class="go">                        [--deploy-repo DEPLOY_REPO]</span>
 <span class="go">                        [--no-require-master | --require-master]</span>
 <span class="go">                        [--command COMMAND] [--no-sync | --sync]</span>
@@ -184,6 +185,13 @@ options available.</p>
 <code class="descname">--built-docs</code><code class="descclassname"> &lt;built_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-built-docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Location of the built html documentation to be deployed to   
         gh-pages. If not specified, Doctr will try to automatically detect build location</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-deploy-deploy-branch-name">
+<code class="descname">--deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the branch to deploy to (default: &#8216;master&#8217; for <code class="docutils literal"><span class="pre">*.github.io</span></code>   
+                               repos, &#8216;gh-pages&#8217; otherwise)</p>
 </dd></dl>
 
 <dl class="option">
