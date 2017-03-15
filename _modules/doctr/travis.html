@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.4.1+40.g65f1bb4 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.4.1+40.g79b9e7d documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.4.1+40.g65f1bb4',
+        VERSION:     '1.4.1+40.g79b9e7d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -270,7 +270,6 @@
 
 <span class="sd">    This isn&#39;t completely robust. If there are multiple remotes and you have a</span>
 <span class="sd">    ``deploy_branch`` branch on the non-default remote, this won&#39;t see it.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">remote_name</span> <span class="o">=</span> <span class="s1">&#39;doctr_remote&#39;</span>
     <span class="n">branch_names</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -285,7 +284,6 @@
 <span class="sd">    repos and ``master`` for ``github.io`` repos.</span>
 
 <span class="sd">    Return True if ``deploy_branch`` was created, False if not.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
