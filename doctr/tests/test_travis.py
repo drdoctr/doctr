@@ -154,8 +154,6 @@ def test_sync_from_log(src, dst):
                           ('doctr', 'false', 'set()', False),
                          ])
 def test_determine_push_rights(travis_branch, travis_pr, whitelist, canpush, monkeypatch):
-    monkeypatch.setenv('TRAVIS_BRANCH', travis_branch)
-    monkeypatch.setenv('TRAVIS_PULL_REQUEST', travis_pr)
     branch_whitelist = {whitelist}
 
-    assert determine_push_rights(branch_whitelist) == canpush
+    assert determine_push_rights(branch_whitelist, travis_branch, travis_pr) == canpush

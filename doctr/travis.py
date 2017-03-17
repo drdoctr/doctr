@@ -159,7 +159,11 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     if auth_type not in ['deploy_key', 'token']:
         raise ValueError("auth_type must be 'deploy_key' or 'token'")
 
-    canpush = determine_push_rights(branch_whitelist)
+    TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
+    TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
+
+    canpush = determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
+                                    TRAVIS_PULL_REQUEST)
 
     print("Setting git attributes")
 
@@ -390,12 +394,11 @@ def push_docs(deploy_branch='gh-pages'):
     print("Pushing commit")
     run(['git', 'push', '-q', 'doctr_remote', deploy_branch])
 
-def determine_push_rights(branch_whitelist):
-
+def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
+    """Check if Travis is running on ``master`` (or a whitelisted branch) to
+    determine if we can/should push the docs to the deploy repo
+    """
     canpush = True
-
-    TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
-    TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
     if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
         print("The docs are only pushed to gh-pages from master. To allow pushing from "
