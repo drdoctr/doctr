@@ -5,6 +5,10 @@
 Current
 =======
 
+1.5.1 (2017-03-17)
+==================
+- Fix for critical bug that allowed pushing docs from any branch. (:issue:`160`)
+
 1.5.0 (2017-03-15)
 ==================
 - The ``--gh-pages-docs`` flag of ``doctr deploy`` has been deprecated.
