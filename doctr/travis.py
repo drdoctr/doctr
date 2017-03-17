@@ -151,7 +151,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     if require_master is not None:
         import warnings
-        warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch_whitelist=['master']`", 
+        warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch_whitelist=['master']`",
                 DeprecationWarning,
                 stacklevel=2)
         branch_whitelist.add('master')
@@ -163,7 +163,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    if any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
+    if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
         print("The docs are only pushed to gh-pages from master. To allow pushing from "
         "a non-master branch, use the --no-require-master flag", file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
