@@ -146,32 +146,24 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
 
-    if branch_whitelist is None:
+    if not branch_whitelist:
         branch_whitelist={'master'}
 
     if require_master is not None:
         import warnings
-        warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch_whitelist=['master']`", 
+        warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch_whitelist=['master']`",
                 DeprecationWarning,
                 stacklevel=2)
         branch_whitelist.add('master')
 
-    canpush = True
     if auth_type not in ['deploy_key', 'token']:
         raise ValueError("auth_type must be 'deploy_key' or 'token'")
 
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    if any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
-        print("The docs are only pushed to gh-pages from master. To allow pushing from "
-        "a non-master branch, use the --no-require-master flag", file=sys.stderr)
-        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
-        canpush = False
-
-    if TRAVIS_PULL_REQUEST != "false":
-        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-        canpush = False
+    canpush = determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
+                                    TRAVIS_PULL_REQUEST)
 
     print("Setting git attributes")
 
@@ -401,3 +393,21 @@ def push_docs(deploy_branch='gh-pages'):
     run(['git', 'pull', 'doctr_remote', deploy_branch])
     print("Pushing commit")
     run(['git', 'push', '-q', 'doctr_remote', deploy_branch])
+
+def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
+    """Check if Travis is running on ``master`` (or a whitelisted branch) to
+    determine if we can/should push the docs to the deploy repo
+    """
+    canpush = True
+
+    if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
+        print("The docs are only pushed to gh-pages from master. To allow pushing from "
+        "a non-master branch, use the --no-require-master flag", file=sys.stderr)
+        print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
+        canpush = False
+
+    if TRAVIS_PULL_REQUEST != "false":
+        print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        canpush = False
+
+    return canpush
