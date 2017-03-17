@@ -9,7 +9,7 @@ from os.path import join
 
 import pytest
 
-from ..travis import sync_from_log
+from ..travis import sync_from_log, determine_push_rights
 
 @pytest.mark.parametrize("src", ["src"])
 @pytest.mark.parametrize("dst", ['.', 'dst'])
@@ -142,3 +142,20 @@ def test_sync_from_log(src, dst):
 
         finally:
             os.chdir(old_curdir)
+
+
+@pytest.mark.parametrize("travis_branch, travis_pr, whitelist, canpush",
+                         [('doctr', 'true', 'master', False),
+                          ('doctr', 'false', 'master', False),
+                          ('master', 'true', 'master', False),
+                          ('master', 'false', 'master', True),
+                          ('doctr', 'True', 'doctr', False),
+                          ('doctr', 'false', 'doctr', True),
+                          ('doctr', 'false', 'set()', False),
+                         ])
+def test_determine_push_rights(travis_branch, travis_pr, whitelist, canpush, monkeypatch):
+    monkeypatch.setenv('TRAVIS_BRANCH', travis_branch)
+    monkeypatch.setenv('TRAVIS_PULL_REQUEST', travis_pr)
+    branch_whitelist = {whitelist}
+
+    assert determine_push_rights(branch_whitelist) == canpush
