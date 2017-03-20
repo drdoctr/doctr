@@ -143,7 +143,9 @@ options available.
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="DEPRECATED: Allow docs to be pushed from a branch other than master: "
-                           "use `branch-whitelist` option in `.travis.yml`")
+                           "use `branches` option.")
+    deploy_parser.add_argument('--branches', dest='branches', default=['master'], nargs='*',
+        help="""List of patterns for acceptable branch to push docs from""", metavar='PATTERN')
     deploy_parser_add_argument('--command', default=None, help="""Command to
         be run before committing and pushing. If the command creates
         additional files that should be deployed, they should be added to the
@@ -249,17 +251,16 @@ def deploy(args, parser):
     try:
         if args.require_master is not None:
             import warnings
-            warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branch-whitelist` configuration option in `.travis.yml`",
+            warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branches` configuration option.",
                 DeprecationWarning,
                 stacklevel=2)
+            args.branches.append('.*')
 
-        branch_whitelist = {'master'} if args.require_master else set({})
-        branch_whitelist.update(set(config.get('branches', set({}))))
 
         can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=args.key_path,
-                                     branch_whitelist=branch_whitelist)
+                                     branch_whitelist=set(args.branches))
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()

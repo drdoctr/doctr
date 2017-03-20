@@ -31,10 +31,10 @@ script:
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --sync .;
-      python -m doctr deploy --sync --gh-pages-docs docs;
-      python -m doctr deploy --sync --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH";
-      python -m doctr deploy --no-require-master  --command "echo test" docs;
+      python -m doctr deploy --sync --branches '$^' .;
+      python -m doctr deploy --sync --branches '$^' --gh-pages-docs docs;
+      python -m doctr deploy --sync --built-docs docs/_build/html "docs-$TRAVIS_BRANCH";
+      python -m doctr deploy --command "echo test" docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
@@ -45,3 +45,5 @@ doctr:
   require-master: true
   sync: False
   lubalubadubdub: False
+  branches:
+    - '[^-].*'

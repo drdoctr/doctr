@@ -17,8 +17,8 @@ The branch name on Travis is stored in the ``$TRAVIS_BRANCH`` environment
 variable. One suggestion would be to deploy the docs to a special directory
 for each branch. The following will deploy the docs to ``docs`` on master and
 :raw-html:`<code>docs-<i>branch</i></code>` on *branch*. You can use the
-``branch-whitelist`` option in ``.travis.yml`` to list explicitly allowed
-branches. ``branch_whitelist`` takes list of regular expressions.
+``branches`` option in ``.travis.yml`` to list explicitly allowed
+branches. ``branches`` takes list of regular expressions.
 
 .. code:: yaml
 
@@ -29,7 +29,7 @@ branches. ``branch_whitelist`` takes list of regular expressions.
      fi
    ...
    doctr:
-     branch-whitelist:
+     branches:
       - master
       - [0-9]+\.x
 

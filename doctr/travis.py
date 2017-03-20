@@ -395,7 +395,7 @@ def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
 
     if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
         print("The docs are only pushed to gh-pages from master. To allow pushing from "
-        "a non-master branch, use the `branch-whitelist` option in `.travis.yml`", file=sys.stderr)
+        "a non-master branch, use the `branches` option.", file=sys.stderr)
         print("This is the {TRAVIS_BRANCH} branch".format(TRAVIS_BRANCH=TRAVIS_BRANCH), file=sys.stderr)
         canpush = False
 
