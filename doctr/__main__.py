@@ -119,9 +119,9 @@ options available.
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
-    deploy_parser.set_defaults(func=deploy)
-    deploy_parser_add_argument = make_parser_with_config_adder(deploy_parser, config)
+    _deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
+    _deploy_parser.set_defaults(func=deploy)
+    deploy_parser_add_argument = make_parser_with_config_adder(_deploy_parser, config)
     deploy_parser_add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
@@ -144,7 +144,7 @@ options available.
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="DEPRECATED: Allow docs to be pushed from a branch other than master: "
                            "use `branches` option.")
-    deploy_parser.add_argument('--branches', dest='branches', default=['master'], nargs='*',
+    deploy_parser_add_argument('--branches', dest='branches', default=['master'], nargs='*',
         help="""List of patterns for acceptable branch to push docs from""", metavar='PATTERN')
     deploy_parser_add_argument('--command', default=None, help="""Command to
         be run before committing and pushing. If the command creates
