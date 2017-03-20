@@ -16,15 +16,22 @@ useful to deploy docs from other branches, to test them out.
 The branch name on Travis is stored in the ``$TRAVIS_BRANCH`` environment
 variable. One suggestion would be to deploy the docs to a special directory
 for each branch. The following will deploy the docs to ``docs`` on master and
-:raw-html:`<code>docs-<i>branch</i></code>` on *branch*.
+:raw-html:`<code>docs-<i>branch</i></code>` on *branch*. You can use the
+``branch-whitelist`` option in ``.travis.yml`` to list explicitly allowed
+branches. ``branch_whitelist`` takes list of regular expressions.
 
 .. code:: yaml
 
    - if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
-       doctr deploy --gh-pages-docs docs;
+       doctr deploy "docs";
      else
-       doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH";
+       doctr deploy "docs-$TRAVIS_BRANCH";
      fi
+   ...
+   doctr:
+     branch-whitelist:
+      - master
+      - [0-9]+\.x
 
 This will not remove the docs after the branch is merged. You will need to do
 that manually.
