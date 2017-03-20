@@ -119,9 +119,9 @@ options available.
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
-    deploy_parser.set_defaults(func=deploy)
-    deploy_parser_add_argument = make_parser_with_config_adder(deploy_parser, config)
+    _deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
+    _deploy_parser.set_defaults(func=deploy)
+    deploy_parser_add_argument = make_parser_with_config_adder(_deploy_parser, config)
     deploy_parser_add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
@@ -134,7 +134,7 @@ options available.
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser.add_argument('--deploy-branch-name', default=None,
+    deploy_parser_add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
                                repos, 'gh-pages' otherwise)""")
     deploy_parser_add_argument('--tmp-dir', default=None,
@@ -142,7 +142,10 @@ options available.
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
-        default=True, help="""Allow docs to be pushed from a branch other than master""")
+        default=True, help="DEPRECATED: Allow docs to be pushed from a branch other than master: "
+                           "use `branches` option.")
+    deploy_parser_add_argument('--branches', dest='branches', default=['master'], nargs='*',
+        help="""List of patterns for acceptable branch to push docs from""", metavar='PATTERN')
     deploy_parser_add_argument('--command', default=None, help="""Command to
         be run before committing and pushing. If the command creates
         additional files that should be deployed, they should be added to the
@@ -220,8 +223,6 @@ def deploy(args, parser):
         parser.error("doctr does not appear to be running on Travis. Use "
             "doctr deploy --force to run anyway.")
 
-    config = get_config()
-
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
 
@@ -246,13 +247,18 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        branch_whitelist = {'master'} if args.require_master else set({})
-        branch_whitelist.update(set(config.get('branches',set({}))))
+        if args.require_master is not None:
+            import warnings
+            warnings.warn("`setup_GitHub_push`'s `require_master` argument in favor of `branches` configuration option.",
+                DeprecationWarning,
+                stacklevel=2)
+            args.branches.append('.*')
+
 
         can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=args.key_path,
-                                     branch_whitelist=branch_whitelist)
+                                     branch_whitelist=set(args.branches))
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
