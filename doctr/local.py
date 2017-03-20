@@ -19,6 +19,64 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
+def set_encrypted_variable(variable, value, build_repo, *, public_key=None, is_private=False, **login_kwargs):
+    """
+    set the env variable  `variable` encrypted using travis API.
+    """
+
+    # if not isinstance(variable, str):
+    #     raise TypeError("variable should be str")
+    # if not isinstance(variable, str):
+    #     raise TypeError("values should be str")
+
+    if not public_key:
+        headers = {'Accept': 'application/vnd.travis-ci.2+json',
+                   'Content-Type': 'application/json',
+                   'User-Agent': 'MyClient/1.0.0'}
+        if is_private:
+            tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+                                             note="temporary token to auth against travis",
+                                             **login_kwargs)
+            data = {'github_token': tok_dict['token']}
+            token_id = tok_dict['id']
+            res = requests.post('https://api.travis-ci.org/auth/github', data=json.dumps(data), headers=headers)
+            res.raise_for_status()
+            access_token = res.json()['access_token']
+            headers['Authorization'] = 'token {}'.format(access_token)
+            print(res.json()['access_token'])
+            tld = 'org'
+        else:
+            tld = 'org'
+        res = requests.get('https://api.travis-ci.{tld}/repos/{build_repo}'.format(build_repo=build_repo, tld=tld),
+            headers=headers)
+        if res.status_code == requests.codes.not_found:
+            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
+        if not res.status_code == requests.codes.ok and is_private:
+            print('del stuff')
+            # delete_GitHub_token(token_id, **login_kwargs)
+        res.raise_for_status()
+        repo_id = res.json()['repo']['id']
+        res = requests.post('https://api.travis-ci.{tld}/settings/env_vars?repository_id={repo_id}'.format(repo_id=repo_id, tld=tld),
+            headers=headers,
+            data=json.dumps({
+                    'env_var':{
+                      "name": variable,
+                      "value": value,
+                      "public": False,
+                      "repository_id": repo_id
+                    }
+            }))
+        if is_private:
+            pass #delete_GitHub_token(token_id, **login_kwargs)
+
+        res.raise_for_status()
+
+        # Remove temporary GH token
+
+
+
+
+
 def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis

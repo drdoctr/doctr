@@ -35,7 +35,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login, set_encrypted_variable)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run)
 from . import __version__
@@ -122,6 +122,20 @@ options available.
     deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
     deploy_parser.set_defaults(func=deploy)
     deploy_parser_add_argument = make_parser_with_config_adder(deploy_parser, config)
+
+    _user_fork_parser = subcommand.add_parser('fork-deploy', help="""Deploy the docs to GitHub from Travis to the current user fork""")
+    _user_fork_parser.set_defaults(func=enable_fork_build)
+
+    _user_fork_parser.add_argument("--no-upload-key", action="store_false", default=True,
+        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
+        option, you will not be prompted for your GitHub credentials, so this option is not compatible with
+        private repositories.""")
+    _user_fork_parser.add_argument('--token', action='store_true', default=False,
+        help="""Push to GitHub using a personal access token. Use this if you
+        used 'doctr configure --token'.""")
+    _user_fork_parser.add_argument('--force', action='store_true', help="""Run the deploy command even
+    if we do not appear to be on Travis.""")
+
     deploy_parser_add_argument('--force', action='store_true', help="""Run the deploy command even
     if we do not appear to be on Travis.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
@@ -387,6 +401,74 @@ def configure(args, parser):
 
     in your .travis.yml.
     """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
+
+def enable_fork_build(args, parser):
+    if not args.force and on_travis():
+        parser.error("doctr appears to be running on Travis. Use "
+            "doctr configure --force to run anyway.")
+
+    if args.upload_key:
+        login_kwargs = GitHub_login()
+    else:
+        login_kwargs = {'auth': None, 'headers': None}
+
+    build_repo = input("What repo do you want to build the docs for (<yourname>/reponame, like 'drdoctr/doctr')? ")
+    is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
+    check_repo_exists(build_repo, service='travis')
+
+    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}/<branchname>] ".format(build_repo=build_repo))
+    if not deploy_repo:
+        deploy_repo = build_repo
+
+    if deploy_repo != build_repo:
+        check_repo_exists(deploy_repo, service='github', **login_kwargs)
+
+    N = IncrementingInt(1)
+
+    header = "\n================== You should now do the following ==================\n"
+
+    if args.token:
+        pass
+        #token = generate_GitHub_token(**login_kwargs)['token']
+        #encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
+        #    build_repo=build_repo, is_private=is_private, **login_kwargs)
+        #print(dedent("""
+        #A personal access token for doctr has been created.
+
+        #You can go to https://github.com/settings/tokens to revoke it."""))
+
+        #print(header)
+    else:
+        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath='tmp_key')
+        import base64
+        with open('tmp_key', 'rb') as f:
+            data = ''.join(base64.encodebytes(f.read()).decode().splitlines())
+        # TODO remove
+        # key = encrypt_file('tmp_key', delete=True)
+        set_encrypted_variable("DOCTR_USER_DEPLOY", data, build_repo=build_repo, is_private=True, **login_kwargs)
+
+        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_repo)
+
+        if args.upload_key:
+
+            upload_GitHub_deploy_key(deploy_repo, ssh_key, **login_kwargs, title='Doctr key blah blah self deploy of {}'.format(build_repo))
+
+            print(dedent("""
+            The deploy key has been added for {deploy_repo}.
+
+            You can go to {deploy_keys_url} to revoke the deploy key.\
+            """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath='tmp_key')))
+            print(header)
+        else:
+            print(header)
+            print(dedent("""\
+            {N}. Go to {deploy_keys_url}
+            and add the following as a new key:
+
+            {ssh_key}
+            Be sure to allow write access for the key.
+            """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url, N=N)))
+
 
 def main():
     config = get_config()
