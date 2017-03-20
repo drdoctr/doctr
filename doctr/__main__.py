@@ -134,7 +134,7 @@ options available.
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to
         gh-pages. If not specified, Doctr will try to automatically detect build location""")
-    deploy_parser.add_argument('--deploy-branch-name', default=None,
+    deploy_parser_add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
                                repos, 'gh-pages' otherwise)""")
     deploy_parser_add_argument('--tmp-dir', default=None,
@@ -222,8 +222,6 @@ def deploy(args, parser):
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
             "doctr deploy --force to run anyway.")
-
-    config = get_config()
 
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
