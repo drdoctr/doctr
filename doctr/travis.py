@@ -133,6 +133,20 @@ def get_current_repo():
     _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
     return (org + '/' + git_repo)
 
+def get_travis_branch():
+    """Get the name of the branch that the PR is from.
+
+    Note that this is not simply ``$TRAVIS_BRANCH``. the ``push`` build will
+    use the correct branch (the branch that the PR is from) but the ``pr``
+    build will use the _target_ of the PR (usually master). So instead, we ask
+    for ``$TRAVIS_PULL_REQUEST_BRANCH`` if it's a PR build, and
+    ``$TRAVIS_BRANCH`` if it's a push build.
+    """
+    if os.environ.get("TRAVIS_PULL_REQUEST", "") == "true":
+        return os.environ.get("TRAVIS_PULL_REQUEST_BRANCH", "")
+    else:
+        return os.environ.get("TRAVIS_BRANCH", "")
+
 def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=None, branch_whitelist=None, deploy_branch='gh-pages'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
