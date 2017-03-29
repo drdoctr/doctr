@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>doctr.travis &#8212; Doctr 1.5.1+1.gca537c0 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.1+3.g60932ab documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.1+1.gca537c0',
+        VERSION:     '1.5.1+3.g60932ab',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -176,6 +176,20 @@
     <span class="c1"># Travis uses the https clone url</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">org</span><span class="p">,</span> <span class="n">git_repo</span> <span class="o">=</span> <span class="n">remote_url</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.git&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">org</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">git_repo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_travis_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.get_travis_branch">[docs]</a><span class="k">def</span> <span class="nf">get_travis_branch</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the name of the branch that the PR is from.</span>
+
+<span class="sd">    Note that this is not simply ``$TRAVIS_BRANCH``. the ``push`` build will</span>
+<span class="sd">    use the correct branch (the branch that the PR is from) but the ``pr``</span>
+<span class="sd">    build will use the _target_ of the PR (usually master). So instead, we ask</span>
+<span class="sd">    for ``$TRAVIS_PULL_REQUEST_BRANCH`` if it&#39;s a PR build, and</span>
+<span class="sd">    ``$TRAVIS_BRANCH`` if it&#39;s a push build.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

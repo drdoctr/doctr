@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &#8212; Doctr 1.5.1+1.gca537c0 documentation</title>
+    <title>API &#8212; Doctr 1.5.1+3.g60932ab documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.1+1.gca537c0',
+        VERSION:     '1.5.1+3.g60932ab',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -204,6 +204,17 @@ specified on the command line.</p>
 <dd><p>Get the encrypted GitHub token in Travis.</p>
 <p>Make sure the contents this variable do not leak. The <code class="docutils literal"><span class="pre">run()</span></code> function
 will remove this from the output, so always use it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.get_travis_branch">
+<code class="descclassname">doctr.travis.</code><code class="descname">get_travis_branch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#get_travis_branch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.get_travis_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the branch that the PR is from.</p>
+<p>Note that this is not simply <code class="docutils literal"><span class="pre">$TRAVIS_BRANCH</span></code>. the <code class="docutils literal"><span class="pre">push</span></code> build will
+use the correct branch (the branch that the PR is from) but the <code class="docutils literal"><span class="pre">pr</span></code>
+build will use the _target_ of the PR (usually master). So instead, we ask
+for <code class="docutils literal"><span class="pre">$TRAVIS_PULL_REQUEST_BRANCH</span></code> if it&#8217;s a PR build, and
+<code class="docutils literal"><span class="pre">$TRAVIS_BRANCH</span></code> if it&#8217;s a push build.</p>
 </dd></dl>
 
 <dl class="function">
