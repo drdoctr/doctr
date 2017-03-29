@@ -2,8 +2,9 @@
  Doctr Changelog
 =================
 
-Current
-=======
+1.5.2 (2017-03-29)
+==================
+- Fix for bug that prevented deploying using ``no-require-master``
 
 1.5.1 (2017-03-17)
 ==================
