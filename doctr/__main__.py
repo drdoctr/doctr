@@ -37,7 +37,7 @@ from textwrap import dedent
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
-    get_current_repo, sync_from_log, find_sphinx_build_dir, run)
+    get_current_repo, sync_from_log, find_sphinx_build_dir, run, get_travis_branch)
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -246,7 +246,7 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        branch_whitelist = {'master'} if args.require_master else set({})
+        branch_whitelist = {'master'} if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
 
         can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
