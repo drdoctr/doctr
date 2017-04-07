@@ -2,6 +2,10 @@
  Doctr Changelog
 =================
 
+1.5.3 (2017-04-07)
+==================
+- Fix for ``doctr configure`` crashing (:issue:`179`)
+
 1.5.2 (2017-03-29)
 ==================
 - Fix for bug that prevented deploying using ``no-require-master``
