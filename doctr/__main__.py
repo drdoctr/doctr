@@ -371,7 +371,7 @@ def configure(args, parser):
           - set -e
           - # Command to build your docs
           - pip install doctr
-          - doctr deploy{options} {deploy_directory}
+          - doctr deploy{options} <deploy_directory>
 
     to the docs build of your .travis.yml.  The 'set -e' prevents doctr from
     running when the docs build fails. Use the 'script' section so that if
