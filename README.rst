@@ -26,8 +26,8 @@ or conda
 Usage
 -----
 
-Run doctr
-~~~~~~~~~
+Run doctr configure
+~~~~~~~~~~~~~~~~~~~
 
 First use doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.
@@ -39,9 +39,9 @@ Run
    doctr configure
 
 and enter your data. You will need your GitHub username and password, and the
-repo you want to build the docs for.
+repo organization / name for which you want to build the docs.
 
-That repo should already be setup with Travis. We recommend enabling
+**Note**: That repo should already be set up with Travis. We recommend enabling
 `branch protection <https://help.github.com/articles/about-protected-branches/>`_
 for the ``gh-pages`` branch and other branches, as the deploy key
 used by doctr has the ability to push to any branch in your repo.
@@ -78,20 +78,20 @@ Your ``.travis.yml`` file should look something like this:
      - cd ..
      - doctr deploy .
 
+See `the travis config file
+-<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
+-itself for example.
 
-See `the Doctr travis
-file <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ for example.
+   **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
+   in the call to ``deploy``. E.g., ``doctr deploy docs/``.
 
-    **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
-    in the call to ``deploy``. E.g., ``doctr deploy docs/``.
+   **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from  running
+   when the docs build fails.
 
-    **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from running
-    when the docs build fails.
-
-    **Warning:** Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
-    you use ``after_success``, it will `not cause
-    <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
-    the build to fail.
+   **Warning:** Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
+   you use ``after_success``, it will `not cause
+   <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
+   the build to fail.
 
 Commit your new files and build your site
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
