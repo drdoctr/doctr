@@ -79,8 +79,7 @@ Your ``.travis.yml`` file should look something like this:
      - doctr deploy .
 
 See `the travis config file
-<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
--itself for example.
+<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
 
    **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
    in the call to ``deploy``. E.g., ``doctr deploy docs/``.
