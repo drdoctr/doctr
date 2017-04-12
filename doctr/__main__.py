@@ -218,7 +218,7 @@ def on_travis():
 def deploy(args, parser):
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
-            "doctr deploy --force to run anyway.")
+                     "doctr deploy <target-dir> --force to run anyway.")
 
     config = get_config()
 
@@ -355,7 +355,10 @@ def configure(args, parser):
 
 
         print(dedent("""\
-        {N}. Commit the file {keypath}.enc.
+        {N}. Add the file {keypath}.enc to be staged for commit:
+
+            git add {keypath}.enc
+
         """.format(keypath=args.key_path, N=N)))
 
     options = ''
@@ -365,28 +368,31 @@ def configure(args, parser):
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
     print(dedent("""\
-    {N}. Add
+    {N}. Add these lines to your `.travis.yml` file:
 
         script:
           - set -e
           - # Command to build your docs
           - pip install doctr
-          - doctr deploy{options} <deploy_directory>
-
-    to the docs build of your .travis.yml.  The 'set -e' prevents doctr from
-    running when the docs build fails. Use the 'script' section so that if
-    doctr fails it causes the build to fail.
-    """.format(options=options, N=N)))
-
-    print(dedent("""\
-    {N}. Put
+          - doctr deploy{options} <target-directory>
 
         env:
-          global:
+          global:`
             - secure: "{encrypted_variable}"
 
-    in your .travis.yml.
-    """.format(encrypted_variable=encrypted_variable.decode('utf-8'), N=N)))
+    """.format(options=options, N=N, encrypted_variable=encrypted_variable.decode('utf-8'))))
+
+    print(dedent("""\
+    {N}. Commit and push these changes to your github repository.
+        The docs should now build automatically on travis.
+
+    """.format(N=N)))
+
+    print(dedent("""\
+    Note: the `set -e` prevents doctr from running when the docs build
+      fails. We put this code under `script:` so that if doctr fails it causes
+      the build to fail.
+    """))
 
 def main():
     config = get_config()

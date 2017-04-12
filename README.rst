@@ -26,6 +26,12 @@ or conda
 Usage
 -----
 
+Run doctr configure
+~~~~~~~~~~~~~~~~~~~
+
+First use doctr to generate the necessary key files so that travis can push
+to your gh-pages (or other) branch.
+
 Run
 
 .. code::
@@ -33,60 +39,74 @@ Run
    doctr configure
 
 and enter your data. You will need your GitHub username and password, and the
-repo you want to build the docs for.
+repo organization / name for which you want to build the docs.
 
-That repo should already be setup with Travis. We recommend enabling
+**Note**: That repo should already be set up with Travis. We recommend enabling
 `branch protection <https://help.github.com/articles/about-protected-branches/>`_
 for the ``gh-pages`` branch and other branches, as the deploy key
-used by Doctr has the ability to push to any branch in your repo.
+used by doctr has the ability to push to any branch in your repo.
 
-Then add the stuff to your ``.travis.yml`` and commit the encrypted deploy
-key. The command above will tell you what to do. You should also have
-something like
+Edit your travis file
+~~~~~~~~~~~~~~~~~~~~~
+
+Doctr will output a bunch of text as well as instructions for next steps. You
+need to edit your ``.travis.yml`` with this text. It contains the secure key
+that lets travis communicate with your github repository, as well as the
+code to run (in ``script:``) in order to build the docs and deploy doctr.
+
+Your ``.travis.yml`` file should look something like this:
 
 .. code:: yaml
 
+   # doctr requires python >=3.5
    language: python
    python:
      - 3.6
 
+   # This gives doctr the key we've generated
    sudo: false
    env:
      global:
        secure: "<your secure key from doctr here>"
 
+   # This is the script to build the docs on travis, then deploy
    script:
      - set -e
      - pip install sphinx doctr
      - cd docs
      - make html
      - cd ..
-     - doctr deploy
+     - doctr deploy .
 
+See `the travis config file
+<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
 
-in your ``.travis.yml``. See `the one
-<https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr
-itself for example.
+   **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
+   in the call to ``deploy``. E.g., ``doctr deploy docs/``.
 
-.. warning::
-
-   Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from running
+   **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from  running
    when the docs build fails.
 
-.. warning::
-
-   Put ``doctr deploy`` in the ``script`` section of your ``.travis.yml``. If
+   **Warning:** Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
    you use ``after_success``, it will `not cause
    <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
    the build to fail.
 
+Commit your new files and build your site
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+``doctr configure`` will create a new file that contains your key. Commit this as
+well as the changes to ``.travis.yml``. Once you push to github, travis should
+now automatically build your documentation and deploy it.
 
-**Heads up:** Doctr requires Python 3.5 or newer. Be sure to run it in a
+Notes 
+-----
+
+**Doctr requires Python 3.5 or newer.** Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
 
-Another suggestion: If you use Sphinx, add
+**To force an error on warnings** if you use Sphinx, add
 
 .. code::
 
@@ -95,9 +115,9 @@ Another suggestion: If you use Sphinx, add
 to your Sphinx ``Makefile``. This will make Sphinx error even if there are
 warnings, keeping your docs more accurate.
 
-**Note: Doctr does not require Sphinx. It will work with deploying anything to
-GitHub pages.** However, if you do use Sphinx, doctr will find your Sphinx
-docs automatically (otherwise use ``doctr deploy --built-docs <DOCS PATH>``).
+**Doctr does not require Sphinx.** It will work with deploying anything to
+GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
+docs automatically (otherwise use ``doctr deploy . --built-docs <DOCS PATH>``).
 
 FAQ
 ---
