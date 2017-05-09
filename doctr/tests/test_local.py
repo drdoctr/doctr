@@ -2,6 +2,7 @@ import os
 
 from ..local import check_repo_exists
 
+import pytest
 from pytest import raises
 
 TEST_TOKEN = os.environ.get('TESTING_TOKEN', None)
@@ -11,17 +12,21 @@ else:
     HEADERS = None
 
 
+@pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_bad_user():
     with raises(RuntimeError):
         check_repo_exists('---/invaliduser', headers=HEADERS)
 
+@pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_bad_repo():
     with raises(RuntimeError):
         check_repo_exists('drdoctr/---', headers=HEADERS)
 
+@pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_repo_exists():
     assert not check_repo_exists('drdoctr/doctr', headers=HEADERS)
 
+@pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_invalid_repo():
     with raises(RuntimeError):
         check_repo_exists('fdsf', headers=HEADERS)
