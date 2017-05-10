@@ -2,6 +2,12 @@
  Doctr Changelog
 =================
 
+Current
+=======
+- Invalid input won't kill ``doctr`` but will instead prompt again for valid
+  input. Prevents users from having to go through the whole login rigamarole
+  again. (:issue:`181`)
+
 1.5.3 (2017-04-07)
 ==================
 - Fix for ``doctr configure`` crashing (:issue:`179`)
