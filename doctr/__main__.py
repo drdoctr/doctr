@@ -301,16 +301,29 @@ def configure(args, parser):
     else:
         login_kwargs = {'auth': None, 'headers': None}
 
-    build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-    is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
-    check_repo_exists(build_repo, service='travis')
+    get_build_repo = False
+    while not get_build_repo:
+        try:
+            build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
+            is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
+            check_repo_exists(build_repo, service='travis')
+            get_build_repo = True
+        except RuntimeError:
+            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
 
-    deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
-    if not deploy_repo:
-        deploy_repo = build_repo
+    get_deploy_repo = False
+    while not get_deploy_repo:
+        try:
+            deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
+            if not deploy_repo:
+                deploy_repo = build_repo
 
-    if deploy_repo != build_repo:
-        check_repo_exists(deploy_repo, service='github', **login_kwargs)
+            if deploy_repo != build_repo:
+                check_repo_exists(deploy_repo, service='github', **login_kwargs)
+
+            get_deploy_repo = True
+        except RuntimeError:
+            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
 
     N = IncrementingInt(1)
 
