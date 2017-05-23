@@ -246,8 +246,16 @@ def checkout_deploy_branch(deploy_branch, canpush=True):
     #create empty branch with .nojekyll if it doesn't already exist
     create_deploy_branch(deploy_branch, push=canpush)
     print("Checking out doctr working branch tracking doctr_remote/{}".format(deploy_branch))
-    run(['git', 'checkout', '-B', DOCTR_WORKING_BRANCH, '--track', 'doctr_remote/{}'.format(deploy_branch)])
+    clear_working_branch()
+    run(['git', 'checkout', '-b', DOCTR_WORKING_BRANCH, '--track', 'doctr_remote/{}'.format(deploy_branch)])
     print("Done")
+
+    return canpush
+
+def clear_working_branch():
+    local_branch_names = subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if DOCTR_WORKING_BRANCH in local_branch_names:
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
 
 def deploy_branch_exists(deploy_branch):
     """
@@ -275,20 +283,24 @@ def create_deploy_branch(deploy_branch, push=True):
     Return True if ``deploy_branch`` was created, False if not.
     """
     if not deploy_branch_exists(deploy_branch):
-        print("Creating {} branch".format(deploy_branch))
-        run(['git', 'checkout', '--orphan', deploy_branch])
+        print("Creating {} branch on doctr_remote".format(deploy_branch))
+        clear_working_branch()
+        run(['git', 'checkout', '--orphan', DOCTR_WORKING_BRANCH])
         # delete everything in the new ref.  this is non-destructive to existing
         # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
-        print("Adding .nojekyll file to {} branch".format(deploy_branch))
+        print("Adding .nojekyll file to working branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', 'Create new {} branch with .nojekyll'.format(deploy_branch)])
         if push:
-            print("Pushing {} branch to remote".format(deploy_branch))
-            run(['git', 'push', '-u', 'doctr_remote', deploy_branch])
-        # return to master branch
-        run(['git', 'checkout', '-'])
+            print("Pushing working branch to remote {} branch".format(deploy_branch))
+            run(['git', 'push', '-u', 'doctr_remote', '{}:{}'.format(DOCTR_WORKING_BRANCH, deploy_branch)])
+        # return to master branch and clear the working branch
+        run(['git', 'checkout', 'master'])
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
+        # fetch the remote so that doctr_remote/{deploy_branch} is resolved
+        run(['git', 'fetch', 'doctr_remote'])
 
         return True
     return False
