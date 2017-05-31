@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &#8212; Doctr 1.5.3+11.g084f0c0 documentation</title>
+    <title>API &#8212; Doctr 1.5.3+12.g330e7fb documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+11.g084f0c0',
+        VERSION:     '1.5.3+12.g330e7fb',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -231,6 +231,8 @@ were made.</p>
 <code class="descclassname">doctr.travis.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em>, <em>shell=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the command <code class="docutils literal"><span class="pre">args</span></code>.</p>
 <p>Automatically hides the secret GitHub token from the output.</p>
+<p>If shell=False (recommended for most commands), args should be a list of
+strings. If shell=True, args should be a string of the command to run.</p>
 </dd></dl>
 
 <dl class="function">
