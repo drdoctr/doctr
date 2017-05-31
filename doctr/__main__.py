@@ -267,7 +267,7 @@ def deploy(args, parser):
             added, removed = [], []
 
         if args.command:
-            run(shlex.split(args.command))
+            run(shlex.split(args.command), shell=True)
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
