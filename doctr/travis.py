@@ -110,6 +110,9 @@ def run(args, shell=False):
     Run the command ``args``.
 
     Automatically hides the secret GitHub token from the output.
+
+    If shell=False (recommended for most commands), args should be a list of
+    strings. If shell=True, args should be a string of the command to run.
     """
     if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
         token = b''
