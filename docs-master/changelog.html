@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Changelog &#8212; Doctr 1.5.3+10.ga41af76 documentation</title>
+    <title>Doctr Changelog &#8212; Doctr 1.5.3+13.g2457c4c documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+10.ga41af76',
+        VERSION:     '1.5.3+13.g2457c4c',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -35,7 +35,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -48,7 +48,7 @@
 <div class="section" id="current">
 <h2>Current<a class="headerlink" href="#current" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Invalid input won&#8217;t kill <code class="docutils literal"><span class="pre">doctr</span></code> but will instead prompt again for valid
+<li>Invalid input won’t kill <code class="docutils literal"><span class="pre">doctr</span></code> but will instead prompt again for valid
 input. Prevents users from having to go through the whole login rigamarole
 again. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/181">#181</a>)</li>
 </ul>
@@ -96,7 +96,7 @@ deployed to</li>
 <li>Fix Travis API endpoint when checking if a repo exists. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/143">#143</a>)</li>
 <li>Add warnings about needing <code class="docutils literal"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal"><span class="pre">.travis.yml</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/146">#146</a>)</li>
 <li>Explicitly pull from <code class="docutils literal"><span class="pre">doctr_remote</span></code> on Travis. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/147">#147</a>)</li>
-<li>Don&#8217;t attempt to push <code class="docutils literal"><span class="pre">gh-pages</span></code> to the remote when pushing is disallowed
+<li>Don’t attempt to push <code class="docutils literal"><span class="pre">gh-pages</span></code> to the remote when pushing is disallowed
 (e.g., on a pull request). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/150">#150</a>)</li>
 <li><code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> now deletes the public key automatically. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/151">#151</a>)</li>
 </ul>
@@ -125,7 +125,7 @@ option. Thanks &#64;Carreau. (<a class="reference external" href="https://github
 &#64;dan-blanchard). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/121">#121</a>)</li>
 <li>Add a list of projects using doctr to the docs. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/116">#116</a>)</li>
 <li>Use the sphinx-issues extension in the changelog. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/99">#99</a>)</li>
-<li>Swap &#8220;description&#8221; and &#8220;long_description&#8221; in setup.py. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/120">#120</a>)</li>
+<li>Swap “description” and “long_description” in setup.py. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/120">#120</a>)</li>
 </ul>
 </div>
 <div class="section" id="id8">
@@ -133,7 +133,7 @@ option. Thanks &#64;Carreau. (<a class="reference external" href="https://github
 <div class="section" id="major-changes">
 <h3>Major Changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Fix the &#8211;built-docs option. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/111">#111</a>)</li>
+<li>Fix the –built-docs option. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/111">#111</a>)</li>
 </ul>
 </div>
 <div class="section" id="minor-changes">
@@ -163,7 +163,7 @@ fork. (<a class="reference external" href="https://github.com/drdoctr/doctr/issu
 deploys using a log file). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
 <li>Python API: Change <code class="docutils literal"><span class="pre">commit_docs</span></code> to actually commit the docs (previously,
 it was done in <code class="docutils literal"><span class="pre">push_docs</span></code>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
-<li>Python API: Don&#8217;t sync files or get the build dir in <code class="docutils literal"><span class="pre">commit_docs</span></code>. This
+<li>Python API: Don’t sync files or get the build dir in <code class="docutils literal"><span class="pre">commit_docs</span></code>. This
 is done separately in <code class="docutils literal"><span class="pre">__main__.py</span></code>. The Python API for <code class="docutils literal"><span class="pre">commit_docs</span></code> is
 now <code class="docutils literal"><span class="pre">commit_docs(*,</span> <span class="pre">added,</span> <span class="pre">removed)</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
 <li>Python API: <code class="docutils literal"><span class="pre">sync_from_log</span></code> automatically includes the log file in the list of added
@@ -179,8 +179,8 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 <h3>Minor Changes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Correctly commit the log file. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
-<li>Fix sync_from_log to create dst if it doesn&#8217;t exist, and add tests for this. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
-<li>Don&#8217;t assume that doctr is being run from master when creating gh-pages. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/93">#93</a>)</li>
+<li>Fix sync_from_log to create dst if it doesn’t exist, and add tests for this. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
+<li>Don’t assume that doctr is being run from master when creating gh-pages. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/93">#93</a>)</li>
 <li>Return to the previous branch after deploying. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/93">#93</a>)</li>
 <li>Remove extra space before options in configure help text. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/90">#90</a>)</li>
 </ul>
@@ -215,9 +215,9 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 <h3>Minor Changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add installation instructions to the documentation. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/60">#60</a>)</li>
-<li>Fix some lingering &#8220;Travis docs builder&#8221; -&gt; &#8220;Doctr&#8221;, including in the git
+<li>Fix some lingering “Travis docs builder” -&gt; “Doctr”, including in the git
 attributes on Travis. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/60">#60</a>)</li>
-<li>Better error message when the repo doesn&#8217;t exist in doctr configure. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/59">#59</a>)</li>
+<li>Better error message when the repo doesn’t exist in doctr configure. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/59">#59</a>)</li>
 <li>Indicate that repo should be org/reponame in doctr configure. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/59">#59</a>)</li>
 </ul>
 </div>
@@ -340,7 +340,7 @@ a token) and deploying to gh-pages from Travis.</li>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
