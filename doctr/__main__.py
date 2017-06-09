@@ -25,7 +25,6 @@ import sys
 import os
 import os.path
 import argparse
-import shlex
 import subprocess
 import yaml
 import json
@@ -268,7 +267,7 @@ def deploy(args, parser):
 
         if args.command:
             run(['git', 'checkout', get_travis_branch()])
-            run(shlex.split(args.command))
+            run(args.command, shell=True)
             run(['git', 'checkout', deploy_branch])
 
         changes = commit_docs(added=added, removed=removed)
