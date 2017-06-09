@@ -267,7 +267,9 @@ def deploy(args, parser):
             added, removed = [], []
 
         if args.command:
+            run(['git', 'checkout', get_travis_branch()])
             run(shlex.split(args.command))
+            run(['git', 'checkout', deploy_branch])
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
