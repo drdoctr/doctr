@@ -132,8 +132,9 @@ options available.
     deploy_parser_add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
     deploy_parser_add_argument('--built-docs', default=None,
-        help="""Location of the built html documentation to be deployed to
-        gh-pages. If not specified, Doctr will try to automatically detect build location""")
+        help="""Location of the built html documentation to be deployed to gh-pages. If not
+        specified, Doctr will try to automatically detect build location
+        (right now only works for Sphinx docs).""")
     deploy_parser.add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
                                repos, 'gh-pages' otherwise)""")
