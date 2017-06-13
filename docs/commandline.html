@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+18.g553d022 documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+15.gb646c40 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+18.g553d022',
+        VERSION:     '1.5.3+15.gb646c40',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -57,7 +57,7 @@ which you should insert into your .travis.yml.</p>
 <p>Then, on Travis, for the build where you build your docs, add</p>
 <blockquote>
 <div><ul class="simple">
-<li>doctr deploy</li>
+<li>doctr deploy . –built-docs path/to/built/html/</li>
 </ul>
 </div></blockquote>
 <p>to the end of the build to deploy the docs to GitHub pages.  This will only
@@ -183,8 +183,9 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-built-docs">
 <code class="descname">--built-docs</code><code class="descclassname"> &lt;built_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-built-docs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Location of the built html documentation to be deployed to   
-        gh-pages. If not specified, Doctr will try to automatically detect build location</p>
+<dd><p>Location of the built html documentation to be deployed to gh-pages. If not   
+        specified, Doctr will try to automatically detect build location   
+        (right now only works for Sphinx docs).</p>
 </dd></dl>
 
 <dl class="option">
