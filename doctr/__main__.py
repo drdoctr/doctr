@@ -13,7 +13,7 @@ which you should insert into your .travis.yml.
 
 Then, on Travis, for the build where you build your docs, add
 
-    - doctr deploy
+    - doctr deploy . --built-docs path/to/built/html/
 
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
@@ -376,7 +376,7 @@ def configure(args, parser):
 
         """.format(keypath=args.key_path, N=N)))
 
-    options = ''
+    options = '--built-docs path/to/built/html/'
     if args.key_path != 'github_deploy_key':
         options += ' --key-path {keypath}.enc'.format(keypath=args.key_path)
     if deploy_repo != build_repo:

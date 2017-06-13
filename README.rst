@@ -72,11 +72,11 @@ Your ``.travis.yml`` file should look something like this:
    # This is the script to build the docs on travis, then deploy
    script:
      - set -e
-     - pip install sphinx doctr
+     - pip install doctr
      - cd docs
      - make html
      - cd ..
-     - doctr deploy .
+     - doctr deploy . --built-docs path/to/built/html/
 
 See `the travis config file
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
@@ -99,21 +99,12 @@ Commit your new files and build your site
 well as the changes to ``.travis.yml``. Once you push to github, travis should
 now automatically build your documentation and deploy it.
 
-Notes 
+Notes
 -----
 
 **Doctr requires Python 3.5 or newer.** Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
-
-**To force an error on warnings** if you use Sphinx, add
-
-.. code::
-
-   html: SPHINXOPTS += -W
-
-to your Sphinx ``Makefile``. This will make Sphinx error even if there are
-warnings, keeping your docs more accurate.
 
 **Doctr does not require Sphinx.** It will work with deploying anything to
 GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
