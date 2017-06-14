@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.5.3+18.g553d022 documentation</title>
+    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.5.3+22.g12996c5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+18.g553d022',
+        VERSION:     '1.5.3+22.g12996c5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -99,11 +99,11 @@ code to run (in <code class="docutils literal"><span class="pre">script:</span><
 <span class="c1"># This is the script to build the docs on travis, then deploy</span>
 <span class="n">script</span><span class="p">:</span>
   <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
-  <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span> <span class="n">doctr</span>
+  <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
   <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
   <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
   <span class="o">-</span> <span class="n">cd</span> <span class="o">..</span>
-  <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span>
+  <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the travis config file</a> used by Doctr itself for example.</p>
@@ -129,12 +129,6 @@ now automatically build your documentation and deploy it.</p>
 <p><strong>Doctr requires Python 3.5 or newer.</strong> Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.</p>
-<p><strong>To force an error on warnings</strong> if you use Sphinx, add</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">html</span><span class="p">:</span> <span class="n">SPHINXOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">W</span>
-</pre></div>
-</div>
-<p>to your Sphinx <code class="docutils literal"><span class="pre">Makefile</span></code>. This will make Sphinx error even if there are
-warnings, keeping your docs more accurate.</p>
 <p><strong>Doctr does not require Sphinx.</strong> It will work with deploying anything to
 GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
 docs automatically (otherwise use <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
