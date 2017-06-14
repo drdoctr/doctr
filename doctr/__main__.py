@@ -13,7 +13,7 @@ which you should insert into your .travis.yml.
 
 Then, on Travis, for the build where you build your docs, add
 
-    - doctr deploy
+    - doctr deploy . --built-docs path/to/built/html/
 
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
@@ -131,8 +131,9 @@ options available.
     deploy_parser_add_argument('--key-path', default='github_deploy_key.enc',
         help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
     deploy_parser_add_argument('--built-docs', default=None,
-        help="""Location of the built html documentation to be deployed to
-        gh-pages. If not specified, Doctr will try to automatically detect build location""")
+        help="""Location of the built html documentation to be deployed to gh-pages. If not
+        specified, Doctr will try to automatically detect build location
+        (right now only works for Sphinx docs).""")
     deploy_parser.add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
                                repos, 'gh-pages' otherwise)""")
@@ -375,7 +376,7 @@ def configure(args, parser):
 
         """.format(keypath=args.key_path, N=N)))
 
-    options = ''
+    options = '--built-docs path/to/built/html/'
     if args.key_path != 'github_deploy_key':
         options += ' --key-path {keypath}.enc'.format(keypath=args.key_path)
     if deploy_repo != build_repo:
