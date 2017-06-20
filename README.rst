@@ -5,10 +5,10 @@ A tool for automatically deploying docs from Travis CI to GitHub pages.
 
 Doctr helps deploy things to GitHub pages from Travis CI by managing the
 otherwise complicated tasks of generating, encrypting, managing SSH deploy
-keys, and syncing files across branches. Doctr was originally designed for
-documentation, but it can be used to deploy any kind of website to GitHub
-pages that can be built on Travis CI. For example, you can use doctr to deploy
-a `blog
+keys, and syncing files to the ``gh-pages`` branch. Doctr was originally
+designed for documentation, but it can be used to deploy any kind of website
+to GitHub pages that can be built on Travis CI. For example, you can use doctr
+to deploy a `blog
 <http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/>`_
 or website that uses a `static site generator <https://www.staticgen.com/>`_.
 
