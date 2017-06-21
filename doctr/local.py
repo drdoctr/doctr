@@ -128,6 +128,12 @@ def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
     if r.status_code == 401:
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
+            auth_header = base64.urlsafe_b64encode(bytes(username + ':' + password, 'utf8')).decode()
+            login_kwargs = {'auth': None, 'headers': {'Authorization': 'Basic {}'.format(auth_header)}}
+            try:
+                generate_GitHub_token(**login_kwargs)
+            except requests.exceptions.HTTPError:
+                pass
             print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
             OTP = input("Authentication code: ")
             return GitHub_login(username=username, password=password, OTP=OTP, headers=headers)
