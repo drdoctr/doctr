@@ -217,6 +217,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
+    run(['git', 'stash'])
 
     #create empty branch with .nojekyll if it doesn't already exist
     new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
