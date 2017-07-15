@@ -36,7 +36,8 @@ from textwrap import dedent
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
-    get_current_repo, sync_from_log, find_sphinx_build_dir, run, get_travis_branch)
+    get_current_repo, sync_from_log, find_sphinx_build_dir, run,
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -152,6 +153,9 @@ options available.
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
+    deploy_parser.add_argument('--no-temp-dir', dest='temp_dir',
+        action='store_false', default=True, help="""Don't copy the
+        --built-docs directory to a temporary directory.""")
     deploy_parser_add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
@@ -160,6 +164,7 @@ options available.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
+
 
     if config:
         print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
@@ -249,14 +254,25 @@ def deploy(args, parser):
         branch_whitelist = {'master'} if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
 
-        can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
+        canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=args.key_path,
                                      branch_whitelist=branch_whitelist)
 
+        if args.command:
+            run(args.command, shell=True)
+
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
+            if args.temp_dir:
+                built_docs = copy_to_tmp(built_docs)
 
+        # Reset in case there are modified files that are tracked in the
+        # dpeloy branch.
+        run(['git', 'reset', '--hard'])
+        checkout_deploy_branch(deploy_branch, canpush=canpush)
+
+        if args.sync:
             log_file = os.path.join(deploy_dir, '.doctr-files')
 
             print("Moving built docs into place")
@@ -266,14 +282,9 @@ def deploy(args, parser):
         else:
             added, removed = [], []
 
-        if args.command:
-            run(['git', 'checkout', get_travis_branch()])
-            run(args.command, shell=True)
-            run(['git', 'checkout', deploy_branch])
-
         changes = commit_docs(added=added, removed=removed)
         if changes:
-            if can_push and args.push:
+            if canpush and args.push:
                 push_docs(deploy_branch)
             else:
                 print("Don't have permission to push. Not trying.")

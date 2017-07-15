@@ -9,6 +9,8 @@ import subprocess
 import sys
 import glob
 import re
+import pathlib
+import tempfile
 
 from cryptography.fernet import Fernet
 
@@ -218,6 +220,12 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     print("Fetching doctr remote")
     run(['git', 'fetch', 'doctr_remote'])
 
+    return canpush
+
+def checkout_deploy_branch(deploy_branch, canpush=True):
+    """
+    Checkout the deploy branch, creating it if it doesn't exist.
+    """
     #create empty branch with .nojekyll if it doesn't already exist
     new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
     print("Checking out {}".format(deploy_branch))
@@ -227,8 +235,6 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     else:
         run(['git', 'checkout', '-b', deploy_branch, '--track', 'doctr_remote/{}'.format(deploy_branch)])
     print("Done")
-
-    return canpush
 
 def deploy_branch_exists(deploy_branch):
     """
@@ -293,6 +299,19 @@ def find_sphinx_build_dir():
 #
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
+
+def copy_to_tmp(directory):
+    """
+    Copies the contents of directory to a temporary directory, and returns the
+    copied location.
+    """
+    tmp_dir = tempfile.mkdtemp()
+    # Use pathlib because os.path.basename is different depending on whether
+    # the path ends in a /
+    p = pathlib.Path(directory)
+    new_dir = os.path.join(tmp_dir, p.name)
+    shutil.copytree(directory, new_dir)
+    return new_dir
 
 def sync_from_log(src, dst, log_file):
     """
