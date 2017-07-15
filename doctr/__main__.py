@@ -259,6 +259,11 @@ def deploy(args, parser):
                                      full_key_path=args.key_path,
                                      branch_whitelist=branch_whitelist)
 
+        if args.command:
+            run(['git', 'checkout', get_travis_branch()])
+            run(args.command, shell=True)
+            run(['git', 'checkout', deploy_branch])
+
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
             if args.temp_dir:
@@ -272,11 +277,6 @@ def deploy(args, parser):
 
         else:
             added, removed = [], []
-
-        if args.command:
-            run(['git', 'checkout', get_travis_branch()])
-            run(args.command, shell=True)
-            run(['git', 'checkout', deploy_branch])
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
