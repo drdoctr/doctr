@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>API &#8212; Doctr 1.5.3+28.gcc39c4e documentation</title>
-    
+    <title>API &#8212; Doctr 1.5.3+36.g853a5fa documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+28.gcc39c4e',
+        VERSION:     '1.5.3+36.g853a5fa',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -69,7 +66,7 @@ authenticated connections to GitHub.</p>
 
 <dl class="function">
 <dt id="doctr.local.check_repo_exists">
-<code class="descclassname">doctr.local.</code><code class="descname">check_repo_exists</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>service=’github’</em>, <em>*</em>, <em>auth=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#check_repo_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.check_repo_exists" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">check_repo_exists</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>service='github'</em>, <em>*</em>, <em>auth=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#check_repo_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.check_repo_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks that the repository exists on GitHub.</p>
 <p>This should be done before attempting generate a key to deploy to that
 repo.</p>
@@ -107,7 +104,7 @@ not provided.</p>
 
 <dl class="function">
 <dt id="doctr.local.generate_GitHub_token">
-<code class="descclassname">doctr.local.</code><code class="descname">generate_GitHub_token</code><span class="sig-paren">(</span><em>*</em>, <em>note=’Doctr token for pushing to gh-pages from Travis’</em>, <em>scopes=None</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_GitHub_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_GitHub_token" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">generate_GitHub_token</code><span class="sig-paren">(</span><em>*</em>, <em>note='Doctr token for pushing to gh-pages from Travis'</em>, <em>scopes=None</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_GitHub_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_GitHub_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a GitHub token for pushing from Travis</p>
 <p>The scope requested is public_repo.</p>
 <p>If no password or OTP are provided, they will be requested from the
@@ -118,14 +115,14 @@ command line.</p>
 
 <dl class="function">
 <dt id="doctr.local.generate_ssh_key">
-<code class="descclassname">doctr.local.</code><code class="descname">generate_ssh_key</code><span class="sig-paren">(</span><em>note</em>, <em>keypath=’github_deploy_key’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_ssh_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_ssh_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">generate_ssh_key</code><span class="sig-paren">(</span><em>note</em>, <em>keypath='github_deploy_key'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_ssh_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_ssh_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates an SSH deploy public and private key.</p>
 <p>Returns the public key as a str.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="doctr.local.upload_GitHub_deploy_key">
-<code class="descclassname">doctr.local.</code><code class="descname">upload_GitHub_deploy_key</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>ssh_key</em>, <em>*</em>, <em>read_only=False</em>, <em>title=’Doctr deploy key for pushing to gh-pages from Travis’</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#upload_GitHub_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.upload_GitHub_deploy_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">upload_GitHub_deploy_key</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>ssh_key</em>, <em>*</em>, <em>read_only=False</em>, <em>title='Doctr deploy key for pushing to gh-pages from Travis'</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#upload_GitHub_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.upload_GitHub_deploy_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uploads a GitHub deploy key to <code class="docutils literal"><span class="pre">deploy_repo</span></code>.</p>
 <p>If <code class="docutils literal"><span class="pre">read_only=True</span></code>, the deploy_key will not be able to write to the
 repo.</p>
@@ -136,6 +133,12 @@ repo.</p>
 <span id="travis"></span><h2>Travis<a class="headerlink" href="#module-doctr.travis" title="Permalink to this headline">¶</a></h2>
 <p>The code that should be run on Travis</p>
 <dl class="function">
+<dt id="doctr.travis.checkout_deploy_branch">
+<code class="descclassname">doctr.travis.</code><code class="descname">checkout_deploy_branch</code><span class="sig-paren">(</span><em>deploy_branch</em>, <em>canpush=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#checkout_deploy_branch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.checkout_deploy_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checkout the deploy branch, creating it if it doesn’t exist.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="doctr.travis.commit_docs">
 <code class="descclassname">doctr.travis.</code><code class="descname">commit_docs</code><span class="sig-paren">(</span><em>*</em>, <em>added</em>, <em>removed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#commit_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.commit_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Commit the docs to the current branch</p>
@@ -143,6 +146,13 @@ repo.</p>
 remote, has been run.</p>
 <p>Returns True if changes were committed and False if no changes were
 committed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="doctr.travis.copy_to_tmp">
+<code class="descclassname">doctr.travis.</code><code class="descname">copy_to_tmp</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#copy_to_tmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.copy_to_tmp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the contents of directory to a temporary directory, and returns the
+copied location.</p>
 </dd></dl>
 
 <dl class="function">
@@ -219,7 +229,7 @@ for <code class="docutils literal"><span class="pre">$TRAVIS_PULL_REQUEST_BRANCH
 
 <dl class="function">
 <dt id="doctr.travis.push_docs">
-<code class="descclassname">doctr.travis.</code><code class="descname">push_docs</code><span class="sig-paren">(</span><em>deploy_branch=’gh-pages’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#push_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.push_docs" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">push_docs</code><span class="sig-paren">(</span><em>deploy_branch='gh-pages'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#push_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.push_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push the changes to the branch named <code class="docutils literal"><span class="pre">deploy_branch</span></code>.</p>
 <p>Assumes that <a class="reference internal" href="#doctr.travis.setup_GitHub_push" title="doctr.travis.setup_GitHub_push"><code class="xref py py-func docutils literal"><span class="pre">setup_GitHub_push()</span></code></a> has been run and returned True, and
 that <a class="reference internal" href="#doctr.travis.commit_docs" title="doctr.travis.commit_docs"><code class="xref py py-func docutils literal"><span class="pre">commit_docs()</span></code></a> has been run. Does not push anything if no changes
@@ -237,7 +247,7 @@ strings. If shell=True, args should be a string of the command to run.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_GitHub_push">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type=’deploy_key’</em>, <em>full_key_path=’github_deploy_key.enc’</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch=’gh-pages’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch='gh-pages'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the remote to push to GitHub (to be run on Travis).</p>
 <p><code class="docutils literal"><span class="pre">auth_type</span></code> should be either <code class="docutils literal"><span class="pre">'deploy_key'</span></code> or <code class="docutils literal"><span class="pre">'token'</span></code>.</p>
 <p>For <code class="docutils literal"><span class="pre">auth_type='token'</span></code>, this sets up the remote with the token and
@@ -248,7 +258,7 @@ variable.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_deploy_key">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath=’github_deploy_key’</em>, <em>key_ext=’.enc’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decrypts the deploy key and configures it with ssh</p>
 <p>The key is assumed to be encrypted as keypath + key_ext, and the
 encryption key is assumed to be set in the environment variable
@@ -318,7 +328,7 @@ file from <code class="docutils literal"><span class="pre">log_file</span></code
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
