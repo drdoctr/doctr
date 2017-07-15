@@ -188,11 +188,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
                                     TRAVIS_PULL_REQUEST)
 
     print("Setting git attributes")
-
-    run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
-    # We need a dummy email or git will fail. We use this one as per
-    # https://help.github.com/articles/keeping-your-email-address-private/.
-    run(['git', 'config', '--global', 'user.email', 'drdoctr@users.noreply.github.com'])
+    set_git_user_email()
 
     remotes = subprocess.check_output(['git', 'remote']).decode('utf-8').split('\n')
     if 'doctr_remote' in remotes:
@@ -221,6 +217,20 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     run(['git', 'fetch', 'doctr_remote'])
 
     return canpush
+
+def set_git_user_email():
+    """
+    Set global user and email for git user if not already present on system
+    """
+    username = subprocess.run(shlex.split('git config user.name'), stdout=subprocess.PIPE)
+    if not username.stdout:
+        run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
+
+    email = subprocess.run(shlex.split('git config user.email'), stdout=subprocess.PIPE)
+    if not email.stdout:
+        # We need a dummy email or git will fail. We use this one as per
+        # https://help.github.com/articles/keeping-your-email-address-private/.
+        run(['git', 'config', '--global', 'user.email', 'drdoctr@users.noreply.github.com'])
 
 def checkout_deploy_branch(deploy_branch, canpush=True):
     """
