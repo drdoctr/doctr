@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+28.gcc39c4e documentation</title>
-    
+    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+29.g1a3e6a1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+28.gcc39c4e',
+        VERSION:     '1.5.3+29.g1a3e6a1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -131,7 +128,7 @@ options available.</p>
 <span class="go">                        [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
 <span class="go">                        [--deploy-repo DEPLOY_REPO]</span>
 <span class="go">                        [--no-require-master | --require-master]</span>
-<span class="go">                        [--command COMMAND] [--no-sync | --sync]</span>
+<span class="go">                        [--command COMMAND] [--no-sync | --sync] [--no-temp-dir]</span>
 <span class="go">                        [--no-push | --push] [--gh-pages-docs GH_PAGES_DOCS]</span>
 <span class="go">                        [deploy_directory]</span>
 </pre></div>
@@ -236,6 +233,13 @@ options available.</p>
 <dt id="cmdoption-doctr-deploy-sync">
 <code class="descname">--sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–no-sync”</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-deploy-no-temp-dir">
+<code class="descname">--no-temp-dir</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-temp-dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t copy the   
+        –built-docs directory to a temporary directory.</p>
 </dd></dl>
 
 <dl class="option">
@@ -347,7 +351,7 @@ branches like <code class="docutils literal"><span class="pre">3.x</span></code>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
