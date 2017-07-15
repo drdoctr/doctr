@@ -34,7 +34,8 @@ from pathlib import Path
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
+    GitHub_login, guess_github_repo)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
@@ -315,9 +316,15 @@ def configure(args, parser):
         login_kwargs = {'auth': None, 'headers': None}
 
     get_build_repo = False
+    default_repo = guess_github_repo()
     while not get_build_repo:
         try:
-            build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
+            if default_repo:
+                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=default_repo))
+                if not build_repo:
+                    build_repo = default_repo
+            else:
+                build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
             check_repo_exists(build_repo, service='travis')
             get_build_repo = True
