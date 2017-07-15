@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.5.3+29.g1a3e6a1 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.3+35.ge377b6d documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.3+29.g1a3e6a1',
+        VERSION:     '1.5.3+35.ge377b6d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -261,6 +261,12 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fetching doctr remote&quot;</span><span class="p">)</span>
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
 
+    <span class="k">return</span> <span class="n">canpush</span></div>
+
+<div class="viewcode-block" id="checkout_deploy_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.checkout_deploy_branch">[docs]</a><span class="k">def</span> <span class="nf">checkout_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">canpush</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checkout the deploy branch, creating it if it doesn&#39;t exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#create empty branch with .nojekyll if it doesn&#39;t already exist</span>
     <span class="n">new_deploy_branch</span> <span class="o">=</span> <span class="n">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
@@ -269,9 +275,7 @@
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">,</span> <span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">canpush</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="deploy_branch_exists"><a class="viewcode-back" href="../../api.html#doctr.travis.deploy_branch_exists">[docs]</a><span class="k">def</span> <span class="nf">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
