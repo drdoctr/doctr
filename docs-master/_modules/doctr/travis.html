@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.5.3+36.g853a5fa documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.3+39.ge7d3864 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.3+36.g853a5fa',
+        VERSION:     '1.5.3+39.ge7d3864',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -229,11 +229,7 @@
                                     <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting git attributes&quot;</span><span class="p">)</span>
-
-    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.name&#39;</span><span class="p">,</span> <span class="s2">&quot;Doctr (Travis CI)&quot;</span><span class="p">])</span>
-    <span class="c1"># We need a dummy email or git will fail. We use this one as per</span>
-    <span class="c1"># https://help.github.com/articles/keeping-your-email-address-private/.</span>
-    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.email&#39;</span><span class="p">,</span> <span class="s1">&#39;drdoctr@users.noreply.github.com&#39;</span><span class="p">])</span>
+    <span class="n">set_git_user_email</span><span class="p">()</span>
 
     <span class="n">remotes</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;doctr_remote&#39;</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">:</span>
@@ -262,6 +258,20 @@
     <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">canpush</span></div>
+
+<div class="viewcode-block" id="set_git_user_email"><a class="viewcode-back" href="../../api.html#doctr.travis.set_git_user_email">[docs]</a><span class="k">def</span> <span class="nf">set_git_user_email</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set global user and email for git user if not already present on system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;git config user.name&#39;</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.name&#39;</span><span class="p">,</span> <span class="s2">&quot;Doctr (Travis CI)&quot;</span><span class="p">])</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;git config user.email&#39;</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+        <span class="c1"># We need a dummy email or git will fail. We use this one as per</span>
+        <span class="c1"># https://help.github.com/articles/keeping-your-email-address-private/.</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.email&#39;</span><span class="p">,</span> <span class="s1">&#39;drdoctr@users.noreply.github.com&#39;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="checkout_deploy_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.checkout_deploy_branch">[docs]</a><span class="k">def</span> <span class="nf">checkout_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">canpush</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
