@@ -37,7 +37,7 @@ from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp)
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -260,9 +260,9 @@ def deploy(args, parser):
                                      branch_whitelist=branch_whitelist)
 
         if args.command:
-            run(['git', 'checkout', get_travis_branch()])
             run(args.command, shell=True)
-            run(['git', 'checkout', deploy_branch])
+
+        checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
