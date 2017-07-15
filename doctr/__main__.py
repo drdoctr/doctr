@@ -254,7 +254,7 @@ def deploy(args, parser):
         branch_whitelist = {'master'} if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
 
-        can_push = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
+        canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=args.key_path,
                                      branch_whitelist=branch_whitelist)
@@ -280,7 +280,7 @@ def deploy(args, parser):
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
-            if can_push and args.push:
+            if canpush and args.push:
                 push_docs(deploy_branch)
             else:
                 print("Don't have permission to push. Not trying.")
