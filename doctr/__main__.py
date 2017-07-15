@@ -267,6 +267,9 @@ def deploy(args, parser):
             if args.temp_dir:
                 built_docs = copy_to_tmp(built_docs)
 
+        # Reset in case there are modified files that are tracked in the
+        # dpeloy branch.
+        run(['git', 'reset', '--hard'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
