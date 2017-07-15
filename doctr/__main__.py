@@ -262,13 +262,14 @@ def deploy(args, parser):
         if args.command:
             run(args.command, shell=True)
 
-        checkout_deploy_branch(deploy_branch, canpush=canpush)
-
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
             if args.temp_dir:
                 built_docs = copy_to_tmp(built_docs)
 
+        checkout_deploy_branch(deploy_branch, canpush=canpush)
+
+        if args.sync:
             log_file = os.path.join(deploy_dir, '.doctr-files')
 
             print("Moving built docs into place")
