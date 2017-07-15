@@ -37,9 +37,8 @@ script:
       python -m doctr deploy --no-require-master  --command "echo test; ls; touch docs/_build/html/test" docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
-      cd doctr;
-      pyflakes .;
-      py.test;
+      pyflakes doctr;
+      py.test doctr;
     fi
 doctr:
   key-path: deploy_key.enc
