@@ -9,6 +9,8 @@ import subprocess
 import sys
 import glob
 import re
+import pathlib
+import tempfile
 
 from cryptography.fernet import Fernet
 
@@ -293,6 +295,19 @@ def find_sphinx_build_dir():
 #
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
+
+def copy_to_tmp(directory):
+    """
+    Copies the contents of directory to a temporary directory, and returns the
+    copied location.
+    """
+    tmp_dir = tempfile.mkdtemp()
+    # Use pathlib because os.path.basename is different depending on whether
+    # the path ends in a /
+    p = pathlib.Path(directory)
+    new_dir = os.path.join(tmp_dir, p.name)
+    shutil.copytree(directory, new_dir)
+    return new_dir
 
 def sync_from_log(src, dst, log_file):
     """

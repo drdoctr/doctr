@@ -36,7 +36,8 @@ from textwrap import dedent
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
-    get_current_repo, sync_from_log, find_sphinx_build_dir, run, get_travis_branch)
+    get_current_repo, sync_from_log, find_sphinx_build_dir, run,
+    get_travis_branch, copy_to_tmp)
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -152,6 +153,9 @@ options available.
         conjunction with the --command flag, for instance, if the command syncs
         the files for you. Any files you wish to commit should be added to the
         index.""")
+    deploy_parser.add_argument('--no-temp-dir', dest='temp_dir',
+        action='store_false', default=True, help="""Don't copy the
+        --built-docs directory to a temporary directory.""")
     deploy_parser_add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
@@ -160,6 +164,7 @@ options available.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
+
 
     if config:
         print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
@@ -256,6 +261,8 @@ def deploy(args, parser):
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
+            if args.temp_dir:
+                built_docs = copy_to_tmp(built_docs)
 
             log_file = os.path.join(deploy_dir, '.doctr-files')
 
