@@ -261,7 +261,7 @@ def deploy(args, parser):
                                     auth_type='token' if args.token else 'deploy_key',
                                     full_key_path=args.key_path,
                                     branch_whitelist=branch_whitelist,
-                                    build_tag=args.build_tag)
+                                    build_tags=args.build_tags)
 
         if args.command:
             run(args.command, shell=True)
