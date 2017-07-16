@@ -291,9 +291,9 @@ def deploy(args, parser):
         else:
             print("The docs have not changed. Not updating")
     finally:
-        subprocess.run(['git', 'checkout', current_commit])
+        run(['git', 'checkout', current_commit])
         # Ignore error, won't do anything if there was nothing to stash
-        subprocess.run(['git', 'stash', 'pop'])
+        run(['git', 'stash', 'pop'])
 
 class IncrementingInt:
     def __init__(self, i=0):
