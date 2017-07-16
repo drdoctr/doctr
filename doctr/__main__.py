@@ -269,7 +269,7 @@ def deploy(args, parser):
 
         # Reset in case there are modified files that are tracked in the
         # dpeloy branch.
-        run(['git', 'reset', '--hard'])
+        run(['git', 'stash'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
@@ -292,6 +292,8 @@ def deploy(args, parser):
             print("The docs have not changed. Not updating")
     finally:
         subprocess.run(['git', 'checkout', current_commit])
+        # Ignore error, won't do anything if there was nothing to stash
+        subprocess.run(['git', 'stash', 'pop'])
 
 class IncrementingInt:
     def __init__(self, i=0):
