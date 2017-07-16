@@ -11,6 +11,7 @@ import glob
 import re
 import pathlib
 import tempfile
+import time
 
 from cryptography.fernet import Fernet
 
@@ -107,7 +108,7 @@ def get_token():
     token = token.encode('utf-8')
     return token
 
-def run(args, shell=False):
+def run(args, shell=False, exit=True):
     """
     Run the command ``args``.
 
@@ -115,6 +116,9 @@ def run(args, shell=False):
 
     If shell=False (recommended for most commands), args should be a list of
     strings. If shell=True, args should be a string of the command to run.
+
+    If exit=True, it exits on nonzero returncode. Otherwise it returns the
+    returncode.
     """
     if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
         token = b''
@@ -125,8 +129,9 @@ def run(args, shell=False):
         print(out.decode('utf-8'))
     if err:
         print(err.decode('utf-8'), file=sys.stderr)
-    if returncode != 0:
+    if exit and returncode != 0:
         sys.exit(returncode)
+    return returncode
 
 def get_current_repo():
     """
@@ -428,7 +433,7 @@ The doctr command that was run is
 
     return False
 
-def push_docs(deploy_branch='gh-pages'):
+def push_docs(deploy_branch='gh-pages', retries=3):
     """
     Push the changes to the branch named ``deploy_branch``.
 
@@ -441,7 +446,16 @@ def push_docs(deploy_branch='gh-pages'):
     print("Pulling")
     run(['git', 'pull', 'doctr_remote', deploy_branch])
     print("Pushing commit")
-    run(['git', 'push', '-q', 'doctr_remote', deploy_branch])
+    code = 1
+    while code and retries:
+        code = run(['git', 'push', '-q', 'doctr_remote', deploy_branch], exit=False)
+        if code:
+            retries -= 1
+            print("Push failed, retrying")
+            time.sleep(1)
+        else:
+            return
+    sys.exit("Giving up...")
 
 def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
