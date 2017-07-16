@@ -58,6 +58,14 @@ normal ``master`` builds, and ``version-<TAG NAME>`` for tag builds:
     fi
   - doctr deploy --build-tags --built-docs build/ $DEPLOY_DIR
 
+If you want to deploy only on a tag, use ``--branch-whitelist`` with no
+arguments to tell doctr to not deploy from any branch. For instance, to deploy
+only tags to ``latest``:
+
+.. code:: yaml
+
+   - doctr deploy latest --built-docs build/ --build-tags --branch-whitelist
+
 Deploy to a separate repo
 =========================
 
