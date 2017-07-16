@@ -304,7 +304,7 @@ def deploy(args, parser):
     finally:
         run(['git', 'checkout', current_commit])
         # Ignore error, won't do anything if there was nothing to stash
-        run(['git', 'stash', 'pop'])
+        run(['git', 'stash', 'pop'], exit=False)
 
 class IncrementingInt:
     def __init__(self, i=0):
