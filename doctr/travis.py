@@ -443,11 +443,11 @@ def push_docs(deploy_branch='gh-pages', retries=3):
 
     """
 
-    print("Pulling")
-    run(['git', 'pull', 'doctr_remote', deploy_branch])
-    print("Pushing commit")
     code = 1
     while code and retries:
+        print("Pulling")
+        code = run(['git', 'pull', 'doctr_remote', deploy_branch])
+        print("Pushing commit")
         code = run(['git', 'push', '-q', 'doctr_remote', deploy_branch], exit=False)
         if code:
             retries -= 1
