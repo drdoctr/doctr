@@ -455,7 +455,7 @@ def push_docs(deploy_branch='gh-pages', retries=3):
             time.sleep(1)
         else:
             return
-    print("Giving up...")
+    sys.exit("Giving up...")
 
 def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
