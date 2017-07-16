@@ -269,7 +269,7 @@ def deploy(args, parser):
 
         # Reset in case there are modified files that are tracked in the
         # dpeloy branch.
-        run(['git', 'stash'])
+        run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
