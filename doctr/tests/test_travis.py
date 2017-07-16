@@ -144,16 +144,51 @@ def test_sync_from_log(src, dst):
             os.chdir(old_curdir)
 
 
-@pytest.mark.parametrize("travis_branch, travis_pr, whitelist, canpush",
-                         [('doctr', 'true', 'master', False),
-                          ('doctr', 'false', 'master', False),
-                          ('master', 'true', 'master', False),
-                          ('master', 'false', 'master', True),
-                          ('doctr', 'True', 'doctr', False),
-                          ('doctr', 'false', 'doctr', True),
-                          ('doctr', 'false', 'set()', False),
-                         ])
-def test_determine_push_rights(travis_branch, travis_pr, whitelist, canpush, monkeypatch):
-    branch_whitelist = {whitelist}
+@pytest.mark.parametrize("""branch_whitelist, TRAVIS_BRANCH,
+                         TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags,
+                         canpush""",
+                         [
 
-    assert determine_push_rights(branch_whitelist, travis_branch, travis_pr) == canpush
+                             ('master', 'doctr', 'true', "", False, False),
+                             ('master', 'doctr', 'false', "", False, False),
+                             ('master', 'master', 'true', "", False, False),
+                             ('master', 'master', 'false', "", False, True),
+                             ('doctr', 'doctr', 'True', "", False, False),
+                             ('doctr', 'doctr', 'false', "", False, True),
+                             ('set()', 'doctr', 'false', "", False, False),
+
+                             ('master', 'doctr', 'true', "tagname", False, False),
+                             ('master', 'doctr', 'false', "tagname", False, False),
+                             ('master', 'master', 'true', "tagname", False, False),
+                             ('master', 'master', 'false', "tagname", False, False),
+                             ('doctr', 'doctr', 'True', "tagname", False, False),
+                             ('doctr', 'doctr', 'false', "tagname", False, False),
+                             ('set()', 'doctr', 'false', "tagname", False, False),
+
+                             ('master', 'doctr', 'true', "", True, False),
+                             ('master', 'doctr', 'false', "", True, False),
+                             ('master', 'master', 'true', "", True, False),
+                             ('master', 'master', 'false', "", True, True),
+                             ('doctr', 'doctr', 'True', "", True, False),
+                             ('doctr', 'doctr', 'false', "", True, True),
+                             ('set()', 'doctr', 'false', "", True, False),
+
+                             ('master', 'doctr', 'true', "tagname", True, True),
+                             ('master', 'doctr', 'false', "tagname", True, True),
+                             ('master', 'master', 'true', "tagname", True, True),
+                             ('master', 'master', 'false', "tagname", True, True),
+                             ('doctr', 'doctr', 'True', "tagname", True, True),
+                             ('doctr', 'doctr', 'false', "tagname", True, True),
+                             ('set()', 'doctr', 'false', "tagname", True, True),
+
+                         ])
+def test_determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
+    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, canpush, monkeypatch):
+    branch_whitelist = {branch_whitelist}
+
+    assert determine_push_rights(
+        branch_whitelist=branch_whitelist,
+        TRAVIS_BRANCH=TRAVIS_BRANCH,
+        TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
+        TRAVIS_TAG=TRAVIS_TAG,
+        build_tags=build_tags) == canpush
