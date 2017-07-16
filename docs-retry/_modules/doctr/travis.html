@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.5.3+50.g1f0f451 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.3+52.g8f9dd63 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.3+50.g1f0f451',
+        VERSION:     '1.5.3+52.g8f9dd63',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -496,7 +496,7 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Giving up...&quot;</span><span class="p">)</span></div>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Giving up...&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span> <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check if Travis is running on ``master`` (or a whitelisted branch) to</span>
