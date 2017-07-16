@@ -166,7 +166,8 @@ options available.
     deploy_parser_add_argument('--build-tags', action='store_true',
         default=False, help="""Deploy on tag builds. On a tag build,
         $TRAVIS_TAG is set to the name of the tag. The default is to not
-        deploy on tag builds.""")
+        deploy on tag builds. Note that this will still build on a branch,
+        unless --branch-whitelist (with no arguments) is passed.""")
     deploy_parser_add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
