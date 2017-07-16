@@ -143,7 +143,7 @@ options available.
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser_add_argument('--branch-whitelist', default=set(), nargs='*',
-        help="""Additional branches to deploy from. Note that you can deploy from
+        help="""Branches to deploy from. Note that you can deploy from
         any branch with --no-require-master.""", type=set, metavar="BRANCH")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
@@ -257,9 +257,11 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        branch_whitelist = {'master'} if args.require_master else set(get_travis_branch())
+        branch_whitelist = set() if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
         branch_whitelist.update(args.branch_whitelist)
+        if not branch_whitelist:
+            branch_whitelist = {'master'}
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                     auth_type='token' if args.token else 'deploy_key',
