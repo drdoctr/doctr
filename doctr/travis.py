@@ -469,6 +469,8 @@ def determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
     canpush = True
 
     if TRAVIS_TAG:
+        if not build_tags:
+            print("The docs are not pushed on tag builds. To push on future tag builds, use --build-tags")
         return build_tags
 
     if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
