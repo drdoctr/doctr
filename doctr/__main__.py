@@ -260,9 +260,10 @@ def deploy(args, parser):
     try:
         branch_whitelist = set() if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
-        branch_whitelist.update(args.branch_whitelist)
-        if not branch_whitelist and args.branch_whitelist is not None:
-            branch_whitelist = {'master'}
+        if args.branch_whitelist is not None:
+            branch_whitelist.update(args.branch_whitelist)
+            if not args.branch_whitelist:
+                branch_whitelist = {'master'}
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                     auth_type='token' if args.token else 'deploy_key',
