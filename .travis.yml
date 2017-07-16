@@ -39,7 +39,7 @@ script:
       python -m doctr deploy --no-require-master  --command "echo test; ls; touch docs/_build/html/test" docs;
       # Test syncing a tracked file with a change
       python -m doctr deploy --sync . --built-docs test;
-      python -m doctr deploy --sync "tag-$TRAVIS_TAG" --build-tags;
+      python -m doctr deploy --sync "tag-$TRAVIS_TAG" --build-tags --branch-whitelist;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
