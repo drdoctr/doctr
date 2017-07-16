@@ -159,6 +159,9 @@ options available.
     deploy_parser_add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
+    deploy_parser_add_argument('--build-tags', default=False, help="""Deploy
+        on tag builds. On a tag build, $TRAVIS_TAG is set to the name of the
+        tag. The default is to not deploy on tag builds.""")
     deploy_parser_add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
@@ -255,9 +258,10 @@ def deploy(args, parser):
         branch_whitelist.update(set(config.get('branches',set({}))))
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
-                                     auth_type='token' if args.token else 'deploy_key',
-                                     full_key_path=args.key_path,
-                                     branch_whitelist=branch_whitelist)
+                                    auth_type='token' if args.token else 'deploy_key',
+                                    full_key_path=args.key_path,
+                                    branch_whitelist=branch_whitelist,
+                                    build_tag=args.build_tag)
 
         if args.command:
             run(args.command, shell=True)
