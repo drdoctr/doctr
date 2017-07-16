@@ -49,6 +49,8 @@ On Travis CI, the tag is set to the environment variable ``$TRAVIS_TAG``,
 which is empty otherwise. The following will deploy the docs to ``dev`` for
 normal ``master`` builds, and ``version-<TAG NAME>`` for tag builds:
 
+.. code:: yaml
+
   - if [[ -z "$TRAVIS_TAG" ]]; then
       DEPLOY_DIR=dev;
     else
