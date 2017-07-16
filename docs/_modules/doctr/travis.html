@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.5.3+58.gdf5ec71 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.3+76.g82b19a4 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.3+58.gdf5ec71',
+        VERSION:     '1.5.3+76.g82b19a4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -201,7 +201,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span>
+    <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span> <span class="n">build_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the remote to push to GitHub (to be run on Travis).</span>
 
@@ -213,6 +215,8 @@
 
 <span class="sd">    For ``auth_type=&#39;deploy_key&#39;``, this sets up the remote with ssh access.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set to the name of the tag for tag builds</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">branch_whitelist</span><span class="p">:</span>
         <span class="n">branch_whitelist</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;master&#39;</span><span class="p">}</span>
@@ -230,8 +234,12 @@
     <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_PULL_REQUEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="n">canpush</span> <span class="o">=</span> <span class="n">determine_push_rights</span><span class="p">(</span><span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
-                                    <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">)</span>
+    <span class="n">canpush</span> <span class="o">=</span> <span class="n">determine_push_rights</span><span class="p">(</span>
+        <span class="n">branch_whitelist</span><span class="o">=</span><span class="n">branch_whitelist</span><span class="p">,</span>
+        <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+        <span class="n">TRAVIS_PULL_REQUEST</span><span class="o">=</span><span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span>
+        <span class="n">TRAVIS_TAG</span><span class="o">=</span><span class="n">TRAVIS_TAG</span><span class="p">,</span>
+        <span class="n">build_tags</span><span class="o">=</span><span class="n">build_tags</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting git attributes&quot;</span><span class="p">)</span>
     <span class="n">set_git_user_email</span><span class="p">()</span>
@@ -498,11 +506,17 @@
             <span class="k">return</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Giving up...&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span> <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">):</span>
+<div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+    <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span> <span class="n">TRAVIS_TAG</span><span class="p">,</span> <span class="n">build_tags</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check if Travis is running on ``master`` (or a whitelisted branch) to</span>
 <span class="sd">    determine if we can/should push the docs to the deploy repo</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">canpush</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">TRAVIS_TAG</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">build_tags</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are not pushed on tag builds. To push on future tag builds, use --build-tags&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">build_tags</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">branch_whitelist</span><span class="p">]):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are only pushed to gh-pages from master. To allow pushing from &quot;</span>
