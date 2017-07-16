@@ -193,8 +193,12 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key',
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    canpush = determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
-                                    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags)
+    canpush = determine_push_rights(
+        branch_whitelist=branch_whitelist,
+        TRAVIS_BRANCH=TRAVIS_BRANCH,
+        TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
+        TRAVIS_TAG=TRAVIS_TAG,
+        build_tags=build_tags)
 
     print("Setting git attributes")
     set_git_user_email()
@@ -461,7 +465,7 @@ def push_docs(deploy_branch='gh-pages', retries=3):
             return
     sys.exit("Giving up...")
 
-def determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
+def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
     TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
     determine if we can/should push the docs to the deploy repo
