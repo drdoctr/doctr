@@ -450,8 +450,12 @@ def push_docs(deploy_branch='gh-pages', retries=3):
     while code and retries:
         code = run(['git', 'push', '-q', 'doctr_remote', deploy_branch], exit=False)
         if code:
+            retries -= 1
+            print("Push failed, retrying")
             time.sleep(1)
-        retries -= 1
+        else:
+            return
+    print("Giving up...")
 
 def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
