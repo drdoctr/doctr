@@ -142,9 +142,10 @@ options available.
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
-    deploy_parser_add_argument('--branch-whitelist', default=set(), nargs='*',
-        help="""Branches to deploy from. Note that you can deploy from
-        any branch with --no-require-master.""", type=set, metavar="BRANCH")
+    deploy_parser_add_argument('--branch-whitelist', default=None, nargs='*',
+        help="""Branches to deploy from. Pass no arguments to not build on any branch
+        (typically used in conjunction with --build-tags). Note that you can
+        deploy from every branch with --no-require-master.""", type=set, metavar="BRANCH")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
     deploy_parser_add_argument('--command', default=None, help="""Command to
@@ -260,7 +261,7 @@ def deploy(args, parser):
         branch_whitelist = set() if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
         branch_whitelist.update(args.branch_whitelist)
-        if not branch_whitelist:
+        if not branch_whitelist and args.branch_whitelist is not None:
             branch_whitelist = {'master'}
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
