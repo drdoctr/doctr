@@ -6,7 +6,7 @@ env:
     - DOCS="true"
     - TESTS="true"
   global:
-    - secure: "Q4/CS/5/BhPbZdH7hjJooF0ucmlSMyM+iDJsmrAsZPI4lBccIEWHoWrqReCWn8AgxvfUMvZ1+PwIsPn47lftfX0zdOsJ92p8P8QovM9BRRf1I+/3imNWvWrAvwkRKWiNblfHPddjcv6TYwl/eQhNS56+wwabAcVmkPljc0iZS6MLCxwdkmcfrwA6DM7nNtofeb60XKBxOVXZ4ASUitIqUyH6CyVmTkV3bvjbeTPpp6vCxybAj/HsgaiqG1q8vbUWGK9Ie5eqm18CJ03M/yVd/St6cwApPcBhSzAnQDSAySKqC0Xesp8nDVC0HQ9S8NxtZyG36+PK7v3shiosvkZR7x7pJUBUZiMV7Bb5DNEUCUqdnXlZ3E5cBHwF7hRM2e4GGM47aQWAhCBwRwr7wowDz5oORfj4oei7bI32xLE0i3DKU1D3IXUFiartqjIZqzky4IGm8wdEWOroN1fd1uR1DPLkNgt9QPlNpX8BrWXUd89iSe+n+QUVoalZciR/QH7MSOXbFBwaUFacPm8b1bTxTFGalqfeMvrJNoBJqcHX0WlXlszAoOFnlwQguBoiVnmxT5KAlmskukHAa1cdHVrGGFei5ucTieeR/U+OZMbL4nrziMYIjyT4BFyI05QiS4D8CqcnJm4TZsejVlptZpEWwYI7e/w/y2J0yXaM7S8cf1g="
+    - secure: "kJUVmbb8L26E4UNTp3n/UUeR8h4AWPIV8el8iKkNmjIsnbWogdJN9pVpQxFNyOs1+9B0DAXlFbcgeVQrYmTbBoBsGk3hNu8JK3/ZCdKw00R46xdbOCjHEpbsjVcBFC1ZRZ1i5Mdce54dDZhNbw1lLVU1zVSEUuKAMLYhL1PXvKR/8Oi+4FusBIzdxhEcyRaQz+fl6U5S+9PVpnhYCAydJikVoIqHwMi4t0CtBLwPTHoJj8wPqZKIbcPApumSFWHNqvHQ0+hx03UdafP/1Zuz7E5GSl2YUVV6KK9+hg5Avc6NhnV+7t6YjMAkNg0oanQLifBPMgA/TyP/BtXDJzy/sxbMGbumndz4i1Q2SIerhqGCnet2wjUW/O5ClNJIhUBoeZV90NUUS5pV7kfsOJbPFRMiSQ4xY2n+bd1gacrd+z+v6II6WxIajSd/BgSCVzVzumQAmUWvi2i4rG07JOoPH1v2SJ9cvIGsH5TCVVCt/EkVW9nrVcNSmQYe+K4ReydPK2zZ+K2Yz1Xg6SsgUCfX1uZP4GsZfM80aIjxTMzNXqv8tHEuFSi/Go7FjftXoUHJrXIZ7lEN+vgCWIUl9rUOtbiMbfFQ7BigI7Gx/ZMeyqpuqGeyvA44m6K6Y3PEXyUmavtSg4+CPrNtj2EG8t4IKWAVgVPYnW6iWlzOFuHce1w="
 
 python:
   - 3.5
@@ -39,6 +39,7 @@ script:
       python -m doctr deploy --no-require-master  --command "echo test; ls; touch docs/_build/html/test" docs;
       # Test syncing a tracked file with a change
       python -m doctr deploy --sync . --built-docs test;
+      python -m doctr deploy --deploy-repo drdoctr/drdoctr.github.io docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;

@@ -15,6 +15,8 @@ import time
 
 from cryptography.fernet import Fernet
 
+DOCTR_WORKING_BRANCH = '__doctr_working_branch'
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.
@@ -242,14 +244,18 @@ def checkout_deploy_branch(deploy_branch, canpush=True):
     Checkout the deploy branch, creating it if it doesn't exist.
     """
     #create empty branch with .nojekyll if it doesn't already exist
-    new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
-    print("Checking out {}".format(deploy_branch))
-    local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
-    if new_deploy_branch or local_deploy_branch_exists:
-        run(['git', 'checkout', deploy_branch])
-    else:
-        run(['git', 'checkout', '-b', deploy_branch, '--track', 'doctr_remote/{}'.format(deploy_branch)])
+    create_deploy_branch(deploy_branch, push=canpush)
+    print("Checking out doctr working branch tracking doctr_remote/{}".format(deploy_branch))
+    clear_working_branch()
+    run(['git', 'checkout', '-b', DOCTR_WORKING_BRANCH, '--track', 'doctr_remote/{}'.format(deploy_branch)])
     print("Done")
+
+    return canpush
+
+def clear_working_branch():
+    local_branch_names = subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if DOCTR_WORKING_BRANCH in local_branch_names:
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
 
 def deploy_branch_exists(deploy_branch):
     """
@@ -277,20 +283,24 @@ def create_deploy_branch(deploy_branch, push=True):
     Return True if ``deploy_branch`` was created, False if not.
     """
     if not deploy_branch_exists(deploy_branch):
-        print("Creating {} branch".format(deploy_branch))
-        run(['git', 'checkout', '--orphan', deploy_branch])
+        print("Creating {} branch on doctr_remote".format(deploy_branch))
+        clear_working_branch()
+        run(['git', 'checkout', '--orphan', DOCTR_WORKING_BRANCH])
         # delete everything in the new ref.  this is non-destructive to existing
         # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
-        print("Adding .nojekyll file to {} branch".format(deploy_branch))
+        print("Adding .nojekyll file to working branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', 'Create new {} branch with .nojekyll'.format(deploy_branch)])
         if push:
-            print("Pushing {} branch to remote".format(deploy_branch))
-            run(['git', 'push', '-u', 'doctr_remote', deploy_branch])
-        # return to master branch
-        run(['git', 'checkout', '-'])
+            print("Pushing working branch to remote {} branch".format(deploy_branch))
+            run(['git', 'push', '-u', 'doctr_remote', '{}:{}'.format(DOCTR_WORKING_BRANCH, deploy_branch)])
+        # return to master branch and clear the working branch
+        run(['git', 'checkout', 'master'])
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
+        # fetch the remote so that doctr_remote/{deploy_branch} is resolved
+        run(['git', 'fetch', 'doctr_remote'])
 
         return True
     return False
@@ -446,9 +456,9 @@ def push_docs(deploy_branch='gh-pages', retries=3):
     code = 1
     while code and retries:
         print("Pulling")
-        code = run(['git', 'pull', 'doctr_remote', deploy_branch])
+        code = run(['git', 'pull', '-s', 'recursive', '-X', 'ours', 'doctr_remote', deploy_branch])
         print("Pushing commit")
-        code = run(['git', 'push', '-q', 'doctr_remote', deploy_branch], exit=False)
+        code = run(['git', 'push', '-q', 'doctr_remote', '{}:{}'.format(DOCTR_WORKING_BRANCH, deploy_branch)])
         if code:
             retries -= 1
             print("Push failed, retrying")
