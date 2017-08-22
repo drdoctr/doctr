@@ -248,7 +248,7 @@ def deploy(args, parser):
     if args.deploy_branch_name:
         deploy_branch = args.deploy_branch_name
     else:
-        deploy_branch = 'master' if deploy_dir.endswith(('.github.io', '.github.com')) else 'gh-pages'
+        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com')) else 'gh-pages'
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
@@ -270,7 +270,7 @@ def deploy(args, parser):
 
         # Reset in case there are modified files that are tracked in the
         # dpeloy branch.
-        run(['git', 'reset', '--hard'])
+        run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
@@ -292,7 +292,9 @@ def deploy(args, parser):
         else:
             print("The docs have not changed. Not updating")
     finally:
-        subprocess.run(['git', 'checkout', current_commit])
+        run(['git', 'checkout', current_commit])
+        # Ignore error, won't do anything if there was nothing to stash
+        run(['git', 'stash', 'pop'], exit=False)
 
 class IncrementingInt:
     def __init__(self, i=0):
