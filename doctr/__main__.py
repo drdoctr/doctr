@@ -41,6 +41,9 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 from . import __version__
 
+def red(text):
+    return "\033[31m%s\033[0m" % text
+
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
 
@@ -295,7 +298,7 @@ def deploy(args, parser):
             print("The docs have not changed. Not updating")
     except:
         DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
-        print("ERROR: The doctr command %r failed." % DOCTR_COMMAND,
+        print(red("ERROR: The doctr command %r failed." % DOCTR_COMMAND),
             file=sys.stderr)
         raise
     finally:
