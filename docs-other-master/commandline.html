@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+14.g8007280 documentation</title>
-    
+    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+62.g7408e1e documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+14.g8007280',
+        VERSION:     '1.5.3+62.g7408e1e',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -57,7 +54,7 @@ which you should insert into your .travis.yml.</p>
 <p>Then, on Travis, for the build where you build your docs, add</p>
 <blockquote>
 <div><ul class="simple">
-<li>doctr deploy</li>
+<li>doctr deploy . –built-docs path/to/built/html/</li>
 </ul>
 </div></blockquote>
 <p>to the end of the build to deploy the docs to GitHub pages.  This will only
@@ -68,13 +65,13 @@ run on the master branch, and won’t run on pull requests.</p>
 </div>
 <dl class="option">
 <dt id="cmdoption-doctr-h">
-<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">–help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-h" title="Permalink to this definition">¶</a></dt>
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-h" title="Permalink to this definition">¶</a></dt>
 <dd><p>show this help message and exit</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-v">
-<code class="descname">-V</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">–version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-v" title="Permalink to this definition">¶</a></dt>
+<code class="descname">-V</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-v" title="Permalink to this definition">¶</a></dt>
 <dd><p>show program’s version number and exit</p>
 </dd></dl>
 
@@ -88,20 +85,20 @@ options available.</p>
 </div>
 <dl class="option">
 <dt id="cmdoption-doctr-configure-h">
-<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">–help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-h" title="Permalink to this definition">¶</a></dt>
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-h" title="Permalink to this definition">¶</a></dt>
 <dd><p>show this help message and exit</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-configure-force">
-<code class="descname">–force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-force" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-force" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the configure command even   
     if we appear to be on Travis.</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-configure-token">
-<code class="descname">–token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a personal access token to push to GitHub. The default is to use a   
         deploy key. WARNING: This will grant read/write access to all the   
         public repositories for the user. This option is not recommended   
@@ -110,7 +107,7 @@ options available.</p>
 
 <dl class="option">
 <dt id="cmdoption-doctr-configure-no-upload-key">
-<code class="descname">–no-upload-key</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-no-upload-key" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-upload-key</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-no-upload-key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Don’t automatically upload the deploy key to GitHub. If you select this   
         option, you will not be prompted for your GitHub credentials, so this option is not compatible with   
         private repositories.</p>
@@ -118,7 +115,7 @@ options available.</p>
 
 <dl class="option">
 <dt id="cmdoption-doctr-configure-key-path">
-<code class="descname">–key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path to save the encrypted GitHub deploy key. The default is ‘github_deploy_key’.   
     The .enc extension is added to the file automatically.</p>
 </dd></dl>
@@ -131,7 +128,7 @@ options available.</p>
 <span class="go">                        [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
 <span class="go">                        [--deploy-repo DEPLOY_REPO]</span>
 <span class="go">                        [--no-require-master | --require-master]</span>
-<span class="go">                        [--command COMMAND] [--no-sync | --sync]</span>
+<span class="go">                        [--command COMMAND] [--no-sync | --sync] [--no-temp-dir]</span>
 <span class="go">                        [--no-push | --push] [--gh-pages-docs GH_PAGES_DOCS]</span>
 <span class="go">                        [deploy_directory]</span>
 </pre></div>
@@ -144,78 +141,79 @@ options available.</p>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-h">
-<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">–help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-h" title="Permalink to this definition">¶</a></dt>
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-h" title="Permalink to this definition">¶</a></dt>
 <dd><p>show this help message and exit</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-force">
-<code class="descname">–force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-force" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-force" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the deploy command even   
     if we do not appear to be on Travis.</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-no-force">
-<code class="descname">–no-force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-force" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-force" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–force”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-token">
-<code class="descname">–token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push to GitHub using a personal access token. Use this if you   
         used ‘doctr configure –token’.</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-no-token">
-<code class="descname">–no-token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-token</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–token”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-key-path">
-<code class="descname">–key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-path" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path of the encrypted GitHub deploy key. The default is ‘github_deploy_key.enc’.</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-built-docs">
-<code class="descname">–built-docs</code><code class="descclassname"> &lt;built_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-built-docs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Location of the built html documentation to be deployed to   
-        gh-pages. If not specified, Doctr will try to automatically detect build location</p>
+<code class="descname">--built-docs</code><code class="descclassname"> &lt;built_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-built-docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the built html documentation to be deployed to gh-pages. If not   
+        specified, Doctr will try to automatically detect build location   
+        (right now only works for Sphinx docs).</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-deploy-branch-name">
-<code class="descname">–deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the branch to deploy to (default: ‘master’ for <code class="docutils literal"><span class="pre">*.github.io</span></code>   
                                repos, ‘gh-pages’ otherwise)</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-deploy-repo">
-<code class="descname">–deploy-repo</code><code class="descclassname"> &lt;deploy_repo&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-repo" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--deploy-repo</code><code class="descclassname"> &lt;deploy_repo&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-repo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Repo to   
         deploy the docs to. By default, it deploys to the repo Doctr is run from.</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-no-require-master">
-<code class="descname">–no-require-master</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-require-master" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-require-master</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-require-master" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allow docs to be pushed from a branch other than master</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-require-master">
-<code class="descname">–require-master</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-require-master" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--require-master</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-require-master" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–no-require-master”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-command">
-<code class="descname">–command</code><code class="descclassname"> &lt;command&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-command" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--command</code><code class="descclassname"> &lt;command&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Command to   
         be run before committing and pushing. If the command creates   
         additional files that should be deployed, they should be added to the   
@@ -224,7 +222,7 @@ options available.</p>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-no-sync">
-<code class="descname">–no-sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-sync" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Don’t sync any files. This is generally used in   
         conjunction with the –command flag, for instance, if the command syncs   
         the files for you. Any files you wish to commit should be added to the   
@@ -233,25 +231,32 @@ options available.</p>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-sync">
-<code class="descname">–sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-sync" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--sync</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–no-sync”</p>
 </dd></dl>
 
 <dl class="option">
+<dt id="cmdoption-doctr-deploy-no-temp-dir">
+<code class="descname">--no-temp-dir</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-temp-dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t copy the   
+        –built-docs directory to a temporary directory.</p>
+</dd></dl>
+
+<dl class="option">
 <dt id="cmdoption-doctr-deploy-no-push">
-<code class="descname">–no-push</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-push" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--no-push</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-no-push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run all the steps except the last push step. Useful for debugging</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-push">
-<code class="descname">–push</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-push" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--push</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-deploy-push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse of “–no-push”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-gh-pages-docs">
-<code class="descname">–gh-pages-docs</code><code class="descclassname"> &lt;gh_pages_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-gh-pages-docs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--gh-pages-docs</code><code class="descclassname"> &lt;gh_pages_docs&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-gh-pages-docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.   
         The default is None. The deploy directory should be passed as   
         the first argument to ‘doctr deploy’. This flag is kept for backwards   
@@ -346,7 +351,7 @@ branches like <code class="docutils literal"><span class="pre">3.x</span></code>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

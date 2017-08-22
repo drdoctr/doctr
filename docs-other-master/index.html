@@ -5,16 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.5.3+14.g8007280 documentation</title>
-    
+    <title>Welcome to the Doctr documentation! &#8212; Doctr 1.5.3+62.g7408e1e documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+14.g8007280',
+        VERSION:     '1.5.3+62.g7408e1e',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -48,6 +45,13 @@
 <div class="section" id="doctr">
 <h1>Doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h1>
 <p>A tool for automatically deploying docs from Travis CI to GitHub pages.</p>
+<p>Doctr helps deploy things to GitHub pages from Travis CI by managing the
+otherwise complicated tasks of generating, encrypting, managing SSH deploy
+keys, and syncing files to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch. Doctr was originally
+designed for documentation, but it can be used to deploy any kind of website
+to GitHub pages that can be built on Travis CI. For example, you can use doctr
+to deploy a <a class="reference external" href="http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/">blog</a>
+or website that uses a <a class="reference external" href="https://www.staticgen.com/">static site generator</a>.</p>
 <p>Contribute to Doctr development on <a class="reference external" href="https://github.com/drdoctr/doctr">GitHub</a>.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -99,11 +103,11 @@ code to run (in <code class="docutils literal"><span class="pre">script:</span><
 <span class="c1"># This is the script to build the docs on travis, then deploy</span>
 <span class="n">script</span><span class="p">:</span>
   <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
-  <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span> <span class="n">doctr</span>
+  <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
   <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
   <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
   <span class="o">-</span> <span class="n">cd</span> <span class="o">..</span>
-  <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span>
+  <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the travis config file</a> used by Doctr itself for example.</p>
@@ -129,12 +133,6 @@ now automatically build your documentation and deploy it.</p>
 <p><strong>Doctr requires Python 3.5 or newer.</strong> Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.</p>
-<p><strong>To force an error on warnings</strong> if you use Sphinx, add</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">html</span><span class="p">:</span> <span class="n">SPHINXOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">W</span>
-</pre></div>
-</div>
-<p>to your Sphinx <code class="docutils literal"><span class="pre">Makefile</span></code>. This will make Sphinx error even if there are
-warnings, keeping your docs more accurate.</p>
 <p><strong>Doctr does not require Sphinx.</strong> It will work with deploying anything to
 GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
 docs automatically (otherwise use <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
@@ -312,7 +310,7 @@ feel good.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
