@@ -267,7 +267,6 @@ def guess_github_repo():
     p = subprocess.run(['git', 'ls-remote', '--get-url', 'origin'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
     if p.stderr or p.returncode:
-        print(p)
         return False
 
     url = p.stdout.decode('utf-8').strip()
