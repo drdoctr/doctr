@@ -28,6 +28,7 @@ import argparse
 import subprocess
 import yaml
 import json
+import shlex
 
 from pathlib import Path
 
@@ -290,6 +291,11 @@ def deploy(args, parser):
                 print("Don't have permission to push. Not trying.")
         else:
             print("The docs have not changed. Not updating")
+    except:
+        DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
+        print("ERROR: The doctr command %r failed." % DOCTR_COMMAND,
+            file=sys.stderr)
+        raise
     finally:
         run(['git', 'checkout', current_commit])
         # Ignore error, won't do anything if there was nothing to stash
