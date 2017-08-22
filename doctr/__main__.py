@@ -28,6 +28,7 @@ import argparse
 import subprocess
 import yaml
 import json
+import shlex
 
 from pathlib import Path
 
@@ -39,6 +40,9 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 from . import __version__
+
+def red(text):
+    return "\033[31m%s\033[0m" % text
 
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
@@ -290,6 +294,11 @@ def deploy(args, parser):
                 print("Don't have permission to push. Not trying.")
         else:
             print("The docs have not changed. Not updating")
+    except BaseException as e:
+        DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
+        print(red("ERROR: The doctr command %r failed: %s" % (DOCTR_COMMAND, e)),
+            file=sys.stderr)
+        raise
     finally:
         run(['git', 'checkout', current_commit])
         # Ignore error, won't do anything if there was nothing to stash
