@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.5.3+60.g961f260 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.5.3+66.gc9f25d4 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.5.3+60.g961f260',
+        VERSION:     '1.5.3+66.gc9f25d4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -55,6 +55,8 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="k">import</span> <span class="n">Fernet</span>
+
+<span class="n">DOCTR_WORKING_BRANCH</span> <span class="o">=</span> <span class="s1">&#39;__doctr_working_branch&#39;</span>
 
 <div class="viewcode-block" id="decrypt_file"><a class="viewcode-back" href="../../api.html#doctr.travis.decrypt_file">[docs]</a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -283,14 +285,18 @@
 <span class="sd">    Checkout the deploy branch, creating it if it doesn&#39;t exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#create empty branch with .nojekyll if it doesn&#39;t already exist</span>
-    <span class="n">new_deploy_branch</span> <span class="o">=</span> <span class="n">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
-    <span class="n">local_deploy_branch_exists</span> <span class="o">=</span> <span class="n">deploy_branch</span> <span class="ow">in</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">new_deploy_branch</span> <span class="ow">or</span> <span class="n">local_deploy_branch_exists</span><span class="p">:</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">,</span> <span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span></div>
+    <span class="n">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out doctr working branch tracking doctr_remote/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+    <span class="n">clear_working_branch</span><span class="p">()</span>
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">,</span> <span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">canpush</span></div>
+
+<span class="k">def</span> <span class="nf">clear_working_branch</span><span class="p">():</span>
+    <span class="n">local_branch_names</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">DOCTR_WORKING_BRANCH</span> <span class="ow">in</span> <span class="n">local_branch_names</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
 
 <div class="viewcode-block" id="deploy_branch_exists"><a class="viewcode-back" href="../../api.html#doctr.travis.deploy_branch_exists">[docs]</a><span class="k">def</span> <span class="nf">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -318,20 +324,24 @@
 <span class="sd">    Return True if ``deploy_branch`` was created, False if not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> branch on doctr_remote&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+        <span class="n">clear_working_branch</span><span class="p">()</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
         <span class="c1"># delete everything in the new ref.  this is non-destructive to existing</span>
         <span class="c1"># refs/branches, etc...</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-rf&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to working branch&quot;</span><span class="p">)</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;touch&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
         <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new </span><span class="si">{}</span><span class="s1"> branch with .nojekyll&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
         <span class="k">if</span> <span class="n">push</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing </span><span class="si">{}</span><span class="s2"> branch to remote&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
-            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
-        <span class="c1"># return to master branch</span>
-        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing working branch to remote </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOCTR_WORKING_BRANCH</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)])</span>
+        <span class="c1"># return to master branch and clear the working branch</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;master&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
+        <span class="c1"># fetch the remote so that doctr_remote/{deploy_branch} is resolved</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
@@ -489,7 +499,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pulling&quot;</span><span class="p">)</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;pull&#39;</span><span class="p">,</span> <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;recursive&#39;</span><span class="p">,</span> <span class="s1">&#39;-X&#39;</span><span class="p">,</span> <span class="s1">&#39;ours&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">])</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing commit&quot;</span><span class="p">)</span>
-        <span class="n">code</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">],</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOCTR_WORKING_BRANCH</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)])</span>
         <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
             <span class="n">retries</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Push failed, retrying&quot;</span><span class="p">)</span>
