@@ -296,10 +296,11 @@ def deploy(args, parser):
                 print("Don't have permission to push. Not trying.")
         else:
             print("The docs have not changed. Not updating")
-    except:
+    except BaseException as e:
         DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
         print(red("ERROR: The doctr command %r failed." % DOCTR_COMMAND),
             file=sys.stderr)
+        print(red(e), file=sys.stderr)
         raise
     finally:
         run(['git', 'checkout', current_commit])
