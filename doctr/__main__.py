@@ -276,8 +276,6 @@ def deploy(args, parser):
         run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
-        sys.exit("Test exiting early")
-
         if args.sync:
             log_file = os.path.join(deploy_dir, '.doctr-files')
 
