@@ -298,9 +298,8 @@ def deploy(args, parser):
             print("The docs have not changed. Not updating")
     except BaseException as e:
         DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
-        print(red("ERROR: The doctr command %r failed." % DOCTR_COMMAND),
+        print(red("ERROR: The doctr command %r failed: %s" % (DOCTR_COMMAND, e),
             file=sys.stderr)
-        print(red(e), file=sys.stderr)
         raise
     finally:
         run(['git', 'checkout', current_commit])
