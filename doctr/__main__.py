@@ -13,7 +13,7 @@ which you should insert into your .travis.yml.
 
 Then, on Travis, for the build where you build your docs, add
 
-    - doctr deploy . --built-docs path/to/built/html/
+    - ``doctr deploy . --built-docs path/to/built/html/``
 
 to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won't run on pull requests.
