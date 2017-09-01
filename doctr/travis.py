@@ -95,7 +95,7 @@ def run_command_hiding_token(args, token, shell=False):
     else:
         command = args
     command = command.replace(token.decode('utf-8'), '~'*len(token))
-    print("Doctr, running command:", command)
+    print(blue(command))
     sys.stdout.flush()
 
     if token:
