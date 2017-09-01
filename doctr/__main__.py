@@ -3,15 +3,15 @@ doctr
 
 A tool to automatically deploy docs to GitHub pages from Travis CI.
 
-The doctr command is two commands in one. To use, first run
+The doctr command is two commands in one. To use, first run::
 
-doctr configure
+    doctr configure
 
 on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
 which you should insert into your .travis.yml.
 
-Then, on Travis, for the build where you build your docs, add
+Then, on Travis, for the build where you build your docs, add::
 
     - doctr deploy . --built-docs path/to/built/html/
 
