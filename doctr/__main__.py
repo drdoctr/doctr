@@ -39,11 +39,8 @@ from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     GitHub_login, guess_github_repo)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch, red)
 from . import __version__
-
-def red(text):
-    return "\033[31m%s\033[0m" % text
 
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
