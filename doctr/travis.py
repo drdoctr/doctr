@@ -83,7 +83,6 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
 
     run(['ssh-add', os.path.expanduser('~/.ssh/' + key_filename)])
 
-# XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token, shell=False):
     if not shell:
         command = ' '.join(map(shlex.quote, args))
@@ -91,11 +90,22 @@ def run_command_hiding_token(args, token, shell=False):
         command = args
     command = command.replace(token.decode('utf-8'), '~'*len(token))
     print(command)
-    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell)
-    out, err = p.stdout, p.stderr
-    out = out.replace(token, b"~"*len(token))
-    err = err.replace(token, b"~"*len(token))
-    return (out, err, p.returncode)
+
+    if token:
+        stdout = stderr = subprocess.PIPE
+    else:
+        stdout = stderr = None
+    p = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell)
+    if token:
+        # XXX: Do this in a way that is streaming
+        out, err = p.stdout, p.stderr
+        out = out.replace(token, b"~"*len(token))
+        err = err.replace(token, b"~"*len(token))
+        if out:
+            print(out.decode('utf-8'))
+        if err:
+            print(err.decode('utf-8'), file=sys.stderr)
+    return p.returncode
 
 def get_token():
     """
@@ -126,11 +136,7 @@ def run(args, shell=False, exit=True):
         token = b''
     else:
         token = get_token()
-    out, err, returncode = run_command_hiding_token(args, token, shell=shell)
-    if out:
-        print(out.decode('utf-8'))
-    if err:
-        print(err.decode('utf-8'), file=sys.stderr)
+    returncode = run_command_hiding_token(args, token, shell=shell)
     if exit and returncode != 0:
         sys.exit(returncode)
     return returncode
