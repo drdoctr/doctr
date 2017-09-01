@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+97.gdb87ae7 documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+102.g0a06dcd documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+97.gdb87ae7',
+        VERSION:     '1.5.3+102.g0a06dcd',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,17 +46,17 @@
 <h2>doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h2>
 <p>doctr</p>
 <p>A tool to automatically deploy docs to GitHub pages from Travis CI.</p>
-<p>The doctr command is two commands in one. To use, first run</p>
-<p>doctr configure</p>
+<p>The doctr command is two commands in one. To use, first run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+</pre></div>
+</div>
 <p>on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
 which you should insert into your .travis.yml.</p>
-<p>Then, on Travis, for the build where you build your docs, add</p>
-<blockquote>
-<div><ul class="simple">
-<li>doctr deploy . –built-docs path/to/built/html/</li>
-</ul>
-</div></blockquote>
+<p>Then, on Travis, for the build where you build your docs, add:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+</pre></div>
+</div>
 <p>to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won’t run on pull requests.</p>
 <p>For more information, see <a class="reference external" href="https://drdoctr.github.io/doctr/docs/">https://drdoctr.github.io/doctr/docs/</a></p>
