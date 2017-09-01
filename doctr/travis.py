@@ -89,7 +89,8 @@ def run_command_hiding_token(args, token, shell=False):
     else:
         command = args
     command = command.replace(token.decode('utf-8'), '~'*len(token))
-    print(command)
+    print("Doctr, running command:", command)
+    sys.stdout.flush()
 
     if token:
         stdout = stderr = subprocess.PIPE
