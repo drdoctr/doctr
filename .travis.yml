@@ -27,6 +27,7 @@ install:
 script:
   - set -e
   - set -x
+  # Note, the commands below need --sync to actually sync, to override sync: False below
   - |
     if [[ "${DOCS}" == "true" ]]; then
       cd docs;
