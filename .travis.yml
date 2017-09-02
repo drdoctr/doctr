@@ -38,7 +38,7 @@ script:
       echo test >> test
       python -m doctr deploy --no-require-master  --command "echo test; ls; touch docs/_build/html/test" docs;
       # Test syncing a tracked file with a change
-      python -m doctr deploy --sync stash-test --built-docs test;
+      python -m doctr deploy --no-require-master --sync stash-test --built-docs test;
       python -m doctr deploy --deploy-repo drdoctr/drdoctr.github.io docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
