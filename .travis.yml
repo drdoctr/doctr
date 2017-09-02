@@ -36,7 +36,7 @@ script:
       python -m doctr deploy --sync .;
       python -m doctr deploy --sync --gh-pages-docs docs;
       python -m doctr deploy --sync --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH";
-      echo test >> test
+      echo `date` >> test
       python -m doctr deploy --no-require-master  --command "echo test; ls; touch docs/_build/html/test" docs;
       # Test syncing a tracked file with a change
       python -m doctr deploy --no-require-master --sync stash-test --built-docs test;
