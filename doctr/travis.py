@@ -338,17 +338,19 @@ def find_sphinx_build_dir():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def copy_to_tmp(directory):
+def copy_to_tmp(source):
     """
-    Copies the contents of directory to a temporary directory, and returns the
-    copied location.
+    Copies ``source`` to a temporary directory, and returns the copied location.
     """
     tmp_dir = tempfile.mkdtemp()
     # Use pathlib because os.path.basename is different depending on whether
     # the path ends in a /
-    p = pathlib.Path(directory)
+    p = pathlib.Path(source)
     new_dir = os.path.join(tmp_dir, p.name)
-    shutil.copytree(directory, new_dir)
+    if os.path.isdir(source):
+        shutil.copytree(source, new_dir)
+    else:
+        shutil.copy2(source, new_dir)
     return new_dir
 
 def sync_from_log(src, dst, log_file):
@@ -364,8 +366,6 @@ def sync_from_log(src, dst, log_file):
     ``src``. ``added`` also includes the log file.
     """
     from os.path import join, exists, isdir
-    if not src.endswith(os.sep):
-        src += os.sep
 
     added, removed = [], []
 
@@ -384,7 +384,14 @@ def sync_from_log(src, dst, log_file):
             else:
                 print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
 
-    files = glob.iglob(join(src, '**'), recursive=True)
+    if os.path.isdir(src):
+        if not src.endswith(os.sep):
+            src += os.sep
+        files = glob.iglob(join(src, '**'), recursive=True)
+    else:
+        files = [src]
+        src = os.path.dirname(src) + os.sep
+
     # sorted makes this easier to test
     for f in sorted(files):
         new_f = join(dst, f[len(src):])
