@@ -2,11 +2,44 @@
  Doctr Changelog
 =================
 
-Current
-=======
-- Invalid input won't kill ``doctr`` but will instead prompt again for valid
+1.6.0 (2017-09-26)
+==================
+
+Major Changes
+-------------
+
+- Fix pushing to .github.io repos (thanks @danielballan). (:issue:`190`)
+- Run ``--command`` on the original branch, not the deploy branch.
+  (:issue:`192`)
+- Run ``--command`` with ``shell=True``. (:issue:`193`)
+- Fix ``doctr configure`` for 2-factor authentication from SMS (thanks
+  @techgaun). (:issue:`203`)
+- Copy ``--built-docs`` to a temporary directory before syncing. Fixes syncing
+  of committed files. (:issue:`215`)
+- Only set the git username and password on Travis if they aren't set already.
+  (:issue:`216`)
+- Guess the repo automatically in ``doctr configure``. (:issue:`217`)
+- Use ``git stash`` instead of ``git reset --hard`` on Travis. Fixes syncing
+  tracked files with changes. (:issue:`219`)
+- Automatically retry on failure in Travis. Fixes race conditions from pushing
+  from concurrent builds. (:issue:`222`)
+- Use the "ours" merge strategy on merge. This should avoid issues when there
+  are merge conflicts on gh-pages from other non-doctr commits. (:issue:`232`)
+- Allow ``--built-docs`` to be a file. (:issue:`252`)
+
+Minor Changes
+-------------
+
+- Improve instructions (thanks @choldgraf). (:issue:`186`)
+- Skip GitHub tests if no API token is present (:issue:`187`)
+- Invalid input won't kill ``doctr configure`` but will instead prompt again for valid
   input. Prevents users from having to go through the whole login rigamarole
-  again. (:issue:`181`)
+  again. (:issue:`181`, :issue:`188`)
+- Make it clearer in the docs that doctr isn't just for Sphinx. (:issue:`196`)
+- Print a red error message when doctr fails. (:issue:`239`)
+- Fix some rendering in the docs (thanks @CJ-Wright). (:issue:`249`)
+- Fix out of order command output (except when doctr uses a token). Also,
+  print doctr commands in blue. (:issue:`250`)
 
 1.5.3 (2017-04-07)
 ==================
