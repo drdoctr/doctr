@@ -146,8 +146,9 @@ options available.
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
-    deploy_parser_add_argument('--command', default=None, help="""Command to
-        be run before committing and pushing. If the command creates
+    deploy_parser_add_argument('--command', default=None,
+        help="""Command to be run before committing and pushing. This command
+        will be run from the deploy repository/branch. If the command creates
         additional files that should be deployed, they should be added to the
         index.""")
     deploy_parser_add_argument('--no-sync', dest='sync', action='store_false',
@@ -261,9 +262,6 @@ def deploy(args, parser):
                                      full_key_path=args.key_path,
                                      branch_whitelist=branch_whitelist)
 
-        if args.command:
-            run(args.command, shell=True)
-
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
             if args.temp_dir:
@@ -283,6 +281,9 @@ def deploy(args, parser):
 
         else:
             added, removed = [], []
+
+        if args.command:
+            run(args.command, shell=True)
 
         changes = commit_docs(added=added, removed=removed)
         if changes:
