@@ -2,6 +2,18 @@
  Doctr Changelog
 =================
 
+1.6.1 (2017-09-27)
+==================
+
+Minor Changes
+-------------
+
+- Revert the change to ``--command`` from 1.6.0 that makes it run on the
+  original branch. If you want to run a command on the original branch, just
+  run it before running doctr. ``--command`` now runs on the deploy branch, as
+  it did before. This does not revert the other change to ``--command`` from
+  1.6.0 (running with ``shell=True``). (:issue:`259`)
+
 1.6.0 (2017-09-26)
 ==================
 
