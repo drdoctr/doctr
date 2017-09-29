@@ -419,7 +419,7 @@ def configure(args, parser):
           - doctr deploy{options} <target-directory>
 
         env:
-          global:`
+          global:
             - secure: "{encrypted_variable}"
 
     """.format(options=options, N=N, encrypted_variable=encrypted_variable.decode('utf-8'))))
