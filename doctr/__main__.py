@@ -416,7 +416,7 @@ def configure(args, parser):
           - set -e
           - # Command to build your docs
           - pip install doctr
-          - doctr deploy{options} <target-directory>
+          - doctr deploy {options} <target-directory>
 
         env:
           global:
