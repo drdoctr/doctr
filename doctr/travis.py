@@ -455,7 +455,7 @@ The doctr command that was run is
     )
 
     # Only commit if there were changes
-    if run(['git', 'diff-index', '--exit-code', '--quiet', 'HEAD', '--'], exit=False) != 0:
+    if run(['git', 'diff-index', '--exit-code', '--cached', '--quiet', 'HEAD', '--'], exit=False) != 0:
         print("Committing")
         run(['git', 'commit', '-am', commit_message])
         return True
