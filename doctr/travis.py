@@ -147,7 +147,7 @@ def run(args, shell=False, exit=True):
     returncode = run_command_hiding_token(args, token, shell=shell)
 
     if exit and returncode != 0:
-        sys.exit("%s failed: %s" % (command, returncode))
+        sys.exit(red("%s failed: %s" % (command, returncode)))
     return returncode
 
 def get_current_repo():
