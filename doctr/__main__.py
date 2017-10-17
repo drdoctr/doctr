@@ -270,7 +270,7 @@ def deploy(args, parser):
                 built_docs = copy_to_tmp(built_docs)
 
         # Reset in case there are modified files that are tracked in the
-        # dpeloy branch.
+        # deploy branch.
         run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
