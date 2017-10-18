@@ -90,14 +90,6 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
     run(['ssh-add', os.path.expanduser('~/.ssh/' + key_filename)])
 
 def run_command_hiding_token(args, token, shell=False):
-    if not shell:
-        command = ' '.join(map(shlex.quote, args))
-    else:
-        command = args
-    command = command.replace(token.decode('utf-8'), '~'*len(token))
-    print(blue(command))
-    sys.stdout.flush()
-
     if token:
         stdout = stderr = subprocess.PIPE
     else:
@@ -143,9 +135,19 @@ def run(args, shell=False, exit=True):
         token = b''
     else:
         token = get_token()
+
+    if not shell:
+        command = ' '.join(map(shlex.quote, args))
+    else:
+        command = args
+    command = command.replace(token.decode('utf-8'), '~'*len(token))
+    print(blue(command))
+    sys.stdout.flush()
+
     returncode = run_command_hiding_token(args, token, shell=shell)
+
     if exit and returncode != 0:
-        sys.exit(returncode)
+        sys.exit(red("%s failed: %s" % (command, returncode)))
     return returncode
 
 def get_current_repo():

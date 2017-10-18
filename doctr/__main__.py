@@ -268,7 +268,7 @@ def deploy(args, parser):
                 built_docs = copy_to_tmp(built_docs)
 
         # Reset in case there are modified files that are tracked in the
-        # dpeloy branch.
+        # deploy branch.
         run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
@@ -295,7 +295,7 @@ def deploy(args, parser):
             print("The docs have not changed. Not updating")
     except BaseException as e:
         DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
-        print(red("ERROR: The doctr command %r failed: %s" % (DOCTR_COMMAND, e)),
+        print(red("ERROR: The doctr command %r failed: %r" % (DOCTR_COMMAND, e)),
             file=sys.stderr)
         raise
     finally:
