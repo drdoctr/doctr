@@ -457,8 +457,7 @@ The doctr command that was run is
     )
 
     # Only commit if there were changes
-    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+    if run(['git', 'diff-index', '--exit-code', '--cached', '--quiet', 'HEAD', '--'], exit=False) != 0:
         print("Committing")
         run(['git', 'commit', '-am', commit_message])
         return True
