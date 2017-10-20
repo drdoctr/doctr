@@ -8,6 +8,8 @@
 Minor Changes
 -------------
 
+- Fix some typos in the ``doctr configure`` output. Thanks @bnaul and
+  @ocefpaf. (:issue:`261` and :issue:`260`)
 - Fix the retry logic for pushing. (:issue:`265`)
 - Better messaging when doctr fails because of an error from a command.
   (:issue:`263`)
