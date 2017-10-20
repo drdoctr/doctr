@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Changelog &#8212; Doctr 1.6.2+3.g5812050 documentation</title>
+    <title>Doctr Changelog &#8212; Doctr 1.6.2+5.g466c77f documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.2+3.g5812050',
+        VERSION:     '1.6.2+5.g466c77f',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -47,8 +47,8 @@
 <div class="section" id="minor-changes">
 <h3>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Fix some typos in the <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> output. Thanks &#64;bnaul and
-&#64;ocefpaf. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/261">#261</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/issues/260">#260</a>)</li>
+<li>Fix some typos in the <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> output. Thanks <a class="reference external" href="https://github.com/bnaul">&#64;bnaul</a> and
+<a class="reference external" href="https://github.com/ocefpaf">&#64;ocefpaf</a>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/261">#261</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/issues/260">#260</a>)</li>
 <li>Fix the retry logic for pushing. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/265">#265</a>)</li>
 <li>Better messaging when doctr fails because of an error from a command.
 (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/263">#263</a>)</li>
@@ -78,12 +78,12 @@ it did before. This does not revert the other change to <code class="docutils li
 <div class="section" id="major-changes">
 <h3>Major Changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Fix pushing to .github.io repos (thanks &#64;danielballan). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/190">#190</a>)</li>
+<li>Fix pushing to .github.io repos (thanks <a class="reference external" href="https://github.com/danielballan">&#64;danielballan</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/190">#190</a>)</li>
 <li>Run <code class="docutils literal"><span class="pre">--command</span></code> on the original branch, not the deploy branch.
 (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/192">#192</a>)</li>
 <li>Run <code class="docutils literal"><span class="pre">--command</span></code> with <code class="docutils literal"><span class="pre">shell=True</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/193">#193</a>)</li>
 <li>Fix <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> for 2-factor authentication from SMS (thanks
-&#64;techgaun). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/203">#203</a>)</li>
+<a class="reference external" href="https://github.com/techgaun">&#64;techgaun</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/203">#203</a>)</li>
 <li>Copy <code class="docutils literal"><span class="pre">--built-docs</span></code> to a temporary directory before syncing. Fixes syncing
 of committed files. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/215">#215</a>)</li>
 <li>Only set the git username and password on Travis if they aren’t set already.
@@ -101,14 +101,14 @@ are merge conflicts on gh-pages from other non-doctr commits. (<a class="referen
 <div class="section" id="id5">
 <h3>Minor Changes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Improve instructions (thanks &#64;choldgraf). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/186">#186</a>)</li>
+<li>Improve instructions (thanks <a class="reference external" href="https://github.com/choldgraf">&#64;choldgraf</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/186">#186</a>)</li>
 <li>Skip GitHub tests if no API token is present (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/187">#187</a>)</li>
 <li>Invalid input won’t kill <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> but will instead prompt again for valid
 input. Prevents users from having to go through the whole login rigamarole
 again. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/181">#181</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/188">#188</a>)</li>
 <li>Make it clearer in the docs that doctr isn’t just for Sphinx. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/196">#196</a>)</li>
 <li>Print a red error message when doctr fails. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/239">#239</a>)</li>
-<li>Fix some rendering in the docs (thanks &#64;CJ-Wright). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/249">#249</a>)</li>
+<li>Fix some rendering in the docs (thanks <a class="reference external" href="https://github.com/CJ-Wright">&#64;CJ-Wright</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/249">#249</a>)</li>
 <li>Fix out of order command output (except when doctr uses a token). Also,
 print doctr commands in blue. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/250">#250</a>)</li>
 </ul>
@@ -171,7 +171,7 @@ latest versions of git. (<a class="reference external" href="https://github.com/
 <li>Run doctr tests on Travis with a personal access token, avoiding rate
 limiting errors. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/133">#133</a>)</li>
 <li>Run all doctr steps except for the push on every build. Add <code class="docutils literal"><span class="pre">--no-push</span></code>
-option. Thanks &#64;Carreau. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/125">#125</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/126">#126</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/132">#132</a>)</li>
+option. Thanks <a class="reference external" href="https://github.com/Carreau">&#64;Carreau</a>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/125">#125</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/126">#126</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/132">#132</a>)</li>
 <li>Clarify in docs that doctr is not just for Sphinx. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/129">#129</a>,
 <a class="reference external" href="https://github.com/drdoctr/doctr/issues/130">#130</a>)</li>
 <li>Use the latest version of sphinxcontrib.autoprogram to build the doctr docs.
@@ -183,7 +183,7 @@ option. Thanks &#64;Carreau. (<a class="reference external" href="https://github
 <h2>1.3.3 (2016-09-20)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add support for private GitHub repositories using travis-ci.com (thanks
-&#64;dan-blanchard). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/121">#121</a>)</li>
+<a class="reference external" href="https://github.com/dan-blanchard">&#64;dan-blanchard</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/121">#121</a>)</li>
 <li>Add a list of projects using doctr to the docs. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/116">#116</a>)</li>
 <li>Use the sphinx-issues extension in the changelog. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/99">#99</a>)</li>
 <li>Swap “description” and “long_description” in setup.py. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/120">#120</a>)</li>
@@ -201,7 +201,7 @@ option. Thanks &#64;Carreau. (<a class="reference external" href="https://github
 <h3>Minor Changes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Get the setup.py description from the README. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/103">#103</a>)</li>
-<li>Add link to GitHub docs for branch protection (thanks &#64;willingc). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/100">#100</a>)</li>
+<li>Add link to GitHub docs for branch protection (thanks <a class="reference external" href="https://github.com/willingc">&#64;willingc</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/100">#100</a>)</li>
 </ul>
 </div>
 </div>
