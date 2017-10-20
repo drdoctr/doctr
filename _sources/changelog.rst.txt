@@ -2,6 +2,21 @@
  Doctr Changelog
 =================
 
+1.6.2 (2017-10-20)
+==================
+
+Minor Changes
+-------------
+
+- Fix the retry logic for pushing. (:issue:`265`)
+- Better messaging when doctr fails because of an error from a command.
+  (:issue:`263`)
+- Fix an error when ``--command`` makes changes to a file that isn't synced,
+  and no synced files are actually changed. Note, currently, if ``--command``
+  adds or changes any files that aren't the new ones that are synced, they
+  will not be committed unless they are manually added to the index. This
+  should be improved in a future version (see :issue:`267`). (:issue:`266`)
+
 1.6.1 (2017-09-27)
 ==================
 
