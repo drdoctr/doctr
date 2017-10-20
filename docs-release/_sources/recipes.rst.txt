@@ -83,8 +83,7 @@ Then, create a pull request to the repository. Tell the owner of the
 repository to add the public key which doctr has printed as a deploy key for
 the repo (doctr will also print the url where they can add this). Don't worry,
 the key is a public SSH key, so it's OK to post it publicly in the pull
-request. If you lose the output of ``doctr configure``, you can also use the
-file ``github_deploy_key.pub`` (you should not commit this file).
+request.
 
 Post-processing the docs on gh-pages
 ====================================
