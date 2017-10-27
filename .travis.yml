@@ -41,6 +41,8 @@ script:
       # Test syncing a tracked file with a change
       python -m doctr deploy --sync stash-test --built-docs test;
       python -m doctr deploy --deploy-repo drdoctr/drdoctr.github.io docs;
+      # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
+      python -m doctr deploy --deploy-branch gh-pages-testing docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
