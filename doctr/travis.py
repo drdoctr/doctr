@@ -258,11 +258,14 @@ def checkout_deploy_branch(deploy_branch, canpush=True):
     """
     Checkout the deploy branch, creating it if it doesn't exist.
     """
-    #create empty branch with .nojekyll if it doesn't already exist
+    # Create an empty branch with .nojekyll if it doesn't already exist
     create_deploy_branch(deploy_branch, push=canpush)
     print("Checking out doctr working branch tracking doctr_remote/{}".format(deploy_branch))
     clear_working_branch()
-    run(['git', 'checkout', '-b', DOCTR_WORKING_BRANCH, '--track', 'doctr_remote/{}'.format(deploy_branch)])
+    # If gh-pages doesn't exist the above create_deploy_branch() will create
+    # it if we can push, but if we can't, it won't and the --track would fail.
+    extra_args = ['--track', 'doctr_remote/{}'.format(deploy_branch)] if canpush else []
+    run(['git', 'checkout', '-b', DOCTR_WORKING_BRANCH] + extra_args)
     print("Done")
 
     return canpush
