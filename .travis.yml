@@ -42,7 +42,7 @@ script:
       python -m doctr deploy --sync stash-test --built-docs test;
       python -m doctr deploy --deploy-repo drdoctr/drdoctr.github.io docs;
       # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
-      python -m doctr deploy --no-require-master --deploy-branch gh-pages-testing docs;
+      python -m doctr deploy --sync --no-require-master --deploy-branch gh-pages-testing docs;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
