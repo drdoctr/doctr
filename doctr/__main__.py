@@ -139,7 +139,7 @@ options available.
         (right now only works for Sphinx docs).""")
     deploy_parser.add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
-                               repos, 'gh-pages' otherwise)""")
+                               and wiki repos, 'gh-pages' otherwise)""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
@@ -250,7 +250,7 @@ def deploy(args, parser):
     if args.deploy_branch_name:
         deploy_branch = args.deploy_branch_name
     else:
-        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com')) else 'gh-pages'
+        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com', '.wiki')) else 'gh-pages'
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
@@ -369,21 +369,23 @@ def configure(args, parser):
 
         print(header)
     else:
-        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
+        # deploy key of the original repo has write access to the wiki
+        deploy_key_repo = deploy_repo[:-5] if deploy_repo.endswith('.wiki') else deploy_repo
+        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_key_repo), keypath=args.key_path)
         key = encrypt_file(args.key_path, delete=True)
         encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, build_repo=build_repo, is_private=is_private, **login_kwargs)
 
-        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_repo)
+        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
         if args.upload_key:
 
-            upload_GitHub_deploy_key(deploy_repo, ssh_key, **login_kwargs)
+            upload_GitHub_deploy_key(deploy_key_repo, ssh_key, **login_kwargs)
 
             print(dedent("""
             The deploy key has been added for {deploy_repo}.
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
-            """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
+            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
             print(header)
         else:
             print(header)
