@@ -337,8 +337,8 @@ def configure(args, parser):
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
             check_repo_exists(build_repo, service='travis')
             get_build_repo = True
-        except RuntimeError:
-            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
+        except RuntimeError as e:
+            print('\n{!s:-^{}}\n'.format(e, 70))
 
     get_deploy_repo = False
     while not get_deploy_repo:
@@ -351,8 +351,8 @@ def configure(args, parser):
                 check_repo_exists(deploy_repo, service='github', **login_kwargs)
 
             get_deploy_repo = True
-        except RuntimeError:
-            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
+        except RuntimeError as e:
+            print('\n{!s:-^{}}\n'.format(e, 70))
 
     N = IncrementingInt(1)
 
