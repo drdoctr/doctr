@@ -132,8 +132,8 @@ options available.
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
     deploy_parser_add_argument('--key-path', default=None,
-        help="""Path of the encrypted GitHub deploy key. The default is github_deploy_key_
-        + deploy respository name + .enc.""")
+        help="""Path of the encrypted GitHub deploy key. The default is github_deploy_key_+
+        deploy respository name + .enc.""")
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to gh-pages. If not
         specified, Doctr will try to automatically detect build location
@@ -187,8 +187,8 @@ options available.
         option, you will not be prompted for your GitHub credentials, so this option is not compatible with
         private repositories.""")
     configure_parser.add_argument('--key-path', default=None,
-        help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_
-        + deploy respository name. The .enc extension is added to the file automatically.""")
+        help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
+        deploy respository name. The .enc extension is added to the file automatically.""")
 
     return parser
 
