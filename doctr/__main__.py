@@ -3,15 +3,15 @@ doctr
 
 A tool to automatically deploy docs to GitHub pages from Travis CI.
 
-The doctr command is two commands in one. To use, first run
+The doctr command is two commands in one. To use, first run::
 
-doctr configure
+    doctr configure
 
 on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
 which you should insert into your .travis.yml.
 
-Then, on Travis, for the build where you build your docs, add
+Then, on Travis, for the build where you build your docs, add::
 
     - doctr deploy . --built-docs path/to/built/html/
 
@@ -28,16 +28,18 @@ import argparse
 import subprocess
 import yaml
 import json
+import shlex
 
 from pathlib import Path
 
 from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists, GitHub_login)
+    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
+    GitHub_login, guess_github_repo)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch, red)
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -144,8 +146,9 @@ options available.
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
-    deploy_parser_add_argument('--command', default=None, help="""Command to
-        be run before committing and pushing. If the command creates
+    deploy_parser_add_argument('--command', default=None,
+        help="""Command to be run before committing and pushing. This command
+        will be run from the deploy repository/branch. If the command creates
         additional files that should be deployed, they should be added to the
         index.""")
     deploy_parser_add_argument('--no-sync', dest='sync', action='store_false',
@@ -247,7 +250,7 @@ def deploy(args, parser):
     if args.deploy_branch_name:
         deploy_branch = args.deploy_branch_name
     else:
-        deploy_branch = 'master' if deploy_dir.endswith(('.github.io', '.github.com')) else 'gh-pages'
+        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com')) else 'gh-pages'
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
@@ -259,16 +262,13 @@ def deploy(args, parser):
                                      full_key_path=args.key_path,
                                      branch_whitelist=branch_whitelist)
 
-        if args.command:
-            run(args.command, shell=True)
-
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
             if args.temp_dir:
                 built_docs = copy_to_tmp(built_docs)
 
         # Reset in case there are modified files that are tracked in the
-        # dpeloy branch.
+        # deploy branch.
         run(['git', 'stash', '--all'])
         checkout_deploy_branch(deploy_branch, canpush=canpush)
 
@@ -282,6 +282,9 @@ def deploy(args, parser):
         else:
             added, removed = [], []
 
+        if args.command:
+            run(args.command, shell=True)
+
         changes = commit_docs(added=added, removed=removed)
         if changes:
             if canpush and args.push:
@@ -290,6 +293,11 @@ def deploy(args, parser):
                 print("Don't have permission to push. Not trying.")
         else:
             print("The docs have not changed. Not updating")
+    except BaseException as e:
+        DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
+        print(red("ERROR: The doctr command %r failed: %r" % (DOCTR_COMMAND, e)),
+            file=sys.stderr)
+        raise
     finally:
         run(['git', 'checkout', current_commit])
         # Ignore error, won't do anything if there was nothing to stash
@@ -317,14 +325,20 @@ def configure(args, parser):
         login_kwargs = {'auth': None, 'headers': None}
 
     get_build_repo = False
+    default_repo = guess_github_repo()
     while not get_build_repo:
         try:
-            build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
+            if default_repo:
+                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=default_repo))
+                if not build_repo:
+                    build_repo = default_repo
+            else:
+                build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
             check_repo_exists(build_repo, service='travis')
             get_build_repo = True
-        except RuntimeError:
-            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
+        except RuntimeError as e:
+            print('\n{!s:-^{}}\n'.format(e, 70))
 
     get_deploy_repo = False
     while not get_deploy_repo:
@@ -337,8 +351,8 @@ def configure(args, parser):
                 check_repo_exists(deploy_repo, service='github', **login_kwargs)
 
             get_deploy_repo = True
-        except RuntimeError:
-            print('\n{:-^{}}\n'.format('Invalid repo or user. Please try again.', 70))
+        except RuntimeError as e:
+            print('\n{!s:-^{}}\n'.format(e, 70))
 
     N = IncrementingInt(1)
 
@@ -402,10 +416,10 @@ def configure(args, parser):
           - set -e
           - # Command to build your docs
           - pip install doctr
-          - doctr deploy{options} <target-directory>
+          - doctr deploy {options} <target-directory>
 
         env:
-          global:`
+          global:
             - secure: "{encrypted_variable}"
 
     """.format(options=options, N=N, encrypted_variable=encrypted_variable.decode('utf-8'))))

@@ -2,11 +2,84 @@
  Doctr Changelog
 =================
 
-Current
-=======
-- Invalid input won't kill ``doctr`` but will instead prompt again for valid
+1.6.3 (2017-11-11)
+==================
+
+Minor Changes
+-------------
+
+- Fix an error that occured when ``gh-pages`` did not exist and doctr did not
+  have the permissions to create it (e.g., on a pull request build).
+  (:issue:`262`)
+- Make usernames links in the changelog. (:issue:`270`)
+
+1.6.2 (2017-10-20)
+==================
+
+Minor Changes
+-------------
+
+- Fix some typos in the ``doctr configure`` output. Thanks :user:`bnaul` and
+  :user:`ocefpaf`. (:issue:`261` and :issue:`260`)
+- Fix the retry logic for pushing. (:issue:`265`)
+- Better messaging when doctr fails because of an error from a command.
+  (:issue:`263`)
+- Fix an error when ``--command`` makes changes to a file that isn't synced,
+  and no synced files are actually changed. Note, currently, if ``--command``
+  adds or changes any files that aren't the new ones that are synced, they
+  will not be committed unless they are manually added to the index. This
+  should be improved in a future version (see :issue:`267`). (:issue:`266`)
+
+1.6.1 (2017-09-27)
+==================
+
+Minor Changes
+-------------
+
+- Revert the change to ``--command`` from 1.6.0 that makes it run on the
+  original branch. If you want to run a command on the original branch, just
+  run it before running doctr. ``--command`` now runs on the deploy branch, as
+  it did before. This does not revert the other change to ``--command`` from
+  1.6.0 (running with ``shell=True``). (:issue:`259`)
+
+1.6.0 (2017-09-26)
+==================
+
+Major Changes
+-------------
+
+- Fix pushing to .github.io repos (thanks :user:`danielballan`). (:issue:`190`)
+- Run ``--command`` on the original branch, not the deploy branch.
+  (:issue:`192`)
+- Run ``--command`` with ``shell=True``. (:issue:`193`)
+- Fix ``doctr configure`` for 2-factor authentication from SMS (thanks
+  :user:`techgaun`). (:issue:`203`)
+- Copy ``--built-docs`` to a temporary directory before syncing. Fixes syncing
+  of committed files. (:issue:`215`)
+- Only set the git username and password on Travis if they aren't set already.
+  (:issue:`216`)
+- Guess the repo automatically in ``doctr configure``. (:issue:`217`)
+- Use ``git stash`` instead of ``git reset --hard`` on Travis. Fixes syncing
+  tracked files with changes. (:issue:`219`)
+- Automatically retry on failure in Travis. Fixes race conditions from pushing
+  from concurrent builds. (:issue:`222`)
+- Use the "ours" merge strategy on merge. This should avoid issues when there
+  are merge conflicts on gh-pages from other non-doctr commits. (:issue:`232`)
+- Allow ``--built-docs`` to be a file. (:issue:`252`)
+
+Minor Changes
+-------------
+
+- Improve instructions (thanks :user:`choldgraf`). (:issue:`186`)
+- Skip GitHub tests if no API token is present (:issue:`187`)
+- Invalid input won't kill ``doctr configure`` but will instead prompt again for valid
   input. Prevents users from having to go through the whole login rigamarole
-  again. (:issue:`181`)
+  again. (:issue:`181`, :issue:`188`)
+- Make it clearer in the docs that doctr isn't just for Sphinx. (:issue:`196`)
+- Print a red error message when doctr fails. (:issue:`239`)
+- Fix some rendering in the docs (thanks :user:`CJ-Wright`). (:issue:`249`)
+- Fix out of order command output (except when doctr uses a token). Also,
+  print doctr commands in blue. (:issue:`250`)
 
 1.5.3 (2017-04-07)
 ==================
@@ -55,7 +128,7 @@ Current
 - Run doctr tests on Travis with a personal access token, avoiding rate
   limiting errors. (:issue:`133`)
 - Run all doctr steps except for the push on every build. Add ``--no-push``
-  option. Thanks @Carreau. (:issue:`125`, :issue:`126`, :issue:`132`)
+  option. Thanks :user:`Carreau`. (:issue:`125`, :issue:`126`, :issue:`132`)
 - Clarify in docs that doctr is not just for Sphinx. (:issue:`129`,
   :issue:`130`)
 - Use the latest version of sphinxcontrib.autoprogram to build the doctr docs.
@@ -66,7 +139,7 @@ Current
 ==================
 
 - Add support for private GitHub repositories using travis-ci.com (thanks
-  @dan-blanchard). (:issue:`121`)
+  :user:`dan-blanchard`). (:issue:`121`)
 - Add a list of projects using doctr to the docs. (:issue:`116`)
 - Use the sphinx-issues extension in the changelog. (:issue:`99`)
 - Swap "description" and "long_description" in setup.py. (:issue:`120`)
@@ -83,7 +156,7 @@ Minor Changes
 -------------
 
 - Get the setup.py description from the README. (:issue:`103`)
-- Add link to GitHub docs for branch protection (thanks @willingc). (:issue:`100`)
+- Add link to GitHub docs for branch protection (thanks :user:`willingc`). (:issue:`100`)
 
 1.3.1 (2016-08-31)
 ==================

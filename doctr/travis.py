@@ -15,6 +15,14 @@ import time
 
 from cryptography.fernet import Fernet
 
+DOCTR_WORKING_BRANCH = '__doctr_working_branch'
+
+def red(text):
+    return "\033[31m%s\033[0m" % text
+
+def blue(text):
+    return "\033[34m%s\033[0m" % text
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.
@@ -81,19 +89,22 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
 
     run(['ssh-add', os.path.expanduser('~/.ssh/' + key_filename)])
 
-# XXX: Do this in a way that is streaming
 def run_command_hiding_token(args, token, shell=False):
-    if not shell:
-        command = ' '.join(map(shlex.quote, args))
+    if token:
+        stdout = stderr = subprocess.PIPE
     else:
-        command = args
-    command = command.replace(token.decode('utf-8'), '~'*len(token))
-    print(command)
-    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell)
-    out, err = p.stdout, p.stderr
-    out = out.replace(token, b"~"*len(token))
-    err = err.replace(token, b"~"*len(token))
-    return (out, err, p.returncode)
+        stdout = stderr = None
+    p = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell)
+    if token:
+        # XXX: Do this in a way that is streaming
+        out, err = p.stdout, p.stderr
+        out = out.replace(token, b"~"*len(token))
+        err = err.replace(token, b"~"*len(token))
+        if out:
+            print(out.decode('utf-8'))
+        if err:
+            print(err.decode('utf-8'), file=sys.stderr)
+    return p.returncode
 
 def get_token():
     """
@@ -124,13 +135,19 @@ def run(args, shell=False, exit=True):
         token = b''
     else:
         token = get_token()
-    out, err, returncode = run_command_hiding_token(args, token, shell=shell)
-    if out:
-        print(out.decode('utf-8'))
-    if err:
-        print(err.decode('utf-8'), file=sys.stderr)
+
+    if not shell:
+        command = ' '.join(map(shlex.quote, args))
+    else:
+        command = args
+    command = command.replace(token.decode('utf-8'), '~'*len(token))
+    print(blue(command))
+    sys.stdout.flush()
+
+    returncode = run_command_hiding_token(args, token, shell=shell)
+
     if exit and returncode != 0:
-        sys.exit(returncode)
+        sys.exit(red("%s failed: %s" % (command, returncode)))
     return returncode
 
 def get_current_repo():
@@ -241,15 +258,26 @@ def checkout_deploy_branch(deploy_branch, canpush=True):
     """
     Checkout the deploy branch, creating it if it doesn't exist.
     """
-    #create empty branch with .nojekyll if it doesn't already exist
-    new_deploy_branch = create_deploy_branch(deploy_branch, push=canpush)
-    print("Checking out {}".format(deploy_branch))
-    local_deploy_branch_exists = deploy_branch in subprocess.check_output(['git', 'branch']).decode('utf-8').split()
-    if new_deploy_branch or local_deploy_branch_exists:
-        run(['git', 'checkout', deploy_branch])
+    # Create an empty branch with .nojekyll if it doesn't already exist
+    create_deploy_branch(deploy_branch, push=canpush)
+    remote_branch = "doctr_remote/{}".format(deploy_branch)
+    print("Checking out doctr working branch tracking", remote_branch)
+    clear_working_branch()
+    # If gh-pages doesn't exist the above create_deploy_branch() will create
+    # it we can push, but if we can't, it won't and the --track would fail.
+    if run(['git', 'rev-parse', '--verify', remote_branch], exit=False) == 0:
+        extra_args = ['--track', remote_branch]
     else:
-        run(['git', 'checkout', '-b', deploy_branch, '--track', 'doctr_remote/{}'.format(deploy_branch)])
+        extra_args = []
+    run(['git', 'checkout', '-b', DOCTR_WORKING_BRANCH] + extra_args)
     print("Done")
+
+    return canpush
+
+def clear_working_branch():
+    local_branch_names = subprocess.check_output(['git', 'branch']).decode('utf-8').split()
+    if DOCTR_WORKING_BRANCH in local_branch_names:
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
 
 def deploy_branch_exists(deploy_branch):
     """
@@ -277,20 +305,24 @@ def create_deploy_branch(deploy_branch, push=True):
     Return True if ``deploy_branch`` was created, False if not.
     """
     if not deploy_branch_exists(deploy_branch):
-        print("Creating {} branch".format(deploy_branch))
-        run(['git', 'checkout', '--orphan', deploy_branch])
+        print("Creating {} branch on doctr_remote".format(deploy_branch))
+        clear_working_branch()
+        run(['git', 'checkout', '--orphan', DOCTR_WORKING_BRANCH])
         # delete everything in the new ref.  this is non-destructive to existing
         # refs/branches, etc...
         run(['git', 'rm', '-rf', '.'])
-        print("Adding .nojekyll file to {} branch".format(deploy_branch))
+        print("Adding .nojekyll file to working branch")
         run(['touch', '.nojekyll'])
         run(['git', 'add', '.nojekyll'])
         run(['git', 'commit', '-m', 'Create new {} branch with .nojekyll'.format(deploy_branch)])
         if push:
-            print("Pushing {} branch to remote".format(deploy_branch))
-            run(['git', 'push', '-u', 'doctr_remote', deploy_branch])
-        # return to master branch
-        run(['git', 'checkout', '-'])
+            print("Pushing working branch to remote {} branch".format(deploy_branch))
+            run(['git', 'push', '-u', 'doctr_remote', '{}:{}'.format(DOCTR_WORKING_BRANCH, deploy_branch)])
+        # return to master branch and clear the working branch
+        run(['git', 'checkout', 'master'])
+        run(['git', 'branch', '-D', DOCTR_WORKING_BRANCH])
+        # fetch the remote so that doctr_remote/{deploy_branch} is resolved
+        run(['git', 'fetch', 'doctr_remote'])
 
         return True
     return False
@@ -315,17 +347,19 @@ def find_sphinx_build_dir():
 # TRAVIS_JOB_NUMBER = os.environ.get("TRAVIS_JOB_NUMBER", '')
 # ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split('.')[1]
 
-def copy_to_tmp(directory):
+def copy_to_tmp(source):
     """
-    Copies the contents of directory to a temporary directory, and returns the
-    copied location.
+    Copies ``source`` to a temporary directory, and returns the copied location.
     """
     tmp_dir = tempfile.mkdtemp()
     # Use pathlib because os.path.basename is different depending on whether
     # the path ends in a /
-    p = pathlib.Path(directory)
+    p = pathlib.Path(source)
     new_dir = os.path.join(tmp_dir, p.name)
-    shutil.copytree(directory, new_dir)
+    if os.path.isdir(source):
+        shutil.copytree(source, new_dir)
+    else:
+        shutil.copy2(source, new_dir)
     return new_dir
 
 def sync_from_log(src, dst, log_file):
@@ -341,8 +375,6 @@ def sync_from_log(src, dst, log_file):
     ``src``. ``added`` also includes the log file.
     """
     from os.path import join, exists, isdir
-    if not src.endswith(os.sep):
-        src += os.sep
 
     added, removed = [], []
 
@@ -361,7 +393,14 @@ def sync_from_log(src, dst, log_file):
             else:
                 print("Warning: File %s doesn't exist." % new_f, file=sys.stderr)
 
-    files = glob.iglob(join(src, '**'), recursive=True)
+    if os.path.isdir(src):
+        if not src.endswith(os.sep):
+            src += os.sep
+        files = glob.iglob(join(src, '**'), recursive=True)
+    else:
+        files = [src]
+        src = os.path.dirname(src) + os.sep
+
     # sorted makes this easier to test
     for f in sorted(files):
         new_f = join(dst, f[len(src):])
@@ -425,8 +464,7 @@ The doctr command that was run is
     )
 
     # Only commit if there were changes
-    if subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+    if run(['git', 'diff-index', '--exit-code', '--cached', '--quiet', 'HEAD', '--'], exit=False) != 0:
         print("Committing")
         run(['git', 'commit', '-am', commit_message])
         return True
@@ -446,9 +484,11 @@ def push_docs(deploy_branch='gh-pages', retries=3):
     code = 1
     while code and retries:
         print("Pulling")
-        code = run(['git', 'pull', 'doctr_remote', deploy_branch])
+        code = run(['git', 'pull', '-s', 'recursive', '-X', 'ours',
+            'doctr_remote', deploy_branch], exit=False)
         print("Pushing commit")
-        code = run(['git', 'push', '-q', 'doctr_remote', deploy_branch], exit=False)
+        code = run(['git', 'push', '-q', 'doctr_remote',
+            '{}:{}'.format(DOCTR_WORKING_BRANCH, deploy_branch)], exit=False)
         if code:
             retries -= 1
             print("Push failed, retrying")
