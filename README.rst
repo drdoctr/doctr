@@ -92,6 +92,8 @@ See `the travis config file
 
    **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
    in the call to ``deploy``. E.g., ``doctr deploy docs/``.
+   
+   **Note:** If you don't already have a gh_pages branch doctr will make one for you.
 
    **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from  running
    when the docs build fails.
