@@ -22,10 +22,13 @@ def test_github_bad_user():
 def test_github_bad_repo():
     with raises(RuntimeError):
         check_repo_exists('drdoctr/---', headers=HEADERS)
+    with raises(RuntimeError):
+        check_repo_exists('drdoctr/---.wiki', headers=HEADERS)
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_repo_exists():
     assert not check_repo_exists('drdoctr/doctr', headers=HEADERS)
+    assert not check_repo_exists('drdoctr/doctr.wiki', headers=HEADERS)
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_invalid_repo():

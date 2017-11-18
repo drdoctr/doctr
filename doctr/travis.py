@@ -49,7 +49,7 @@ def decrypt_file(file, key):
 
     os.chmod(file[:-4], 0o600)
 
-def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
+def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'):
     """
     Decrypts the deploy key and configures it with ssh
 
@@ -58,10 +58,13 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc'):
     DOCTR_DEPLOY_ENCRYPTION_KEY.
 
     """
-    key = os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None)
+    key = os.environ.get(env_name, os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None))
     if not key:
-        raise RuntimeError("DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set")
+        raise RuntimeError("{env_name} or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set"
+            .format(env_name=env_name))
 
+    if not os.path.isfile(keypath + key_ext):
+        keypath = 'github_deploy_key'
     key_filename = os.path.basename(keypath)
     key = key.encode('utf-8')
     decrypt_file(keypath + key_ext, key)
@@ -131,10 +134,10 @@ def run(args, shell=False, exit=True):
     If exit=True, it exits on nonzero returncode. Otherwise it returns the
     returncode.
     """
-    if "DOCTR_DEPLOY_ENCRYPTION_KEY" in os.environ:
-        token = b''
-    else:
+    if "GH_TOKEN" in os.environ:
         token = get_token()
+    else:
+        token = b''
 
     if not shell:
         command = ' '.join(map(shlex.quote, args))
@@ -177,7 +180,8 @@ def get_travis_branch():
     else:
         return os.environ.get("TRAVIS_BRANCH", "")
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc', require_master=None, branch_whitelist=None, deploy_branch='gh-pages'):
+def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc',
+    require_master=None, branch_whitelist=None, deploy_branch='gh-pages', env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -226,7 +230,7 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
         else:
             keypath, key_ext = full_key_path.rsplit('.', 1)
             key_ext = '.' + key_ext
-            setup_deploy_key(keypath=keypath, key_ext=key_ext)
+            setup_deploy_key(keypath=keypath, key_ext=key_ext, env_name=env_name)
             run(['git', 'remote', 'add', 'doctr_remote',
                 'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
     else:

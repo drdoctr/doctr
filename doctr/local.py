@@ -245,6 +245,11 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     else:
         raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
 
+    wiki = False
+    if repo.endswith('.wiki') and service == 'github':
+        wiki = True
+        repo = repo[:-5]
+
     r = requests.get(REPO_URL.format(user=user, repo=repo), auth=auth, headers=headers)
 
     if r.status_code == requests.codes.not_found:
@@ -253,8 +258,17 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
                                                                            service=service))
 
     r.raise_for_status()
+    private = r.json().get('private', False)
+    
+    if wiki and not private:
+        # private wiki needs authentication, so skip check for existence
+        p = subprocess.run(['git', 'ls-remote', '-h', 'https://github.com/{user}/{repo}.wiki'.format(
+            user=user, repo=repo)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        if p.stderr or p.returncode:
+            raise RuntimeError('Wiki not found. Please create a wiki')
+        return False
 
-    return r.json().get('private', False)
+    return private
 
 GIT_URL = re.compile(r'(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?')
 
