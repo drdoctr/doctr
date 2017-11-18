@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API &#8212; Doctr 1.6.2+15.ga92d50c documentation</title>
+    <title>API &#8212; Doctr 1.6.3+6.g9971dbd documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.2+15.ga92d50c',
+        VERSION:     '1.6.3+6.g9971dbd',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -261,7 +261,7 @@ returncode.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_GitHub_push">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch='gh-pages'</em>, <em>keyenv='DOCTR_DEPLOY_ENCRYPTION_KEY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch='gh-pages'</em>, <em>env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the remote to push to GitHub (to be run on Travis).</p>
 <p><code class="docutils literal"><span class="pre">auth_type</span></code> should be either <code class="docutils literal"><span class="pre">'deploy_key'</span></code> or <code class="docutils literal"><span class="pre">'token'</span></code>.</p>
 <p>For <code class="docutils literal"><span class="pre">auth_type='token'</span></code>, this sets up the remote with the token and
@@ -272,11 +272,11 @@ variable.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_deploy_key">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em>, <em>keyenv='DOCTR_DEPLOY_ENCRYPTION_KEY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em>, <em>env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decrypts the deploy key and configures it with ssh</p>
 <p>The key is assumed to be encrypted as keypath + key_ext, and the
 encryption key is assumed to be set in the environment variable
-keyenv.</p>
+DOCTR_DEPLOY_ENCRYPTION_KEY.</p>
 </dd></dl>
 
 <dl class="function">

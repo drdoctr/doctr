@@ -2,6 +2,17 @@
  Doctr Changelog
 =================
 
+1.6.3 (2017-11-11)
+==================
+
+Minor Changes
+-------------
+
+- Fix an error that occured when ``gh-pages`` did not exist and doctr did not
+  have the permissions to create it (e.g., on a pull request build).
+  (:issue:`262`)
+- Make usernames links in the changelog. (:issue:`270`)
+
 1.6.2 (2017-10-20)
 ==================
 

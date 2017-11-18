@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.6.2+15.ga92d50c documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.6.3+6.g9971dbd documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.2+15.ga92d50c',
+        VERSION:     '1.6.3+6.g9971dbd',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -80,7 +80,7 @@ options available.</p>
 <div class="section" id="doctr-configure">
 <h3>doctr configure<a class="headerlink" href="#doctr-configure" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr configure [-h] [--force] [--token] [--no-upload-key]</span>
-<span class="go">                           [--key-env KEY_ENV] [--key-path KEY_PATH]</span>
+<span class="go">                           [--key-path KEY_PATH]</span>
 </pre></div>
 </div>
 <dl class="option">
@@ -114,25 +114,17 @@ options available.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-doctr-configure-key-env">
-<code class="descname">--key-env</code><code class="descclassname"> &lt;key_env&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-env" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment variable name to store the key used to encrypt GitHub deploy key.   
-        The default is ‘DOCTR_DEPLOY_ENCRYPTION_KEY’.</p>
-</dd></dl>
-
-<dl class="option">
 <dt id="cmdoption-doctr-configure-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path to save the encrypted GitHub deploy key. The default is ‘github_deploy_key’.   
-    The .enc extension is added to the file automatically.</p>
+<dd><p>Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name. The .enc extension is added to the file automatically.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="doctr-deploy">
 <h3>doctr deploy<a class="headerlink" href="#doctr-deploy" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force | --no-force] [--token | --no-token]</span>
-<span class="go">                        [--key-env KEY_ENV] [--key-path KEY_PATH]</span>
-<span class="go">                        [--built-docs BUILT_DOCS]</span>
+<span class="go">                        [--key-path KEY_PATH] [--built-docs BUILT_DOCS]</span>
 <span class="go">                        [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
 <span class="go">                        [--deploy-repo DEPLOY_REPO]</span>
 <span class="go">                        [--no-require-master | --require-master]</span>
@@ -180,16 +172,10 @@ options available.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-doctr-deploy-key-env">
-<code class="descname">--key-env</code><code class="descclassname"> &lt;key_env&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-env" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment variable name of the key used to encrypt GitHub deploy key.   
-        The default is ‘DOCTR_DEPLOY_ENCRYPTION_KEY’.</p>
-</dd></dl>
-
-<dl class="option">
 <dt id="cmdoption-doctr-deploy-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path of the encrypted GitHub deploy key. The default is ‘github_deploy_key.enc’.</p>
+<dd><p>Path of the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name + .enc.</p>
 </dd></dl>
 
 <dl class="option">
