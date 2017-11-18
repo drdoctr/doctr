@@ -46,7 +46,9 @@ script:
       # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
       python -m doctr deploy --sync --no-require-master --deploy-branch gh-pages-testing docs;
       # Test pushing to .github.io
-      python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io;
+      python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io "docs-$TRAVIS_BRANCH";
+      # Actual docs deployment
+      python -m doctr deploy --sync --deploy-repo drdoctr/drdoctr.github.io .;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
