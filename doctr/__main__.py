@@ -220,7 +220,7 @@ def get_deploy_key_repo(deploy_repo, key_path, key_ext=''):
     # Automatically determine environment variable and key file name from deploy repo name
     # Special characters are substituted with a hyphen(-) by GitHub
     snake_case_name = deploy_key_repo.replace('-', '_').replace('.', '_').replace('/', '_').lower()
-    env_name = 'DOCTR_DEPLOY_KEY_' + snake_case_name.upper()
+    env_name = 'DOCTR_DEPLOY_ENCRYPTION_KEY_' + snake_case_name.upper()
     key_path = key_path or 'github_deploy_key_' + snake_case_name + key_ext
 
     return (deploy_key_repo, env_name, key_path)
