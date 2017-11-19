@@ -60,7 +60,7 @@ Edit your travis file
 
 Doctr will output a bunch of text as well as instructions for next steps. You
 need to edit your ``.travis.yml`` with this text. It contains the secure key
-that lets travis communicate with your github repository, as well as the
+that lets travis communicate with your GitHub repository, as well as the
 code to run (in ``script:``) in order to build the docs and deploy doctr.
 
 Your ``.travis.yml`` file should look something like this:
@@ -109,7 +109,7 @@ Commit your new files and build your site
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``doctr configure`` will create a new file that contains your key. Commit this as
-well as the changes to ``.travis.yml``. Once you push to github, travis should
+well as the changes to ``.travis.yml``. Once you push to GitHub, travis should
 now automatically build your documentation and deploy it.
 
 Notes
