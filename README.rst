@@ -7,7 +7,7 @@ Doctr helps deploy things to GitHub pages from Travis CI by managing the
 otherwise complicated tasks of generating, encrypting, managing SSH deploy
 keys, and syncing files to the ``gh-pages`` branch. Doctr was originally
 designed for documentation, but it can be used to deploy any kind of website
-to GitHub pages that can be built on Travis CI. For example, you can use doctr
+to GitHub pages that can be built on Travis CI. For example, you can use Doctr
 to deploy a `blog
 <http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/>`_
 or website that uses a `static site generator <https://www.staticgen.com/>`_.
@@ -18,7 +18,7 @@ Contribute to Doctr development on `GitHub
 Installation
 ------------
 
-Install doctr with pip
+Install Doctr with pip
 
 .. code::
 
@@ -30,15 +30,15 @@ or conda
 
    conda install -c conda-forge doctr
 
-**Note that doctr requires Python 3.5 or newer.**
+**Note that Doctr requires Python 3.5 or newer.**
 
 Usage
 -----
 
-Run doctr configure
+Run Doctr configure
 ~~~~~~~~~~~~~~~~~~~
 
-First use doctr to generate the necessary key files so that travis can push
+First use Doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.
 
 Run
@@ -53,7 +53,7 @@ repo organization / name for which you want to build the docs.
 **Note**: That repo should already be set up with Travis. We recommend enabling
 `branch protection <https://help.github.com/articles/about-protected-branches/>`_
 for the ``gh-pages`` branch and other branches, as the deploy key
-used by doctr has the ability to push to any branch in your repo.
+used by Doctr has the ability to push to any branch in your repo.
 
 Edit your travis file
 ~~~~~~~~~~~~~~~~~~~~~
@@ -61,22 +61,22 @@ Edit your travis file
 Doctr will output a bunch of text as well as instructions for next steps. You
 need to edit your ``.travis.yml`` with this text. It contains the secure key
 that lets travis communicate with your GitHub repository, as well as the
-code to run (in ``script:``) in order to build the docs and deploy doctr.
+code to run (in ``script:``) in order to build the docs and deploy Doctr.
 
 Your ``.travis.yml`` file should look something like this:
 
 .. code:: yaml
 
-   # doctr requires python >=3.5
+   # Doctr requires python >=3.5
    language: python
    python:
      - 3.6
 
-   # This gives doctr the key we've generated
+   # This gives Doctr the key we've generated
    sudo: false
    env:
      global:
-       secure: "<your secure key from doctr here>"
+       secure: "<your secure key from Doctr here>"
 
    # This is the script to build the docs on travis, then deploy
    script:
@@ -90,10 +90,10 @@ Your ``.travis.yml`` file should look something like this:
 See `the travis config file
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
 
-You can deploy ``doctr`` to a different folder by giving it a different path
-in the call to ``deploy``. E.g., ``doctr deploy docs/``.
+You can deploy to a different folder by giving it a different path in the call
+to ``deploy``. E.g., ``doctr deploy docs/``.
 
-If you don't already have a gh_pages branch doctr will make one for you.
+If you don't already have a gh_pages branch Doctr will make one for you.
 
 .. warning::
 
@@ -120,7 +120,7 @@ Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
 
 **Doctr does not require Sphinx.** It will work with deploying anything to
-GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
+GitHub pages. However, if you do use Sphinx, Doctr will find your Sphinx
 docs automatically (otherwise use ``doctr deploy . --built-docs <DOCS PATH>``).
 
 FAQ
@@ -183,7 +183,7 @@ FAQ
   public key <https://docs.travis-ci.com/user/encryption-keys/>`_.
 
   Travis does not make secure environment variables available to pull requests
-  builds. Furthermore, doctr itself does not push from any branch other than
+  builds. Furthermore, Doctr itself does not push from any branch other than
   ``master`` by default, although this :ref:`can be changed <any-branch>`.
 
   By default, Doctr uses deploy keys, but it can also use a GitHub
@@ -192,10 +192,10 @@ FAQ
   account, whereas a deploy key only grants push access only to a single
   repository.
 
-  Both doctr and Travis CI itself take measures to prevent the private
+  Both Doctr and Travis CI itself take measures to prevent the private
   encryption key from leaking in the build logs.
 
-  At any time, you can revoke the deploy key created by doctr by going to the
+  At any time, you can revoke the deploy key created by Doctr by going to the
   deploy key settings for the repository in GitHub at
   :samp:`https://github.com/{org}/{repo}/settings/keys`. Personal access
   tokens can be revoked at `https://github.com/settings/tokens
@@ -232,4 +232,4 @@ Projects using Doctr
 
 - `xonsh <http://xon.sh>`_
 
-Are you using doctr?  Please add your project to the list!
+Are you using Doctr?  Please add your project to the list!

@@ -84,8 +84,8 @@ instructions on screen. Create a new branch, commit the
 encrypted environment variable and the call to ``doctr deploy``.
 
 Then, create a pull request to the repository. Tell the owner of the
-repository to add the public key which doctr has printed as a deploy key for
-the repo (doctr will also print the url where they can add this). Don't worry,
+repository to add the public key which Doctr has printed as a deploy key for
+the repo (Doctr will also print the url where they can add this). Don't worry,
 the key is a public SSH key, so it's OK to post it publicly in the pull
 request.
 
