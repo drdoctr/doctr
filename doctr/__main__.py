@@ -443,9 +443,12 @@ def configure(args, parser):
 
         env:
           global:
+            # Doctr deploy key for {deploy_repo}
             - secure: "{encrypted_variable}"
 
-    """.format(options=options, N=N, encrypted_variable=encrypted_variable.decode('utf-8'))))
+    """.format(options=options, N=N,
+        encrypted_variable=encrypted_variable.decode('utf-8'),
+        deploy_repo=deploy_repo)))
 
     print(dedent("""\
     {N}. Commit and push these changes to your github repository.
