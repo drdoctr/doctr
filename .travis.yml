@@ -48,6 +48,9 @@ script:
       python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io "docs-$TRAVIS_BRANCH";
       # Actual docs deployment
       python -m doctr deploy --sync --deploy-repo drdoctr/drdoctr.github.io .;
+      # GitHub Wiki deploy
+      echo "This page was automatically deployed by doctr on $(date)" > deploy-test.md;
+      python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/doctr.wiki . --built-docs deploy-test.md;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
