@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.6.3+6.g1b6acdb documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.6.3+28.g6de06c4 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.3+6.g1b6acdb',
+        VERSION:     '1.6.3+28.g6de06c4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -116,8 +116,8 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-configure-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path to save the encrypted GitHub deploy key. The default is ‘github_deploy_key’.   
-    The .enc extension is added to the file automatically.</p>
+<dd><p>Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name. The .enc extension is added to the file automatically.</p>
 </dd></dl>
 
 </div>
@@ -174,7 +174,8 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path of the encrypted GitHub deploy key. The default is ‘github_deploy_key.enc’.</p>
+<dd><p>Path of the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name + .enc.</p>
 </dd></dl>
 
 <dl class="option">
@@ -189,7 +190,7 @@ options available.</p>
 <dt id="cmdoption-doctr-deploy-deploy-branch-name">
 <code class="descname">--deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the branch to deploy to (default: ‘master’ for <code class="docutils literal"><span class="pre">*.github.io</span></code>   
-                               repos, ‘gh-pages’ otherwise)</p>
+                               and wiki repos, ‘gh-pages’ otherwise)</p>
 </dd></dl>
 
 <dl class="option">
