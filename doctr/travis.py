@@ -70,6 +70,7 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCT
         keypath = 'github_deploy_key'
     key_filename = os.path.basename(keypath)
     key = key.encode('utf-8')
+    print(keypath)
     decrypt_file(keypath + key_ext, key)
 
     key_path = os.path.expanduser("~/.ssh/" + key_filename)
