@@ -55,8 +55,11 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCT
 
     The key is assumed to be encrypted as keypath + key_ext, and the
     encryption key is assumed to be set in the environment variable
-    DOCTR_DEPLOY_ENCRYPTION_KEY.
+    ``env_name``. If ``env_name`` is not set, it falls back to
+    ``DOCTR_DEPLOY_ENCRYPTION_KEY`` for backwards compatibility.
 
+    If keypath + key_ext does not exist, it falls back to
+    ``github_deploy_key.enc`` for backwards compatibility.
     """
     key = os.environ.get(env_name, os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None))
     if not key:
