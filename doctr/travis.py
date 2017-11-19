@@ -58,8 +58,6 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCT
     DOCTR_DEPLOY_ENCRYPTION_KEY.
 
     """
-    print(env_name)
-    print(os.environ.keys())
     key = os.environ.get(env_name, os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None))
     if not key:
         raise RuntimeError("{env_name} or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set"
