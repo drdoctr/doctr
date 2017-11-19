@@ -25,9 +25,9 @@ for each branch. The following will deploy the docs to ``docs`` on master and
 .. code:: yaml
 
    - if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
-       doctr deploy --gh-pages-docs docs;
+       doctr deploy docs;
      else
-       doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH";
+       doctr deploy --no-require-master "docs-$TRAVIS_BRANCH";
      fi
 
 This will not remove the docs after the branch is merged. You will need to do
@@ -60,7 +60,7 @@ In your ``.travis.yml``, specify the deploy repository with
 
 .. code:: yaml
 
-   - doctr deploy --deploy-repo <deploy repo>
+   - doctr deploy --deploy-repo <deploy repo> deploy_dir
 
 The instructions from ``doctr configure`` will also give you the correct
 command to run.
@@ -105,7 +105,7 @@ you can run
 
 .. code:: bash
 
-   doctr deploy --command 'post-process.py'
+   doctr deploy --command 'post-process.py' deploy_dir
 
 Using a separate command to deploy to gh-pages
 ==============================================
@@ -115,7 +115,7 @@ use Doctr to manage your deploy key. Use
 
 .. code:: bash
 
-   doctr deploy --no-sync --command 'command to deploy'
+   doctr deploy --no-sync --command 'command to deploy' deploy_dir
 
 The command to deploy should add any files that you want committed to the
 index.
