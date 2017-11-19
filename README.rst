@@ -173,6 +173,41 @@ FAQ
   If you cannot build your documentation in Python 3, you will need to
   install Python 3.6 in Travis to run Doctr.
 
+- **Is this secure?**
+
+  Doctr enables creates an encrypted SSH deploy key, which allows any Travis
+  build on your repo to push to the deploy repo. The deploy key is encrypted using
+  `Fernet encryption from the Python cryptography
+  module <https://cryptography.io/en/latest/fernet/>`_. The Fernet key is then
+  encrypted to a secure environment variable for Travis using the `Travis
+  public key <https://docs.travis-ci.com/user/encryption-keys/>`_.
+
+  Travis does not make secure environment variables available to pull requests
+  builds. Furthermore, doctr itself does not push from any branch other than
+  ``master`` by default, although this :ref:`can be changed <any-branch>`.
+
+  By default, Doctr uses deploy keys, but it can also use a GitHub
+  personal access token, using the ``--token`` flag. However, this is not
+  recommended, as a GitHub personal access token grants access to your entire
+  account, whereas a deploy key only grants push access only to a single
+  repository.
+
+  Both doctr and Travis CI itself take measures to prevent the private
+  encryption key from leaking in the build logs.
+
+  At any time, you can revoke the deploy key created by doctr by going to the
+  deploy key settings for the repository in GitHub at
+  :samp:`https://github.com/{org}/{repo}/settings/keys`. Personal access
+  tokens can be revoked at `https://github.com/settings/tokens
+  <https://github.com/settings/tokens>`_. If you revoke a key, you will need
+  to rerun ``doctr configure`` to generate a new one to continue using Doctr.
+
+- **Can Doctr do X?**
+
+  See the :ref:`recipes` page for many common use case recipes for Doctr.
+  Doctr supports virtually anything that involves pushing from Travis CI to
+  GitHub automatically.
+
 - **I would use this, but it's missing a feature that I want.**
 
   Doctr is still very new. We welcome all `feature requests

@@ -1,8 +1,12 @@
+.. _recipes:
+
 =========
  Recipes
 =========
 
 Here are some useful recipes for Doctr.
+
+.. _any-branch:
 
 Deploy docs from any branch
 ===========================
