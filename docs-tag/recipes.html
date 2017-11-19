@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Recipes &#8212; Doctr 1.5.3+76.g82b19a4 documentation</title>
+    <title>Recipes &#8212; Doctr 1.6.3+56.gd48c9b9 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+76.g82b19a4',
+        VERSION:     '1.6.3+56.gd48c9b9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,10 +41,10 @@
           <div class="body" role="main">
             
   <div class="section" id="recipes">
-<h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h1>
 <p>Here are some useful recipes for Doctr.</p>
 <div class="section" id="deploy-docs-from-any-branch">
-<h2>Deploy docs from any branch<a class="headerlink" href="#deploy-docs-from-any-branch" title="Permalink to this headline">¶</a></h2>
+<span id="any-branch"></span><h2>Deploy docs from any branch<a class="headerlink" href="#deploy-docs-from-any-branch" title="Permalink to this headline">¶</a></h2>
 <p>By default, Doctr only deploys docs from the <code class="docutils literal"><span class="pre">master</span></code> branch, but it can be
 useful to deploy docs from other branches, to test them out.</p>
 <p>The branch name on Travis is stored in the <code class="docutils literal"><span class="pre">$TRAVIS_BRANCH</span></code> environment
@@ -52,9 +52,9 @@ variable. One suggestion would be to deploy the docs to a special directory
 for each branch. The following will deploy the docs to <code class="docutils literal"><span class="pre">docs</span></code> on master and
 <span class="raw-html"><code>docs-<i>branch</i></code></span> on <em>branch</em>.</p>
 <div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="k">if</span> <span class="p">[[</span> <span class="s2">&quot;$</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;master&quot;</span> <span class="p">]];</span> <span class="n">then</span>
-    <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">gh</span><span class="o">-</span><span class="n">pages</span><span class="o">-</span><span class="n">docs</span> <span class="n">docs</span><span class="p">;</span>
+    <span class="n">doctr</span> <span class="n">deploy</span> <span class="n">docs</span><span class="p">;</span>
   <span class="k">else</span>
-    <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">require</span><span class="o">-</span><span class="n">master</span> <span class="o">--</span><span class="n">gh</span><span class="o">-</span><span class="n">pages</span><span class="o">-</span><span class="n">docs</span> <span class="s2">&quot;docs-$TRAVIS_BRANCH&quot;</span><span class="p">;</span>
+    <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">require</span><span class="o">-</span><span class="n">master</span> <span class="s2">&quot;docs-$TRAVIS_BRANCH&quot;</span><span class="p">;</span>
   <span class="n">fi</span>
 </pre></div>
 </div>
@@ -103,7 +103,7 @@ public deploy key, which you can then give to someone who has admin access to
 add to the form on GitHub (<code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> will print the public key and
 the url of the form for someone with admin access to paste it in).</p>
 <p>In your <code class="docutils literal"><span class="pre">.travis.yml</span></code>, specify the deploy repository with</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="o">&lt;</span><span class="n">deploy</span> <span class="n">repo</span><span class="o">&gt;</span>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="o">&lt;</span><span class="n">deploy</span> <span class="n">repo</span><span class="o">&gt;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
 <p>The instructions from <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> will also give you the correct
@@ -120,11 +120,11 @@ the repository you are deploying to, you cannot upload the deploy key.</p>
 </div>
 <p>This will set up doctr, but not require any GitHub credentials. Follow the
 instructions on screen. Create a new branch, commit the
-<code class="docutils literal"><span class="pre">github_deploy_key.enc</span></code> file, and edit <code class="docutils literal"><span class="pre">.travis.yml</span></code> to include the
+<code class="docutils literal"><span class="pre">github_deploy_key_org_repo.enc</span></code> file, and edit <code class="docutils literal"><span class="pre">.travis.yml</span></code> to include the
 encrypted environment variable and the call to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>.</p>
 <p>Then, create a pull request to the repository. Tell the owner of the
-repository to add the public key which doctr has printed as a deploy key for
-the repo (doctr will also print the url where they can add this). Don’t worry,
+repository to add the public key which Doctr has printed as a deploy key for
+the repo (Doctr will also print the url where they can add this). Don’t worry,
 the key is a public SSH key, so it’s OK to post it publicly in the pull
 request.</p>
 </div>
@@ -138,7 +138,7 @@ index.html.</p>
 before they are committed and uploaded.</p>
 <p>For example, if you have a script in <code class="docutils literal"><span class="pre">gh-pages</span></code> called <code class="docutils literal"><span class="pre">post-process.py</span></code>,
 you can run</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;post-process.py&#39;</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;post-process.py&#39;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
 </div>
@@ -146,11 +146,22 @@ you can run</p>
 <h2>Using a separate command to deploy to gh-pages<a class="headerlink" href="#using-a-separate-command-to-deploy-to-gh-pages" title="Permalink to this headline">¶</a></h2>
 <p>If you already have an existing tool to deploy to <code class="docutils literal"><span class="pre">gh-pages</span></code>, you can still
 use Doctr to manage your deploy key. Use</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sync</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;command to deploy&#39;</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sync</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;command to deploy&#39;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
 <p>The command to deploy should add any files that you want committed to the
 index.</p>
+</div>
+<div class="section" id="deploying-to-a-github-wiki">
+<h2>Deploying to a GitHub wiki<a class="headerlink" href="#deploying-to-a-github-wiki" title="Permalink to this headline">¶</a></h2>
+<p>Doctr supports deploying to GitHub wikis. Just use <code class="docutils literal"><span class="pre">org/repo.wiki</span></code> when
+as the deploy repo running <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code>. When deploying, use</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="n">org</span><span class="o">/</span><span class="n">repo</span><span class="o">.</span><span class="n">wiki</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>The deploy key for pushing to a wiki is the same as for pushing to the repo
+itself, so if you are pushing to both, you will not need more than one deploy
+key.</p>
 </div>
 </div>
 
@@ -169,6 +180,7 @@ index.</p>
 <li><a class="reference internal" href="#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">Setting up Doctr for a repo you don’t have admin access to</a></li>
 <li><a class="reference internal" href="#post-processing-the-docs-on-gh-pages">Post-processing the docs on gh-pages</a></li>
 <li><a class="reference internal" href="#using-a-separate-command-to-deploy-to-gh-pages">Using a separate command to deploy to gh-pages</a></li>
+<li><a class="reference internal" href="#deploying-to-a-github-wiki">Deploying to a GitHub wiki</a></li>
 </ul>
 </li>
 </ul>
@@ -206,7 +218,7 @@ index.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

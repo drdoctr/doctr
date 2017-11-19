@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.5.3+76.g82b19a4 documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.6.3+56.gd48c9b9 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.5.3+76.g82b19a4',
+        VERSION:     '1.6.3+56.gd48c9b9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,17 +46,17 @@
 <h2>doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h2>
 <p>doctr</p>
 <p>A tool to automatically deploy docs to GitHub pages from Travis CI.</p>
-<p>The doctr command is two commands in one. To use, first run</p>
-<p>doctr configure</p>
+<p>The doctr command is two commands in one. To use, first run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+</pre></div>
+</div>
 <p>on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
 which you should insert into your .travis.yml.</p>
-<p>Then, on Travis, for the build where you build your docs, add</p>
-<blockquote>
-<div><ul class="simple">
-<li>doctr deploy . –built-docs path/to/built/html/</li>
-</ul>
-</div></blockquote>
+<p>Then, on Travis, for the build where you build your docs, add:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+</pre></div>
+</div>
 <p>to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won’t run on pull requests.</p>
 <p>For more information, see <a class="reference external" href="https://drdoctr.github.io/doctr/docs/">https://drdoctr.github.io/doctr/docs/</a></p>
@@ -116,8 +116,8 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-configure-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path to save the encrypted GitHub deploy key. The default is ‘github_deploy_key’.   
-    The .enc extension is added to the file automatically.</p>
+<dd><p>Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name. The .enc extension is added to the file automatically.</p>
 </dd></dl>
 
 </div>
@@ -176,7 +176,8 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-key-path">
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-key-path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path of the encrypted GitHub deploy key. The default is ‘github_deploy_key.enc’.</p>
+<dd><p>Path of the encrypted GitHub deploy key. The default is github_deploy_key_+   
+        deploy respository name + .enc.</p>
 </dd></dl>
 
 <dl class="option">
@@ -191,7 +192,7 @@ options available.</p>
 <dt id="cmdoption-doctr-deploy-deploy-branch-name">
 <code class="descname">--deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the branch to deploy to (default: ‘master’ for <code class="docutils literal"><span class="pre">*.github.io</span></code>   
-                               repos, ‘gh-pages’ otherwise)</p>
+                               and wiki repos, ‘gh-pages’ otherwise)</p>
 </dd></dl>
 
 <dl class="option">
@@ -224,8 +225,8 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-command">
 <code class="descname">--command</code><code class="descclassname"> &lt;command&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Command to   
-        be run before committing and pushing. If the command creates   
+<dd><p>Command to be run before committing and pushing. This command   
+        will be run from the deploy repository/branch. If the command creates   
         additional files that should be deployed, they should be added to the   
         index.</p>
 </dd></dl>
@@ -376,7 +377,7 @@ branches like <code class="docutils literal"><span class="pre">3.x</span></code>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
