@@ -6,8 +6,10 @@ env:
     - DOCS="true"
     - TESTS="true"
   global:
+    # Deploy key for drdoctr/doctr
     - secure: "kJUVmbb8L26E4UNTp3n/UUeR8h4AWPIV8el8iKkNmjIsnbWogdJN9pVpQxFNyOs1+9B0DAXlFbcgeVQrYmTbBoBsGk3hNu8JK3/ZCdKw00R46xdbOCjHEpbsjVcBFC1ZRZ1i5Mdce54dDZhNbw1lLVU1zVSEUuKAMLYhL1PXvKR/8Oi+4FusBIzdxhEcyRaQz+fl6U5S+9PVpnhYCAydJikVoIqHwMi4t0CtBLwPTHoJj8wPqZKIbcPApumSFWHNqvHQ0+hx03UdafP/1Zuz7E5GSl2YUVV6KK9+hg5Avc6NhnV+7t6YjMAkNg0oanQLifBPMgA/TyP/BtXDJzy/sxbMGbumndz4i1Q2SIerhqGCnet2wjUW/O5ClNJIhUBoeZV90NUUS5pV7kfsOJbPFRMiSQ4xY2n+bd1gacrd+z+v6II6WxIajSd/BgSCVzVzumQAmUWvi2i4rG07JOoPH1v2SJ9cvIGsH5TCVVCt/EkVW9nrVcNSmQYe+K4ReydPK2zZ+K2Yz1Xg6SsgUCfX1uZP4GsZfM80aIjxTMzNXqv8tHEuFSi/Go7FjftXoUHJrXIZ7lEN+vgCWIUl9rUOtbiMbfFQ7BigI7Gx/ZMeyqpuqGeyvA44m6K6Y3PEXyUmavtSg4+CPrNtj2EG8t4IKWAVgVPYnW6iWlzOFuHce1w="
-
+    # Deploy key for drdoctr/drdoctr.github.io
+    - secure: "miMtYnqGtt26LT3Tr23OwHOST2NGEJZsng5oMSP26lRv81ZQZ+VsFhEcjptUR1KfQia05t2viVTuyedZIgZe23dn3KDEm6Lqp8COAERe6jnW3/qZdHyD1zC3ddaku0dS4LVnk7jaRsjpu1mSdODxGZ9pCKA861uDDKk8DUeWx40sOte6MYL7OS38HavPCGJI0s4OL9eVqN++TAiZ9ts+Wa1O0M5wEkxaR4ES5cmzC0TLErKCnjyzy4aVU9+ykU43qVncq7w0857TSicBhh/zp0/6mvrBzv3lVCC0vUUiPrca0cn6mNTLggHFiur/BCfVAuEE5MPsZlW79jqtsYb+3lr45ELx22zUkZtXJtYOhlsA9AIG42iRMuOilt1Db0aVvlOAisvUZtSN1X314zYnqNLgCf32VpIsFFCuTBmW99UfvXpqOt0zRgnD50PEM4vDVO1L5HslNAmnAfa/l/jAFWD3xVMd+mSik2kVZo1i3ntjRiMjs6CGJulVS/psKSG6umTFyV1v9MCRHKLtfPatXVnlQ1OtdtP6w1DDsmWSxu+lHGmcSzcBqBzq6PrIRv3JmVghEloQVhYDaeb1/IXJu7l4uAV2M8vXaQU2syDbYpC/mP/1WNt0zFh0rHHRvhfqXylW65h7jxqt3mDMJq0IkaGCw3hXo63h4hjcZG+E7C4="
 python:
   - 3.5
   - 3.6
@@ -27,29 +29,35 @@ install:
 script:
   - set -e
   - set -x
-  # Note, the commands below need --sync to actually sync, to override sync: False below
+  # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
   - |
     if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --sync .;
-      python -m doctr deploy --sync --gh-pages-docs docs;
-      python -m doctr deploy --sync --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH" --command "echo test && ls && touch docs-$TRAVIS_BRANCH/test-file && git add docs-$TRAVIS_BRANCH/test-file"
+      python -m doctr deploy --sync --key-path deploy_key.enc .;
+      python -m doctr deploy --sync --key-path deploy_key.enc --gh-pages-docs docs;
+      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH" --command "echo test && ls && touch docs-$TRAVIS_BRANCH/test-file && git add docs-$TRAVIS_BRANCH/test-file"
       echo `date` >> test
-      python -m doctr deploy --no-require-master docs;
+      python -m doctr deploy --key-path deploy_key.enc --no-require-master docs;
       # Test syncing a tracked file with a change
-      python -m doctr deploy --sync stash-test --built-docs test;
-      python -m doctr deploy --deploy-repo drdoctr/drdoctr.github.io docs;
+      python -m doctr deploy --sync --key-path deploy_key.enc stash-test --built-docs test;
       # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
-      python -m doctr deploy --sync --no-require-master --deploy-branch gh-pages-testing docs;
+      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-branch gh-pages-testing docs;
+      # Test pushing to .github.io
+      python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io "docs-$TRAVIS_BRANCH";
+      # Actual docs deployment
+      python -m doctr deploy --sync --deploy-repo drdoctr/drdoctr.github.io .;
+      # GitHub Wiki deploy
+      echo "This page was automatically deployed by doctr on $(date)" > deploy-test.md;
+      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-repo drdoctr/doctr.wiki . --built-docs deploy-test.md;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
       py.test doctr;
     fi
+
 doctr:
-  key-path: deploy_key.enc
   require-master: true
   sync: False
   lubalubadubdub: False

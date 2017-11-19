@@ -131,15 +131,16 @@ options available.
     deploy_parser_add_argument('--token', action='store_true', default=False,
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
-    deploy_parser_add_argument('--key-path', default='github_deploy_key.enc',
-        help="""Path of the encrypted GitHub deploy key. The default is %(default)r.""")
+    deploy_parser_add_argument('--key-path', default=None,
+        help="""Path of the encrypted GitHub deploy key. The default is github_deploy_key_+
+        deploy respository name + .enc.""")
     deploy_parser_add_argument('--built-docs', default=None,
         help="""Location of the built html documentation to be deployed to gh-pages. If not
         specified, Doctr will try to automatically detect build location
         (right now only works for Sphinx docs).""")
     deploy_parser.add_argument('--deploy-branch-name', default=None,
                                help="""Name of the branch to deploy to (default: 'master' for ``*.github.io``
-                               repos, 'gh-pages' otherwise)""")
+                               and wiki repos, 'gh-pages' otherwise)""")
     deploy_parser_add_argument('--tmp-dir', default=None,
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
@@ -185,9 +186,9 @@ options available.
         dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
         option, you will not be prompted for your GitHub credentials, so this option is not compatible with
         private repositories.""")
-    configure_parser.add_argument('--key-path', default='github_deploy_key',
-        help="""Path to save the encrypted GitHub deploy key. The default is %(default)r.
-    The .enc extension is added to the file automatically.""")
+    configure_parser.add_argument('--key-path', default=None,
+        help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
+        deploy respository name. The .enc extension is added to the file automatically.""")
 
     return parser
 
@@ -207,6 +208,22 @@ def get_config():
     if not isinstance(config, dict):
         raise ValueError('config is not a dict: {}'.format(config))
     return config
+
+def get_deploy_key_repo(deploy_repo, keypath, key_ext=''):
+    """
+    Return (repository of which deploy key is used, environment variable to store
+    the encryption key of deploy key, path of deploy key file)
+    """
+    # deploy key of the original repo has write access to the wiki
+    deploy_key_repo = deploy_repo[:-5] if deploy_repo.endswith('.wiki') else deploy_repo
+
+    # Automatically determine environment variable and key file name from deploy repo name
+    # Special characters are substituted with a hyphen(-) by GitHub
+    snake_case_name = deploy_key_repo.replace('-', '_').replace('.', '_').replace('/', '_').lower()
+    env_name = 'DOCTR_DEPLOY_ENCRYPTION_KEY_' + snake_case_name.upper()
+    keypath = keypath or 'github_deploy_key_' + snake_case_name + key_ext
+
+    return (deploy_key_repo, env_name, keypath)
 
 def process_args(parser):
     args = parser.parse_args()
@@ -250,7 +267,9 @@ def deploy(args, parser):
     if args.deploy_branch_name:
         deploy_branch = args.deploy_branch_name
     else:
-        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com')) else 'gh-pages'
+        deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com', '.wiki')) else 'gh-pages'
+
+    _, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path, key_ext='.enc')
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
@@ -259,8 +278,8 @@ def deploy(args, parser):
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
-                                     full_key_path=args.key_path,
-                                     branch_whitelist=branch_whitelist)
+                                     full_key_path=keypath,
+                                     branch_whitelist=branch_whitelist, env_name=env_name)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
@@ -369,21 +388,25 @@ def configure(args, parser):
 
         print(header)
     else:
-        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(deploy_repo=deploy_repo), keypath=args.key_path)
-        key = encrypt_file(args.key_path, delete=True)
-        encrypted_variable = encrypt_variable(b"DOCTR_DEPLOY_ENCRYPTION_KEY=" + key, build_repo=build_repo, is_private=is_private, **login_kwargs)
+        deploy_key_repo, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path)
 
-        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_repo)
+        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(
+            deploy_repo=deploy_key_repo), keypath=keypath)
+        key = encrypt_file(keypath, delete=True)
+        encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
+            build_repo=build_repo, is_private=is_private, **login_kwargs)
+
+        deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
         if args.upload_key:
 
-            upload_GitHub_deploy_key(deploy_repo, ssh_key, **login_kwargs)
+            upload_GitHub_deploy_key(deploy_key_repo, ssh_key, **login_kwargs)
 
             print(dedent("""
             The deploy key has been added for {deploy_repo}.
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
-            """.format(deploy_repo=deploy_repo, deploy_keys_url=deploy_keys_url, keypath=args.key_path)))
+            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url, keypath=keypath)))
             print(header)
         else:
             print(header)
@@ -401,11 +424,11 @@ def configure(args, parser):
 
             git add {keypath}.enc
 
-        """.format(keypath=args.key_path, N=N)))
+        """.format(keypath=keypath, N=N)))
 
     options = '--built-docs path/to/built/html/'
-    if args.key_path != 'github_deploy_key':
-        options += ' --key-path {keypath}.enc'.format(keypath=args.key_path)
+    if args.key_path:
+        options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
@@ -420,9 +443,12 @@ def configure(args, parser):
 
         env:
           global:
+            # Doctr deploy key for {deploy_repo}
             - secure: "{encrypted_variable}"
 
-    """.format(options=options, N=N, encrypted_variable=encrypted_variable.decode('utf-8'))))
+    """.format(options=options, N=N,
+        encrypted_variable=encrypted_variable.decode('utf-8'),
+        deploy_repo=deploy_repo)))
 
     print(dedent("""\
     {N}. Commit and push these changes to your github repository.
