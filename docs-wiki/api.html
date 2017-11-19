@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API &#8212; Doctr 1.6.3+16.g000aa7e documentation</title>
+    <title>API &#8212; Doctr 1.6.3+21.g13038c5 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.3+16.g000aa7e',
+        VERSION:     '1.6.3+21.g13038c5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -276,7 +276,10 @@ variable.</p>
 <dd><p>Decrypts the deploy key and configures it with ssh</p>
 <p>The key is assumed to be encrypted as keypath + key_ext, and the
 encryption key is assumed to be set in the environment variable
-DOCTR_DEPLOY_ENCRYPTION_KEY.</p>
+<code class="docutils literal"><span class="pre">env_name</span></code>. If <code class="docutils literal"><span class="pre">env_name</span></code> is not set, it falls back to
+<code class="docutils literal"><span class="pre">DOCTR_DEPLOY_ENCRYPTION_KEY</span></code> for backwards compatibility.</p>
+<p>If keypath + key_ext does not exist, it falls back to
+<code class="docutils literal"><span class="pre">github_deploy_key.enc</span></code> for backwards compatibility.</p>
 </dd></dl>
 
 <dl class="function">
