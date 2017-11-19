@@ -80,7 +80,7 @@ No worries, you can still help. Run
 
 This will set up doctr, but not require any GitHub credentials. Follow the
 instructions on screen. Create a new branch, commit the
-``github_deploy_key.enc`` file, and edit ``.travis.yml`` to include the
+``github_deploy_key_org_repo.enc`` file, and edit ``.travis.yml`` to include the
 encrypted environment variable and the call to ``doctr deploy``.
 
 Then, create a pull request to the repository. Tell the owner of the
