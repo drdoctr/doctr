@@ -7,7 +7,7 @@ Doctr helps deploy things to GitHub pages from Travis CI by managing the
 otherwise complicated tasks of generating, encrypting, managing SSH deploy
 keys, and syncing files to the ``gh-pages`` branch. Doctr was originally
 designed for documentation, but it can be used to deploy any kind of website
-to GitHub pages that can be built on Travis CI. For example, you can use doctr
+to GitHub pages that can be built on Travis CI. For example, you can use Doctr
 to deploy a `blog
 <http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/>`_
 or website that uses a `static site generator <https://www.staticgen.com/>`_.
@@ -18,7 +18,7 @@ Contribute to Doctr development on `GitHub
 Installation
 ------------
 
-Install doctr with pip
+Install Doctr with pip
 
 .. code::
 
@@ -30,15 +30,15 @@ or conda
 
    conda install -c conda-forge doctr
 
-**Note that doctr requires Python 3.5 or newer.**
+**Note that Doctr requires Python 3.5 or newer.**
 
 Usage
 -----
 
-Run doctr configure
+Run Doctr configure
 ~~~~~~~~~~~~~~~~~~~
 
-First use doctr to generate the necessary key files so that travis can push
+First use Doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.
 
 Run
@@ -53,30 +53,30 @@ repo organization / name for which you want to build the docs.
 **Note**: That repo should already be set up with Travis. We recommend enabling
 `branch protection <https://help.github.com/articles/about-protected-branches/>`_
 for the ``gh-pages`` branch and other branches, as the deploy key
-used by doctr has the ability to push to any branch in your repo.
+used by Doctr has the ability to push to any branch in your repo.
 
 Edit your travis file
 ~~~~~~~~~~~~~~~~~~~~~
 
 Doctr will output a bunch of text as well as instructions for next steps. You
 need to edit your ``.travis.yml`` with this text. It contains the secure key
-that lets travis communicate with your github repository, as well as the
-code to run (in ``script:``) in order to build the docs and deploy doctr.
+that lets travis communicate with your GitHub repository, as well as the
+code to run (in ``script:``) in order to build the docs and deploy Doctr.
 
 Your ``.travis.yml`` file should look something like this:
 
 .. code:: yaml
 
-   # doctr requires python >=3.5
+   # Doctr requires python >=3.5
    language: python
    python:
      - 3.6
 
-   # This gives doctr the key we've generated
+   # This gives Doctr the key we've generated
    sudo: false
    env:
      global:
-       secure: "<your secure key from doctr here>"
+       secure: "<your secure key from Doctr here>"
 
    # This is the script to build the docs on travis, then deploy
    script:
@@ -90,15 +90,17 @@ Your ``.travis.yml`` file should look something like this:
 See `the travis config file
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
 
-   **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
-   in the call to ``deploy``. E.g., ``doctr deploy docs/``.
-   
-   **Note:** If you don't already have a gh_pages branch doctr will make one for you.
+You can deploy to a different folder by giving it a different path in the call
+to ``deploy``. E.g., ``doctr deploy docs/``.
 
-   **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from  running
+If you don't already have a gh_pages branch Doctr will make one for you.
+
+.. warning::
+
+   Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from running
    when the docs build fails.
 
-   **Warning:** Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
+   Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
    you use ``after_success``, it will `not cause
    <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
    the build to fail.
@@ -107,7 +109,7 @@ Commit your new files and build your site
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``doctr configure`` will create a new file that contains your key. Commit this as
-well as the changes to ``.travis.yml``. Once you push to github, travis should
+well as the changes to ``.travis.yml``. Once you push to GitHub, travis should
 now automatically build your documentation and deploy it.
 
 Notes
@@ -118,7 +120,7 @@ Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.
 
 **Doctr does not require Sphinx.** It will work with deploying anything to
-GitHub pages. However, if you do use Sphinx, doctr will find your Sphinx
+GitHub pages. However, if you do use Sphinx, Doctr will find your Sphinx
 docs automatically (otherwise use ``doctr deploy . --built-docs <DOCS PATH>``).
 
 FAQ
@@ -171,6 +173,41 @@ FAQ
   If you cannot build your documentation in Python 3, you will need to
   install Python 3.6 in Travis to run Doctr.
 
+- **Is this secure?**
+
+  Doctr enables creates an encrypted SSH deploy key, which allows any Travis
+  build on your repo to push to the deploy repo. The deploy key is encrypted using
+  `Fernet encryption from the Python cryptography
+  module <https://cryptography.io/en/latest/fernet/>`_. The Fernet key is then
+  encrypted to a secure environment variable for Travis using the `Travis
+  public key <https://docs.travis-ci.com/user/encryption-keys/>`_.
+
+  Travis does not make secure environment variables available to pull requests
+  builds. Furthermore, Doctr itself does not push from any branch other than
+  ``master`` by default, although this :ref:`can be changed <any-branch>`.
+
+  By default, Doctr uses deploy keys, but it can also use a GitHub
+  personal access token, using the ``--token`` flag. However, this is not
+  recommended, as a GitHub personal access token grants access to your entire
+  account, whereas a deploy key only grants push access only to a single
+  repository.
+
+  Both Doctr and Travis CI itself take measures to prevent the private
+  encryption key from leaking in the build logs.
+
+  At any time, you can revoke the deploy key created by Doctr by going to the
+  deploy key settings for the repository in GitHub at
+  :samp:`https://github.com/{org}/{repo}/settings/keys`. Personal access
+  tokens can be revoked at `https://github.com/settings/tokens
+  <https://github.com/settings/tokens>`_. If you revoke a key, you will need
+  to rerun ``doctr configure`` to generate a new one to continue using Doctr.
+
+- **Can Doctr do X?**
+
+  See the :ref:`recipes` page for many common use case recipes for Doctr.
+  Doctr supports virtually anything that involves pushing from Travis CI to
+  GitHub automatically.
+
 - **I would use this, but it's missing a feature that I want.**
 
   Doctr is still very new. We welcome all `feature requests
@@ -195,4 +232,4 @@ Projects using Doctr
 
 - `xonsh <http://xon.sh>`_
 
-Are you using doctr?  Please add your project to the list!
+Are you using Doctr?  Please add your project to the list!
