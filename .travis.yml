@@ -29,21 +29,21 @@ install:
 script:
   - set -e
   - set -x
-  # Note, the commands below need --sync to actually sync, to override sync: False below
+  # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
   - |
     if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --sync .;
-      python -m doctr deploy --sync --gh-pages-docs docs;
-      python -m doctr deploy --sync --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH" --command "echo test && ls && touch docs-$TRAVIS_BRANCH/test-file && git add docs-$TRAVIS_BRANCH/test-file"
+      python -m doctr deploy --sync --key-path deploy_key.enc .;
+      python -m doctr deploy --sync --key-path deploy_key.enc --gh-pages-docs docs;
+      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH" --command "echo test && ls && touch docs-$TRAVIS_BRANCH/test-file && git add docs-$TRAVIS_BRANCH/test-file"
       echo `date` >> test
       python -m doctr deploy --no-require-master docs;
       # Test syncing a tracked file with a change
-      python -m doctr deploy --sync stash-test --built-docs test;
+      python -m doctr deploy --sync --key-path deploy_key.enc stash-test --built-docs test;
       # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
-      python -m doctr deploy --sync --no-require-master --deploy-branch gh-pages-testing docs;
+      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-branch gh-pages-testing docs;
       # Test pushing to .github.io
       python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io "docs-$TRAVIS_BRANCH";
       # Actual docs deployment
@@ -53,8 +53,8 @@ script:
       pyflakes doctr;
       py.test doctr;
     fi
+
 doctr:
-  key-path: deploy_key.enc
   require-master: true
   sync: False
   lubalubadubdub: False
