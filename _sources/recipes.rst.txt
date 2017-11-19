@@ -1,8 +1,12 @@
+.. _recipes:
+
 =========
  Recipes
 =========
 
 Here are some useful recipes for Doctr.
+
+.. _any-branch:
 
 Deploy docs from any branch
 ===========================
@@ -21,9 +25,9 @@ for each branch. The following will deploy the docs to ``docs`` on master and
 .. code:: yaml
 
    - if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
-       doctr deploy --gh-pages-docs docs;
+       doctr deploy docs;
      else
-       doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH";
+       doctr deploy --no-require-master "docs-$TRAVIS_BRANCH";
      fi
 
 This will not remove the docs after the branch is merged. You will need to do
@@ -56,7 +60,7 @@ In your ``.travis.yml``, specify the deploy repository with
 
 .. code:: yaml
 
-   - doctr deploy --deploy-repo <deploy repo>
+   - doctr deploy --deploy-repo <deploy repo> deploy_dir
 
 The instructions from ``doctr configure`` will also give you the correct
 command to run.
@@ -76,12 +80,12 @@ No worries, you can still help. Run
 
 This will set up doctr, but not require any GitHub credentials. Follow the
 instructions on screen. Create a new branch, commit the
-``github_deploy_key.enc`` file, and edit ``.travis.yml`` to include the
+``github_deploy_key_org_repo.enc`` file, and edit ``.travis.yml`` to include the
 encrypted environment variable and the call to ``doctr deploy``.
 
 Then, create a pull request to the repository. Tell the owner of the
-repository to add the public key which doctr has printed as a deploy key for
-the repo (doctr will also print the url where they can add this). Don't worry,
+repository to add the public key which Doctr has printed as a deploy key for
+the repo (Doctr will also print the url where they can add this). Don't worry,
 the key is a public SSH key, so it's OK to post it publicly in the pull
 request.
 
@@ -101,7 +105,7 @@ you can run
 
 .. code:: bash
 
-   doctr deploy --command 'post-process.py'
+   doctr deploy --command 'post-process.py' deploy_dir
 
 Using a separate command to deploy to gh-pages
 ==============================================
@@ -111,7 +115,21 @@ use Doctr to manage your deploy key. Use
 
 .. code:: bash
 
-   doctr deploy --no-sync --command 'command to deploy'
+   doctr deploy --no-sync --command 'command to deploy' deploy_dir
 
 The command to deploy should add any files that you want committed to the
 index.
+
+Deploying to a GitHub wiki
+==========================
+
+Doctr supports deploying to GitHub wikis. Just use ``org/repo.wiki`` when
+as the deploy repo running ``doctr configure``. When deploying, use
+
+.. code:: bash
+
+   doctr deploy --deploy-repo org/repo.wiki .
+
+The deploy key for pushing to a wiki is the same as for pushing to the repo
+itself, so if you are pushing to both, you will not need more than one deploy
+key.
