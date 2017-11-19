@@ -278,7 +278,7 @@ def deploy(args, parser):
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
-                                     full_keypath=keypath,
+                                     full_key_path=keypath,
                                      branch_whitelist=branch_whitelist, env_name=env_name)
 
         if args.sync:
