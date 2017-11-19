@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.6.3+56.gd48c9b9 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.6.3+57.ga74f440 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.6.3+56.gd48c9b9',
+        VERSION:     '1.6.3+57.ga74f440',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -224,8 +224,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span>
-    <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span> <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">,</span> <span class="n">build_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span>
+    <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span>
+    <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">,</span> <span class="n">build_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the remote to push to GitHub (to be run on Travis).</span>
 
