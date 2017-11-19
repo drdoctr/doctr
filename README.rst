@@ -90,15 +90,17 @@ Your ``.travis.yml`` file should look something like this:
 See `the travis config file
 <https://github.com/drdoctr/doctr/blob/master/.travis.yml>`_ used by Doctr itself for example.
 
-   **Note:** You can deploy ``doctr`` to a different folder by giving it a different path
-   in the call to ``deploy``. E.g., ``doctr deploy docs/``.
-   
-   **Note:** If you don't already have a gh_pages branch doctr will make one for you.
+You can deploy ``doctr`` to a different folder by giving it a different path
+in the call to ``deploy``. E.g., ``doctr deploy docs/``.
 
-   **Warning:** Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from  running
+If you don't already have a gh_pages branch doctr will make one for you.
+
+.. warning::
+
+   Be sure to add ``set -e`` in ``script``, to prevent ``doctr`` from running
    when the docs build fails.
 
-   **Warning:** Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
+   Put ``doctr deploy .`` in the ``script`` section of your ``.travis.yml``. If
    you use ``after_success``, it will `not cause
    <https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build>`_
    the build to fail.
