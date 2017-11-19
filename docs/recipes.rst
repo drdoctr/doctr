@@ -119,3 +119,17 @@ use Doctr to manage your deploy key. Use
 
 The command to deploy should add any files that you want committed to the
 index.
+
+Deploying to a GitHub wiki
+==========================
+
+Doctr supports deploying to GitHub wikis. Just use ``org/repo.wiki`` when
+as the deploy repo running ``doctr configure``. When deploying, use
+
+.. code:: bash
+
+   doctr deploy --deploy-repo org/repo.wiki .
+
+The deploy key for pushing to a wiki is the same as for pushing to the repo
+itself, so if you are pushing to both, you will not need more than one deploy
+key.
