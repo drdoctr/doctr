@@ -183,8 +183,10 @@ def get_travis_branch():
     else:
         return os.environ.get("TRAVIS_BRANCH", "")
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc',
-    require_master=None, branch_whitelist=None, deploy_branch='gh-pages', env_name='DOCTR_DEPLOY_ENCRYPTION_KEY', build_tags=False):
+def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
+    full_key_path='github_deploy_key.enc', require_master=None,
+    branch_whitelist=None, deploy_branch='gh-pages',
+    env_name='DOCTR_DEPLOY_ENCRYPTION_KEY', build_tags=False):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
