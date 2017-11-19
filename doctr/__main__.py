@@ -209,7 +209,7 @@ def get_config():
         raise ValueError('config is not a dict: {}'.format(config))
     return config
 
-def get_deploy_key_repo(deploy_repo, key_path, key_ext=''):
+def get_deploy_key_repo(deploy_repo, keypath, key_ext=''):
     """
     Return (repository of which deploy key is used, environment variable to store
     the encryption key of deploy key, path of deploy key file)
@@ -221,9 +221,9 @@ def get_deploy_key_repo(deploy_repo, key_path, key_ext=''):
     # Special characters are substituted with a hyphen(-) by GitHub
     snake_case_name = deploy_key_repo.replace('-', '_').replace('.', '_').replace('/', '_').lower()
     env_name = 'DOCTR_DEPLOY_ENCRYPTION_KEY_' + snake_case_name.upper()
-    key_path = key_path or 'github_deploy_key_' + snake_case_name + key_ext
+    keypath = keypath or 'github_deploy_key_' + snake_case_name + key_ext
 
-    return (deploy_key_repo, env_name, key_path)
+    return (deploy_key_repo, env_name, keypath)
 
 def process_args(parser):
     args = parser.parse_args()
@@ -269,7 +269,7 @@ def deploy(args, parser):
     else:
         deploy_branch = 'master' if deploy_repo.endswith(('.github.io', '.github.com', '.wiki')) else 'gh-pages'
 
-    _, env_name, key_path = get_deploy_key_repo(deploy_repo, args.key_path, key_ext='.enc')
+    _, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path, key_ext='.enc')
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
@@ -278,7 +278,7 @@ def deploy(args, parser):
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
-                                     full_key_path=key_path,
+                                     full_keypath=keypath,
                                      branch_whitelist=branch_whitelist, env_name=env_name)
 
         if args.sync:
@@ -388,11 +388,11 @@ def configure(args, parser):
 
         print(header)
     else:
-        deploy_key_repo, env_name, key_path = get_deploy_key_repo(deploy_repo, args.key_path)
+        deploy_key_repo, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path)
 
         ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(
-            deploy_repo=deploy_key_repo), keypath=key_path)
-        key = encrypt_file(key_path, delete=True)
+            deploy_repo=deploy_key_repo), keypath=keypath)
+        key = encrypt_file(keypath, delete=True)
         encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
             build_repo=build_repo, is_private=is_private, **login_kwargs)
 
@@ -406,7 +406,7 @@ def configure(args, parser):
             The deploy key has been added for {deploy_repo}.
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
-            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url, keypath=key_path)))
+            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url, keypath=keypath)))
             print(header)
         else:
             print(header)
@@ -424,11 +424,11 @@ def configure(args, parser):
 
             git add {keypath}.enc
 
-        """.format(keypath=key_path, N=N)))
+        """.format(keypath=keypath, N=N)))
 
     options = '--built-docs path/to/built/html/'
     if args.key_path:
-        options += ' --key-path {keypath}.enc'.format(keypath=key_path)
+        options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
