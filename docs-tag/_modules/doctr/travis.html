@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.6.3+57.ga74f440 documentation</title>
+    <title>doctr.travis &#8212; Doctr test-tag+1.g2324e4b documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.6.3+57.ga74f440',
+        VERSION:     'test-tag+1.g2324e4b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -490,6 +490,9 @@
     <span class="n">TRAVIS_COMMIT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_COMMIT&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_REPO_SLUG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_REPO_SLUG&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_JOB_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_JOB_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="s2">&quot;tag&quot;</span> <span class="k">if</span> <span class="n">TRAVIS_TAG</span> <span class="k">else</span> <span class="s2">&quot;branch&quot;</span>
+
     <span class="n">DOCTR_COMMAND</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">added</span><span class="p">:</span>
@@ -501,7 +504,7 @@
 <span class="s2">Update docs after building Travis build </span><span class="si">{TRAVIS_BUILD_NUMBER}</span><span class="s2"> of</span>
 <span class="si">{TRAVIS_REPO_SLUG}</span><span class="s2"></span>
 
-<span class="s2">The docs were built from the branch &#39;</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&#39; against the commit</span>
+<span class="s2">The docs were built from the </span><span class="si">{branch}</span><span class="s2"> &#39;</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&#39; against the commit</span>
 <span class="si">{TRAVIS_COMMIT}</span><span class="s2">.</span>
 
 <span class="s2">The Travis build that generated this commit is at</span>
@@ -511,6 +514,7 @@
 
 <span class="s2">    </span><span class="si">{DOCTR_COMMAND}</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">branch</span><span class="o">=</span><span class="n">branch</span><span class="p">,</span>
     <span class="n">TRAVIS_BUILD_NUMBER</span><span class="o">=</span><span class="n">TRAVIS_BUILD_NUMBER</span><span class="p">,</span>
     <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
     <span class="n">TRAVIS_COMMIT</span><span class="o">=</span><span class="n">TRAVIS_COMMIT</span><span class="p">,</span>
