@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Recipes &#8212; Doctr 1.6.3+37.gadcb6b2 documentation</title>
+    <title>Recipes &#8212; Doctr 1.6.3+59.g6ad5dc6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.3+37.gadcb6b2',
+        VERSION:     '1.6.3+59.g6ad5dc6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -65,6 +65,30 @@ For security purposes, it is not possible to deploy from branches on forks
 (Travis does not allow access to encrypted environment variables on pull
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.</p>
+</div>
+<div class="section" id="deploy-docs-from-git-tags">
+<h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
+<p>Travis CI runs separate builds for git tags that are pushed to your repo. By
+default, doctr does not deploy on these builds, but it can be enabled with the
+<code class="docutils literal"><span class="pre">--build-tags</span></code> flag to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. This is useful if you want to use
+doctr to deploy versioned docs for releases, for example.</p>
+<p>On Travis CI, the tag is set to the environment variable <code class="docutils literal"><span class="pre">$TRAVIS_TAG</span></code>,
+which is empty otherwise. The following will deploy the docs to <code class="docutils literal"><span class="pre">dev</span></code> for
+normal <code class="docutils literal"><span class="pre">master</span></code> builds, and <code class="docutils literal"><span class="pre">version-&lt;TAG</span> <span class="pre">NAME&gt;</span></code> for tag builds:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span>- if [[ -z &quot;$TRAVIS_TAG&quot; ]]; then
+    DEPLOY_DIR=dev;
+  else
+    DEPLOY_DIR=&quot;version-$TRAVIS_TAG&quot;;
+  fi
+- doctr deploy --build-tags --built-docs build/ $DEPLOY_DIR
+</pre></div>
+</div>
+<p>If you want to deploy only on a tag, use <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> with no
+arguments to tell doctr to not deploy from any branch. For instance, to deploy
+only tags to <code class="docutils literal"><span class="pre">latest</span></code>:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="n">latest</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">tags</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="deploy-to-a-separate-repo">
 <h2>Deploy to a separate repo<a class="headerlink" href="#deploy-to-a-separate-repo" title="Permalink to this headline">¶</a></h2>
@@ -151,6 +175,7 @@ key.</p>
   <ul>
 <li><a class="reference internal" href="#">Recipes</a><ul>
 <li><a class="reference internal" href="#deploy-docs-from-any-branch">Deploy docs from any branch</a></li>
+<li><a class="reference internal" href="#deploy-docs-from-git-tags">Deploy docs from git tags</a></li>
 <li><a class="reference internal" href="#deploy-to-a-separate-repo">Deploy to a separate repo</a></li>
 <li><a class="reference internal" href="#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">Setting up Doctr for a repo you don’t have admin access to</a></li>
 <li><a class="reference internal" href="#post-processing-the-docs-on-gh-pages">Post-processing the docs on gh-pages</a></li>

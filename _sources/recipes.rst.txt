@@ -41,6 +41,35 @@ For security purposes, it is not possible to deploy from branches on forks
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.
 
+Deploy docs from git tags
+=========================
+
+Travis CI runs separate builds for git tags that are pushed to your repo. By
+default, doctr does not deploy on these builds, but it can be enabled with the
+``--build-tags`` flag to ``doctr deploy``. This is useful if you want to use
+doctr to deploy versioned docs for releases, for example.
+
+On Travis CI, the tag is set to the environment variable ``$TRAVIS_TAG``,
+which is empty otherwise. The following will deploy the docs to ``dev`` for
+normal ``master`` builds, and ``version-<TAG NAME>`` for tag builds:
+
+.. code:: yaml
+
+  - if [[ -z "$TRAVIS_TAG" ]]; then
+      DEPLOY_DIR=dev;
+    else
+      DEPLOY_DIR="version-$TRAVIS_TAG";
+    fi
+  - doctr deploy --build-tags --built-docs build/ $DEPLOY_DIR
+
+If you want to deploy only on a tag, use ``--branch-whitelist`` with no
+arguments to tell doctr to not deploy from any branch. For instance, to deploy
+only tags to ``latest``:
+
+.. code:: yaml
+
+   - doctr deploy latest --built-docs build/ --build-tags --branch-whitelist
+
 Deploy to a separate repo
 =========================
 
