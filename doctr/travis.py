@@ -183,8 +183,10 @@ def get_travis_branch():
     else:
         return os.environ.get("TRAVIS_BRANCH", "")
 
-def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github_deploy_key.enc',
-    require_master=None, branch_whitelist=None, deploy_branch='gh-pages', env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'):
+def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
+    full_key_path='github_deploy_key.enc', require_master=None,
+    branch_whitelist=None, deploy_branch='gh-pages',
+    env_name='DOCTR_DEPLOY_ENCRYPTION_KEY', build_tags=False):
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
@@ -196,6 +198,8 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
 
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
+    # Set to the name of the tag for tag builds
+    TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
 
     if not branch_whitelist:
         branch_whitelist={'master'}
@@ -213,8 +217,12 @@ def setup_GitHub_push(deploy_repo, auth_type='deploy_key', full_key_path='github
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
-    canpush = determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
-                                    TRAVIS_PULL_REQUEST)
+    canpush = determine_push_rights(
+        branch_whitelist=branch_whitelist,
+        TRAVIS_BRANCH=TRAVIS_BRANCH,
+        TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
+        TRAVIS_TAG=TRAVIS_TAG,
+        build_tags=build_tags)
 
     print("Setting git attributes")
     set_git_user_email()
@@ -441,6 +449,9 @@ def commit_docs(*, added, removed):
     TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
     TRAVIS_REPO_SLUG = os.environ.get("TRAVIS_REPO_SLUG", "<unknown>")
     TRAVIS_JOB_ID = os.environ.get("TRAVIS_JOB_ID", "")
+    TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
+    branch = "tag" if TRAVIS_TAG else "branch"
+
     DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
     for f in added:
@@ -452,7 +463,7 @@ def commit_docs(*, added, removed):
 Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
 {TRAVIS_REPO_SLUG}
 
-The docs were built from the branch '{TRAVIS_BRANCH}' against the commit
+The docs were built from the {branch} '{TRAVIS_BRANCH}' against the commit
 {TRAVIS_COMMIT}.
 
 The Travis build that generated this commit is at
@@ -462,6 +473,7 @@ The doctr command that was run is
 
     {DOCTR_COMMAND}
 """.format(
+    branch=branch,
     TRAVIS_BUILD_NUMBER=TRAVIS_BUILD_NUMBER,
     TRAVIS_BRANCH=TRAVIS_BRANCH,
     TRAVIS_COMMIT=TRAVIS_COMMIT,
@@ -504,11 +516,17 @@ def push_docs(deploy_branch='gh-pages', retries=3):
             return
     sys.exit("Giving up...")
 
-def determine_push_rights(branch_whitelist, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST):
+def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
+    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
     determine if we can/should push the docs to the deploy repo
     """
     canpush = True
+
+    if TRAVIS_TAG:
+        if not build_tags:
+            print("The docs are not pushed on tag builds. To push on future tag builds, use --build-tags")
+        return build_tags
 
     if not any([re.compile(x).match(TRAVIS_BRANCH) for x in branch_whitelist]):
         print("The docs are only pushed to gh-pages from master. To allow pushing from "

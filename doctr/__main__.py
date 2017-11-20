@@ -145,6 +145,10 @@ options available.
         help=argparse.SUPPRESS)
     deploy_parser_add_argument('--deploy-repo', default=None, help="""Repo to
         deploy the docs to. By default, it deploys to the repo Doctr is run from.""")
+    deploy_parser_add_argument('--branch-whitelist', default=None, nargs='*',
+        help="""Branches to deploy from. Pass no arguments to not build on any branch
+        (typically used in conjunction with --build-tags). Note that you can
+        deploy from every branch with --no-require-master.""", type=set, metavar="BRANCH")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
     deploy_parser_add_argument('--command', default=None,
@@ -163,6 +167,11 @@ options available.
     deploy_parser_add_argument('--no-push', dest='push', action='store_false',
         default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
+    deploy_parser_add_argument('--build-tags', action='store_true',
+        default=False, help="""Deploy on tag builds. On a tag build,
+        $TRAVIS_TAG is set to the name of the tag. The default is to not
+        deploy on tag builds. Note that this will still build on a branch,
+        unless --branch-whitelist (with no arguments) is passed.""")
     deploy_parser_add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
@@ -273,13 +282,19 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        branch_whitelist = {'master'} if args.require_master else set(get_travis_branch())
+        branch_whitelist = set() if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
+        if args.branch_whitelist is not None:
+            branch_whitelist.update(args.branch_whitelist)
+            if not args.branch_whitelist:
+                branch_whitelist = {'master'}
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=keypath,
-                                     branch_whitelist=branch_whitelist, env_name=env_name)
+                                     branch_whitelist=branch_whitelist,
+                                     build_tags=args.build_tags,
+                                     env_name=env_name)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
