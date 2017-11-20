@@ -449,6 +449,9 @@ def commit_docs(*, added, removed):
     TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
     TRAVIS_REPO_SLUG = os.environ.get("TRAVIS_REPO_SLUG", "<unknown>")
     TRAVIS_JOB_ID = os.environ.get("TRAVIS_JOB_ID", "")
+    TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
+    branch = "tag" if TRAVIS_TAG else "branch"
+
     DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
     for f in added:
@@ -460,7 +463,7 @@ def commit_docs(*, added, removed):
 Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
 {TRAVIS_REPO_SLUG}
 
-The docs were built from the branch '{TRAVIS_BRANCH}' against the commit
+The docs were built from the {branch} '{TRAVIS_BRANCH}' against the commit
 {TRAVIS_COMMIT}.
 
 The Travis build that generated this commit is at
@@ -470,6 +473,7 @@ The doctr command that was run is
 
     {DOCTR_COMMAND}
 """.format(
+    branch=branch,
     TRAVIS_BUILD_NUMBER=TRAVIS_BUILD_NUMBER,
     TRAVIS_BRANCH=TRAVIS_BRANCH,
     TRAVIS_COMMIT=TRAVIS_COMMIT,
