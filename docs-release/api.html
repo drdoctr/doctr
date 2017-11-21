@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API &#8212; Doctr 1.6.2+14.g3cbaf96 documentation</title>
+    <title>API &#8212; Doctr 1.6.3+64.gd86d0e3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.2+14.g3cbaf96',
+        VERSION:     '1.6.3+64.gd86d0e3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -194,7 +194,7 @@ extension.</p>
 
 <dl class="function">
 <dt id="doctr.travis.determine_push_rights">
-<code class="descclassname">doctr.travis.</code><code class="descname">determine_push_rights</code><span class="sig-paren">(</span><em>branch_whitelist</em>, <em>TRAVIS_BRANCH</em>, <em>TRAVIS_PULL_REQUEST</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#determine_push_rights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.determine_push_rights" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">determine_push_rights</code><span class="sig-paren">(</span><em>*</em>, <em>branch_whitelist</em>, <em>TRAVIS_BRANCH</em>, <em>TRAVIS_PULL_REQUEST</em>, <em>TRAVIS_TAG</em>, <em>build_tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#determine_push_rights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.determine_push_rights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if Travis is running on <code class="docutils literal"><span class="pre">master</span></code> (or a whitelisted branch) to
 determine if we can/should push the docs to the deploy repo</p>
 </dd></dl>
@@ -261,7 +261,7 @@ returncode.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_GitHub_push">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch='gh-pages'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_GitHub_push</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>*</em>, <em>auth_type='deploy_key'</em>, <em>full_key_path='github_deploy_key.enc'</em>, <em>require_master=None</em>, <em>branch_whitelist=None</em>, <em>deploy_branch='gh-pages'</em>, <em>env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'</em>, <em>build_tags=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_GitHub_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_GitHub_push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the remote to push to GitHub (to be run on Travis).</p>
 <p><code class="docutils literal"><span class="pre">auth_type</span></code> should be either <code class="docutils literal"><span class="pre">'deploy_key'</span></code> or <code class="docutils literal"><span class="pre">'token'</span></code>.</p>
 <p>For <code class="docutils literal"><span class="pre">auth_type='token'</span></code>, this sets up the remote with the token and
@@ -272,11 +272,14 @@ variable.</p>
 
 <dl class="function">
 <dt id="doctr.travis.setup_deploy_key">
-<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.travis.</code><code class="descname">setup_deploy_key</code><span class="sig-paren">(</span><em>keypath='github_deploy_key'</em>, <em>key_ext='.enc'</em>, <em>env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/travis.html#setup_deploy_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.travis.setup_deploy_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decrypts the deploy key and configures it with ssh</p>
 <p>The key is assumed to be encrypted as keypath + key_ext, and the
 encryption key is assumed to be set in the environment variable
-DOCTR_DEPLOY_ENCRYPTION_KEY.</p>
+<code class="docutils literal"><span class="pre">env_name</span></code>. If <code class="docutils literal"><span class="pre">env_name</span></code> is not set, it falls back to
+<code class="docutils literal"><span class="pre">DOCTR_DEPLOY_ENCRYPTION_KEY</span></code> for backwards compatibility.</p>
+<p>If keypath + key_ext does not exist, it falls back to
+<code class="docutils literal"><span class="pre">github_deploy_key.enc</span></code> for backwards compatibility.</p>
 </dd></dl>
 
 <dl class="function">
@@ -300,30 +303,26 @@ file from <code class="docutils literal"><span class="pre">log_file</span></code
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#module-doctr.local">Local</a></li>
-<li><a class="reference internal" href="#module-doctr.travis">Travis</a></li>
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-doctr.local">Local</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-doctr.travis">Travis</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">GitHub Test Authentication</a></li>
 </ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="recipes.html" title="previous chapter">Recipes</a></li>
-      <li>Next: <a href="changelog.html" title="next chapter">Doctr Changelog</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/api.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">

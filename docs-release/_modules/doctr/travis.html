@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.6.2+14.g3cbaf96 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.6.3+64.gd86d0e3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.6.2+14.g3cbaf96',
+        VERSION:     '1.6.3+64.gd86d0e3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -90,19 +90,25 @@
 
     <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">file</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="mo">0o600</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setup_deploy_key"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_deploy_key">[docs]</a><span class="k">def</span> <span class="nf">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="s1">&#39;github_deploy_key&#39;</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="s1">&#39;.enc&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="setup_deploy_key"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_deploy_key">[docs]</a><span class="k">def</span> <span class="nf">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="s1">&#39;github_deploy_key&#39;</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="s1">&#39;.enc&#39;</span><span class="p">,</span> <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decrypts the deploy key and configures it with ssh</span>
 
 <span class="sd">    The key is assumed to be encrypted as keypath + key_ext, and the</span>
 <span class="sd">    encryption key is assumed to be set in the environment variable</span>
-<span class="sd">    DOCTR_DEPLOY_ENCRYPTION_KEY.</span>
+<span class="sd">    ``env_name``. If ``env_name`` is not set, it falls back to</span>
+<span class="sd">    ``DOCTR_DEPLOY_ENCRYPTION_KEY`` for backwards compatibility.</span>
 
+<span class="sd">    If keypath + key_ext does not exist, it falls back to</span>
+<span class="sd">    ``github_deploy_key.enc`` for backwards compatibility.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DOCTR_DEPLOY_ENCRYPTION_KEY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DOCTR_DEPLOY_ENCRYPTION_KEY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{env_name}</span><span class="s2"> or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="o">=</span><span class="n">env_name</span><span class="p">))</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="n">key_ext</span><span class="p">):</span>
+        <span class="n">keypath</span> <span class="o">=</span> <span class="s1">&#39;github_deploy_key&#39;</span>
     <span class="n">key_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">keypath</span><span class="p">)</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
     <span class="n">decrypt_file</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="n">key_ext</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -172,10 +178,10 @@
 <span class="sd">    If exit=True, it exits on nonzero returncode. Otherwise it returns the</span>
 <span class="sd">    returncode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;DOCTR_DEPLOY_ENCRYPTION_KEY&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-        <span class="n">token</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;GH_TOKEN&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
         <span class="n">token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">shell</span><span class="p">:</span>
         <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
@@ -218,7 +224,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span>
+    <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span>
+    <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">,</span> <span class="n">build_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the remote to push to GitHub (to be run on Travis).</span>
 
@@ -230,6 +239,8 @@
 
 <span class="sd">    For ``auth_type=&#39;deploy_key&#39;``, this sets up the remote with ssh access.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set to the name of the tag for tag builds</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">branch_whitelist</span><span class="p">:</span>
         <span class="n">branch_whitelist</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;master&#39;</span><span class="p">}</span>
@@ -247,8 +258,12 @@
     <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_PULL_REQUEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="n">canpush</span> <span class="o">=</span> <span class="n">determine_push_rights</span><span class="p">(</span><span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
-                                    <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">)</span>
+    <span class="n">canpush</span> <span class="o">=</span> <span class="n">determine_push_rights</span><span class="p">(</span>
+        <span class="n">branch_whitelist</span><span class="o">=</span><span class="n">branch_whitelist</span><span class="p">,</span>
+        <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+        <span class="n">TRAVIS_PULL_REQUEST</span><span class="o">=</span><span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span>
+        <span class="n">TRAVIS_TAG</span><span class="o">=</span><span class="n">TRAVIS_TAG</span><span class="p">,</span>
+        <span class="n">build_tags</span><span class="o">=</span><span class="n">build_tags</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting git attributes&quot;</span><span class="p">)</span>
     <span class="n">set_git_user_email</span><span class="p">()</span>
@@ -267,7 +282,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span> <span class="o">=</span> <span class="n">full_key_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">key_ext</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key_ext</span>
-            <span class="n">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="n">key_ext</span><span class="p">)</span>
+            <span class="n">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="n">key_ext</span><span class="p">,</span> <span class="n">env_name</span><span class="o">=</span><span class="n">env_name</span><span class="p">)</span>
             <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;git@github.com:</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
     <span class="k">else</span><span class="p">:</span>
@@ -475,6 +490,9 @@
     <span class="n">TRAVIS_COMMIT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_COMMIT&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_REPO_SLUG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_REPO_SLUG&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
     <span class="n">TRAVIS_JOB_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_JOB_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="s2">&quot;tag&quot;</span> <span class="k">if</span> <span class="n">TRAVIS_TAG</span> <span class="k">else</span> <span class="s2">&quot;branch&quot;</span>
+
     <span class="n">DOCTR_COMMAND</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">added</span><span class="p">:</span>
@@ -486,7 +504,7 @@
 <span class="s2">Update docs after building Travis build </span><span class="si">{TRAVIS_BUILD_NUMBER}</span><span class="s2"> of</span>
 <span class="si">{TRAVIS_REPO_SLUG}</span><span class="s2"></span>
 
-<span class="s2">The docs were built from the branch &#39;</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&#39; against the commit</span>
+<span class="s2">The docs were built from the </span><span class="si">{branch}</span><span class="s2"> &#39;</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&#39; against the commit</span>
 <span class="si">{TRAVIS_COMMIT}</span><span class="s2">.</span>
 
 <span class="s2">The Travis build that generated this commit is at</span>
@@ -496,6 +514,7 @@
 
 <span class="s2">    </span><span class="si">{DOCTR_COMMAND}</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">branch</span><span class="o">=</span><span class="n">branch</span><span class="p">,</span>
     <span class="n">TRAVIS_BUILD_NUMBER</span><span class="o">=</span><span class="n">TRAVIS_BUILD_NUMBER</span><span class="p">,</span>
     <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
     <span class="n">TRAVIS_COMMIT</span><span class="o">=</span><span class="n">TRAVIS_COMMIT</span><span class="p">,</span>
@@ -538,11 +557,17 @@
             <span class="k">return</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Giving up...&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span> <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">):</span>
+<div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+    <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span> <span class="n">TRAVIS_TAG</span><span class="p">,</span> <span class="n">build_tags</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check if Travis is running on ``master`` (or a whitelisted branch) to</span>
 <span class="sd">    determine if we can/should push the docs to the deploy repo</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">canpush</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">TRAVIS_TAG</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">build_tags</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are not pushed on tag builds. To push on future tag builds, use --build-tags&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">build_tags</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">branch_whitelist</span><span class="p">]):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are only pushed to gh-pages from master. To allow pushing from &quot;</span>
@@ -561,15 +586,23 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../index.html">Table Of Contents</a></h3>
 <ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">GitHub Test Authentication</a></li>
 </ul>
-</div>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">

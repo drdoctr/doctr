@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.6.2+14.g3cbaf96 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.6.3+64.gd86d0e3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.6.2+14.g3cbaf96',
+        VERSION:     '1.6.3+64.gd86d0e3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -286,16 +286,30 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Invalid service specified for repo check (neither &quot;travis&quot; nor &quot;github&quot;)&#39;</span><span class="p">)</span>
 
+    <span class="n">wiki</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.wiki&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">wiki</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">repo</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">REPO_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">),</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on </span><span class="si">{service}</span><span class="s1">. Exiting&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
-                                                                                    <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
-                                                                                    <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on </span><span class="si">{service}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                                                                           <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
+                                                                           <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">))</span>
 
     <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="n">private</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">wiki</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">private</span><span class="p">:</span>
+        <span class="c1"># private wiki needs authentication, so skip check for existence</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;ls-remote&#39;</span><span class="p">,</span> <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;https://github.com/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">.wiki&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">)],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Wiki not found. Please create a wiki&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">private</span></div>
 
 <span class="n">GIT_URL</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?&#39;</span><span class="p">)</span>
 
@@ -321,15 +335,23 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../index.html">Table Of Contents</a></h3>
 <ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">GitHub Test Authentication</a></li>
 </ul>
-</div>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
