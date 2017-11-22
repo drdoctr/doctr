@@ -41,6 +41,8 @@ For security purposes, it is not possible to deploy from branches on forks
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.
 
+.. _recipe-tags:
+
 Deploy docs from git tags
 =========================
 
@@ -148,6 +150,8 @@ use Doctr to manage your deploy key. Use
 
 The command to deploy should add any files that you want committed to the
 index.
+
+.. _recipe-wikis:
 
 Deploying to a GitHub wiki
 ==========================
