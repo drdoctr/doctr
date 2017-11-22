@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Recipes &#8212; Doctr 1.6.3+62.gca9d965 documentation</title>
+    <title>Recipes &#8212; Doctr 1.7.0+1.gd886977 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.3+62.gca9d965',
+        VERSION:     '1.7.0+1.gd886977',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -67,7 +67,7 @@ requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.</p>
 </div>
 <div class="section" id="deploy-docs-from-git-tags">
-<h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
+<span id="recipe-tags"></span><h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
 <p>Travis CI runs separate builds for git tags that are pushed to your repo. By
 default, doctr does not deploy on these builds, but it can be enabled with the
 <code class="docutils literal"><span class="pre">--build-tags</span></code> flag to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. This is useful if you want to use
@@ -153,7 +153,7 @@ use Doctr to manage your deploy key. Use</p>
 index.</p>
 </div>
 <div class="section" id="deploying-to-a-github-wiki">
-<h2>Deploying to a GitHub wiki<a class="headerlink" href="#deploying-to-a-github-wiki" title="Permalink to this headline">¶</a></h2>
+<span id="recipe-wikis"></span><h2>Deploying to a GitHub wiki<a class="headerlink" href="#deploying-to-a-github-wiki" title="Permalink to this headline">¶</a></h2>
 <p>Doctr supports deploying to GitHub wikis. Just use <code class="docutils literal"><span class="pre">org/repo.wiki</span></code> when
 as the deploy repo running <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code>. When deploying, use</p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="n">org</span><span class="o">/</span><span class="n">repo</span><span class="o">.</span><span class="n">wiki</span> <span class="o">.</span>
@@ -173,6 +173,7 @@ key.</p>
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Table Of Contents</a></h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Doctr</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commandline.html">Doctr Command Line Help</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Recipes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#deploy-docs-from-any-branch">Deploy docs from any branch</a></li>

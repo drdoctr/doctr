@@ -2,6 +2,44 @@
  Doctr Changelog
 =================
 
+1.7.0 (2017-11-21)
+==================
+
+Major Changes
+-------------
+
+- Add support for multiple deploy repos. Thanks :user:`ylemkimon`. Note, as a
+  result of this, the default environment variable name on Travis is now
+  :samp:`DOCTR_DEPLOY_ENCRYPTION_KEY_{ORG}_{REPO}` where :samp:`{ORG}` and
+  :samp:`{REPO}` are the GitHub organization and repo, capitalized with
+  special characters replaced with underscores. The default encryption key
+  file is now :samp:`doctr_deploy_key_{org}_{repo}.enc`, where :samp:`{org}`
+  and :samp:`{repo}` are the organization and repo names with special
+  characters replaced with underscores. The old key and file names are still
+  supported for backwards compatibility, and a custom key file name can still
+  be used with the ``--key-path`` flag. (:issue:`276` and :issue:`280`)
+
+- Add support for deploying to GitHub wikis. Thanks :user:`ylemkimon`. The
+  wiki for a GitHub repository is :samp:`{org}/{repo}.wiki`. The deploy key
+  for a wiki is the same as for the repository itself, so if you have already
+  run ``doctr configure`` for a given repository you do not need to run it
+  again for its wiki. See :ref:`the recipes page <recipe-wikis>` for more
+  information. (:issue:`276` and :issue:`280`)
+
+
+- Add support for deploying from tag builds. Tag builds are builds
+  that Travis CI runs on tags pushed up to the repository. See
+  :ref:`the recipes page <recipe-tags>` for more information. (:issue:`225`)
+
+Minor Changes
+-------------
+
+- Add a global table of contents to the docs sidebar. (:issue:`284`)
+- Note in the docs that doctr will make the ``gh-pages`` branch for you if it
+  doesn't exist. Thanks :user:`CJ-Wright`. (:issue:`235`)
+- Print a more helpful error message when the repository check in ``doctr
+  configure`` fails. Thanks :user:`ylemkimon`. (:issue:`279`)
+
 1.6.3 (2017-11-11)
 ==================
 
