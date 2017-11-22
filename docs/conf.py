@@ -139,7 +139,7 @@ html_theme_options = {
 html_sidebars = {
     '**': ['globaltoc.html', 'sidebarhelp.html',
            'searchbox.html'],
-    'index': ['localtoc.html', 'globaltoc.html', 'sidebarhelp.html',
+    'index': ['localtocindex.html', 'globaltocindex.html', 'sidebarhelp.html',
            'searchbox.html'],
 }
 
