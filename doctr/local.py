@@ -19,6 +19,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
+from .common import red
 
 def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
@@ -129,6 +130,8 @@ def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
     if r.status_code == 401:
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
+            if OTP:
+                print(red("Invalid token"))
             auth_header = base64.urlsafe_b64encode(bytes(username + ':' + password, 'utf8')).decode()
             login_kwargs = {'auth': None, 'headers': {'Authorization': 'Basic {}'.format(auth_header)}}
             try:
@@ -259,7 +262,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     r.raise_for_status()
     private = r.json().get('private', False)
-    
+
     if wiki and not private:
         # private wiki needs authentication, so skip check for existence
         p = subprocess.run(['git', 'ls-remote', '-h', 'https://github.com/{user}/{repo}.wiki'.format(
