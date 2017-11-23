@@ -131,7 +131,7 @@ def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
         two_factor = r.headers.get('X-GitHub-OTP')
         if two_factor:
             if OTP:
-                print(red("Invalid token"))
+                print(red("Invalid authentication code"))
             auth_header = base64.urlsafe_b64encode(bytes(username + ':' + password, 'utf8')).decode()
             login_kwargs = {'auth': None, 'headers': {'Authorization': 'Basic {}'.format(auth_header)}}
             try:
