@@ -477,7 +477,7 @@ def configure(args, parser):
 
         script:
           - set -e
-          - {BOLD_BLACK}# <Command to build your docs>{RESET}
+          - {BOLD_BLACK}<Command to build your docs>{RESET}
           - pip install doctr
           - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
 
