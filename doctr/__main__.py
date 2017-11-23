@@ -41,7 +41,7 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 
-from .common import red, green, blue, BOLD_MAGENTA, RESET
+from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESET
 
 from . import __version__
 
@@ -359,6 +359,7 @@ def configure(args, parser):
     - green: Welcome messages (use sparingly)
     - blue: Default values
     - bold_magenta: Action items
+    - bold_black: Parts of code to be run or copied that should be modified
     """
     if not args.force and on_travis():
         parser.error(red("doctr appears to be running on Travis. Use "
@@ -465,7 +466,7 @@ def configure(args, parser):
             git add {keypath}.enc
         """.format(keypath=keypath, N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
-    options = '--built-docs path/to/built/html/'
+    options = '--built-docs ' + bold_black('<path/to/built/html/>')
     if args.key_path:
         options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
@@ -476,9 +477,9 @@ def configure(args, parser):
 
         script:
           - set -e
-          - # Command to build your docs
+          - {BOLD_BLACK}# <Command to build your docs>{RESET}
           - pip install doctr
-          - doctr deploy {options} <target-directory>
+          - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
 
         env:
           global:
@@ -486,8 +487,13 @@ def configure(args, parser):
             - secure: "{encrypted_variable}"
     """.format(options=options, N=N,
         encrypted_variable=encrypted_variable.decode('utf-8'),
-        deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+        deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
+        BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
+    print(dedent("""\
+    Replace the text in {BOLD_BLACK}<angle brackets>{RESET} with the relevant
+    things for your repository.
+    """.format(BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
     print(dedent("""\
     Note: the `set -e` prevents doctr from running when the docs build fails.
