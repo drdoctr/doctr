@@ -452,10 +452,10 @@ def configure(args, parser):
             print(header)
             print(dedent("""\
             {N}. {BOLD_MAGENTA}Go to {deploy_keys_url}
-            and add the following as a new key:{RESET}
+               and add the following as a new key:{RESET}
 
-            {ssh_key}
-            {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
+                {ssh_key}
+               {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
             """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url, N=N,
                 BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
