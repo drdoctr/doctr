@@ -353,8 +353,13 @@ def configure(args, parser):
         parser.error("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway.")
 
+    login_kwargs = {}
     if args.upload_key:
-        login_kwargs = GitHub_login()
+        while not login_kwargs:
+            try:
+                login_kwargs = GitHub_login()
+            except AuthenticationFailed as e:
+                print(e)
     else:
         login_kwargs = {'auth': None, 'headers': None}
 
