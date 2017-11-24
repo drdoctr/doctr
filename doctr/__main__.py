@@ -475,16 +475,16 @@ def configure(args, parser):
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
 
+        env:
+          global:
+            # Doctr deploy key for {deploy_repo}
+            - secure: "{encrypted_variable}"
+
         script:
           - set -e
           - {BOLD_BLACK}<Command to build your docs>{RESET}
           - pip install doctr
           - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
-
-        env:
-          global:
-            # Doctr deploy key for {deploy_repo}
-            - secure: "{encrypted_variable}"
     """.format(options=options, N=N,
         encrypted_variable=encrypted_variable.decode('utf-8'),
         deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
