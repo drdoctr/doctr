@@ -21,7 +21,7 @@ Major Changes
 .. raw:: html
 
     <style> .red {color:red} .green {color:green} .blue {color:blue}
-    .magenta {color:darkmagenta; font-weight:bold} .gray {color:dimgray; font-weight:bold} </style>
+    .magenta {color:magenta; font-weight:bold} .gray {color:dimgray; font-weight:bold} </style>
 
 - Cleanup the ``doctr configure`` code. Output is now
   color-coded according to its meaning:
