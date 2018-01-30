@@ -41,7 +41,7 @@ For security purposes, it is not possible to deploy from branches on forks
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.
 
-.. _specific-branch:
+.. _non-master-branch:
 
 Deploy docs from a non-master branch
 ====================================
