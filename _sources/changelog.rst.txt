@@ -2,6 +2,47 @@
  Doctr Changelog
 =================
 
+1.7.1 (2018-01-30)
+==================
+
+Major Changes
+-------------
+
+.. role:: red
+
+.. role:: green
+
+.. role:: blue
+
+.. role:: magenta
+
+.. role:: gray
+
+.. raw:: html
+
+    <style> .red {color:red} .green {color:green} .blue {color:blue}
+    .magenta {color:magenta; font-weight:bold} .gray {color:dimgray; font-weight:bold} </style>
+
+- Cleanup the ``doctr configure`` code. Output is now
+  color-coded according to its meaning:
+
+  - :red:`red`: warnings and errors
+  - :green:`green`: welcome messages (used sparingly)
+  - :blue:`blue`: default values
+  - :magenta:`bold magenta`: action items
+  - :gray:`bold gray`: things that should be replaced when copy-pasting
+
+  The ``doctr configure`` text has also been improved. (:issue:`289`)
+
+Minor Changes
+-------------
+
+- Retry on invalid username and password in ``doctr configure``.  (:issue:`289`)
+
+- Print when the 2FA code fails in ``doctr configure``.  (:issue:`289`)
+
+- Fix the ``--branch-whitelist`` flag to ``doctr deploy``. (:issue:`291`)
+
 1.7.0 (2017-11-21)
 ==================
 
