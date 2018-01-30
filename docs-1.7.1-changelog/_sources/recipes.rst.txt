@@ -41,6 +41,22 @@ For security purposes, it is not possible to deploy from branches on forks
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.
 
+.. _non-master-branch:
+
+Deploy docs from a non-master branch
+====================================
+
+If you want to deploy docs from only specific branches other than just
+``master``, you can use the ``--branch-whitelist`` flag. This is useful if
+your default branch is named something other than ``master``. The default
+``--branch-whitelist`` is ``master``. ``--branch-whitelist`` can take any
+number of arguments, so it should generally go last in your ``doctr deploy``
+call.
+
+.. code:: yaml
+
+   - doctr deploy --built-docs build/ . --branch-whitelist develop
+
 .. _recipe-tags:
 
 Deploy docs from git tags
