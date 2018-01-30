@@ -365,7 +365,8 @@ def copy_to_tmp(source):
     # Use pathlib because os.path.basename is different depending on whether
     # the path ends in a /
     p = pathlib.Path(source)
-    new_dir = os.path.join(tmp_dir, p.name)
+    dirname = p.name or 'temp'
+    new_dir = os.path.join(tmp_dir, dirname)
     if os.path.isdir(source):
         shutil.copytree(source, new_dir)
     else:
