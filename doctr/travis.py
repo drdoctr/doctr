@@ -15,13 +15,8 @@ import time
 
 from cryptography.fernet import Fernet
 
+from .common import red, blue
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
-
-def red(text):
-    return "\033[31m%s\033[0m" % text
-
-def blue(text):
-    return "\033[34m%s\033[0m" % text
 
 def decrypt_file(file, key):
     """

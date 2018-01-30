@@ -36,10 +36,13 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo)
+    GitHub_login, guess_github_repo, AuthenticationFailed)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp, checkout_deploy_branch, red)
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
+
+from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESET
+
 from . import __version__
 
 def make_parser_with_config_adder(parser, config):
@@ -349,12 +352,34 @@ class IncrementingInt:
     __str__ = __repr__
 
 def configure(args, parser):
-    if not args.force and on_travis():
-        parser.error("doctr appears to be running on Travis. Use "
-            "doctr configure --force to run anyway.")
+    """
+    Color guide
 
+    - red: Error and warning messages
+    - green: Welcome messages (use sparingly)
+    - blue: Default values
+    - bold_magenta: Action items
+    - bold_black: Parts of code to be run or copied that should be modified
+    """
+    if not args.force and on_travis():
+        parser.error(red("doctr appears to be running on Travis. Use "
+            "doctr configure --force to run anyway."))
+
+
+    print(green(dedent("""\
+    Welcome to Doctr.
+
+    We need to ask you a few questions to get you on your way to automatically
+    deploying from Travis CI to GitHub pages.
+    """)))
+
+    login_kwargs = {}
     if args.upload_key:
-        login_kwargs = GitHub_login()
+        while not login_kwargs:
+            try:
+                login_kwargs = GitHub_login()
+            except AuthenticationFailed as e:
+                print(red(e))
     else:
         login_kwargs = {'auth': None, 'headers': None}
 
@@ -363,7 +388,7 @@ def configure(args, parser):
     while not get_build_repo:
         try:
             if default_repo:
-                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=default_repo))
+                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=blue(default_repo)))
                 if not build_repo:
                     build_repo = default_repo
             else:
@@ -372,12 +397,12 @@ def configure(args, parser):
             check_repo_exists(build_repo, service='travis')
             get_build_repo = True
         except RuntimeError as e:
-            print('\n{!s:-^{}}\n'.format(e, 70))
+            print(red('\n{!s:-^{}}\n'.format(e, 70)))
 
     get_deploy_repo = False
     while not get_deploy_repo:
         try:
-            deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=build_repo))
+            deploy_repo = input("What repo do you want to deploy the docs to? [{build_repo}] ".format(build_repo=blue(build_repo)))
             if not deploy_repo:
                 deploy_repo = build_repo
 
@@ -386,11 +411,11 @@ def configure(args, parser):
 
             get_deploy_repo = True
         except RuntimeError as e:
-            print('\n{!s:-^{}}\n'.format(e, 70))
+            print(red('\n{!s:-^{}}\n'.format(e, 70)))
 
     N = IncrementingInt(1)
 
-    header = "\n================== You should now do the following ==================\n"
+    header = green("\n================== You should now do the following ==================\n")
 
     if args.token:
         token = generate_GitHub_token(**login_kwargs)['token']
@@ -426,56 +451,62 @@ def configure(args, parser):
         else:
             print(header)
             print(dedent("""\
-            {N}. Go to {deploy_keys_url}
-            and add the following as a new key:
+            {N}. {BOLD_MAGENTA}Go to {deploy_keys_url}
+               and add the following as a new key:{RESET}
 
-            {ssh_key}
-            Be sure to allow write access for the key.
-            """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url, N=N)))
+                {ssh_key}
+               {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
+            """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url, N=N,
+                BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
 
         print(dedent("""\
-        {N}. Add the file {keypath}.enc to be staged for commit:
+        {N}. {BOLD_MAGENTA}Add the file {keypath}.enc to be staged for commit:{RESET}
 
             git add {keypath}.enc
+        """.format(keypath=keypath, N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
-        """.format(keypath=keypath, N=N)))
-
-    options = '--built-docs path/to/built/html/'
+    options = '--built-docs ' + bold_black('<path/to/built/html/>')
     if args.key_path:
         options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
     print(dedent("""\
-    {N}. Add these lines to your `.travis.yml` file:
-
-        script:
-          - set -e
-          - # Command to build your docs
-          - pip install doctr
-          - doctr deploy {options} <target-directory>
+    {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
 
         env:
           global:
             # Doctr deploy key for {deploy_repo}
             - secure: "{encrypted_variable}"
 
+        script:
+          - set -e
+          - {BOLD_BLACK}<Command to build your docs>{RESET}
+          - pip install doctr
+          - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
     """.format(options=options, N=N,
         encrypted_variable=encrypted_variable.decode('utf-8'),
-        deploy_repo=deploy_repo)))
+        deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
+        BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
     print(dedent("""\
-    {N}. Commit and push these changes to your github repository.
-        The docs should now build automatically on travis.
-
-    """.format(N=N)))
+    Replace the text in {BOLD_BLACK}<angle brackets>{RESET} with the relevant
+    things for your repository.
+    """.format(BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
     print(dedent("""\
-    Note: the `set -e` prevents doctr from running when the docs build
-      fails. We put this code under `script:` so that if doctr fails it causes
-      the build to fail.
+    Note: the `set -e` prevents doctr from running when the docs build fails.
+    We put this code under `script:` so that if doctr fails it causes the
+    build to fail.
     """))
+
+    print(dedent("""\
+    {N}. {BOLD_MAGENTA}Commit and push these changes to your GitHub repository.{RESET}
+       The docs should now build automatically on Travis.
+    """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+
+    print("See the documentation at https://drdoctr.github.io/ for more information.")
 
 def main():
     config = get_config()
