@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Recipes &#8212; Doctr 1.7.0+12.g07d958d documentation</title>
+    <title>Recipes &#8212; Doctr 1.7.1+11.gc312fb2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.7.0+12.g07d958d',
+        VERSION:     '1.7.1+11.gc312fb2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -65,6 +65,18 @@ For security purposes, it is not possible to deploy from branches on forks
 (Travis does not allow access to encrypted environment variables on pull
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.</p>
+</div>
+<div class="section" id="deploy-docs-from-a-non-master-branch">
+<span id="non-master-branch"></span><h2>Deploy docs from a non-master branch<a class="headerlink" href="#deploy-docs-from-a-non-master-branch" title="Permalink to this headline">¶</a></h2>
+<p>If you want to deploy docs from only specific branches other than just
+<code class="docutils literal"><span class="pre">master</span></code>, you can use the <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> flag. This is useful if
+your default branch is named something other than <code class="docutils literal"><span class="pre">master</span></code>. The default
+<code class="docutils literal"><span class="pre">--branch-whitelist</span></code> is <code class="docutils literal"><span class="pre">master</span></code>. <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> can take any
+number of arguments, so it should generally go last in your <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>
+call.</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">.</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span> <span class="n">develop</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="deploy-docs-from-git-tags">
 <span id="recipe-tags"></span><h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
@@ -177,6 +189,7 @@ key.</p>
 <li class="toctree-l1"><a class="reference internal" href="commandline.html">Doctr Command Line Help</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Recipes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#deploy-docs-from-any-branch">Deploy docs from any branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deploy-docs-from-a-non-master-branch">Deploy docs from a non-master branch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deploy-docs-from-git-tags">Deploy docs from git tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deploy-to-a-separate-repo">Deploy to a separate repo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">Setting up Doctr for a repo you don’t have admin access to</a></li>
