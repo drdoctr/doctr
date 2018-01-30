@@ -53,6 +53,8 @@ script:
       python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-repo drdoctr/doctr.wiki . --built-docs deploy-test.md;
       # Build on tags
       python -m doctr deploy --sync --key-path deploy_key.enc "tag-$TRAVIS_TAG" --build-tags --branch-whitelist;
+      # Test --branch-whitelist
+      python -m doctr deploy --sync --key-path deploy_key.enc "branch-whitelist" --branch-whitelist branch-whitelist;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;

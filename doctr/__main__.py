@@ -148,7 +148,7 @@ options available.
     deploy_parser_add_argument('--branch-whitelist', default=None, nargs='*',
         help="""Branches to deploy from. Pass no arguments to not build on any branch
         (typically used in conjunction with --build-tags). Note that you can
-        deploy from every branch with --no-require-master.""", type=set, metavar="BRANCH")
+        deploy from every branch with --no-require-master.""", metavar="BRANCH")
     deploy_parser_add_argument('--no-require-master', dest='require_master', action='store_false',
         default=True, help="""Allow docs to be pushed from a branch other than master""")
     deploy_parser_add_argument('--command', default=None,
@@ -285,7 +285,7 @@ def deploy(args, parser):
         branch_whitelist = set() if args.require_master else set(get_travis_branch())
         branch_whitelist.update(set(config.get('branches',set({}))))
         if args.branch_whitelist is not None:
-            branch_whitelist.update(args.branch_whitelist)
+            branch_whitelist.update(set(args.branch_whitelist))
             if not args.branch_whitelist:
                 branch_whitelist = {'master'}
 
