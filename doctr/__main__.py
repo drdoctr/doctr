@@ -180,7 +180,7 @@ options available.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
-    deploy_parser_add_argument('--exclude', nargs='+', help="""Files and
+    deploy_parser_add_argument('--exclude', nargs='+', default=(), help="""Files and
         directories from --built-docs that are not copied.""")
 
     if config:
