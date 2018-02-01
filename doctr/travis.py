@@ -372,7 +372,7 @@ def copy_to_tmp(source):
         shutil.copy2(source, new_dir)
     return new_dir
 
-def sync_from_log(src, dst, log_file):
+def sync_from_log(src, dst, log_file, exclude=()):
     """
     Sync the files in ``src`` to ``dst``.
 
@@ -383,6 +383,9 @@ def sync_from_log(src, dst, log_file):
     ``src`` (even if it already existed in ``dst``), and ``removed`` is every
     file from ``log_file`` that was removed from ``dst`` because it wasn't in
     ``src``. ``added`` also includes the log file.
+
+    ``exclude`` may be a list of paths from ``src`` that should be ignored.
+    Such paths are neither added nor removed.
     """
     from os.path import join, exists, isdir
 
@@ -413,6 +416,8 @@ def sync_from_log(src, dst, log_file):
 
     # sorted makes this easier to test
     for f in sorted(files):
+        if f in exclude:
+            pass
         new_f = join(dst, f[len(src):])
         if isdir(f):
             os.makedirs(new_f, exist_ok=True)
