@@ -198,6 +198,25 @@ def test_sync_from_log(src, dst):
                     join(dst, 'testdir', 'test2'),
                     ])
 
+            # Test excluding a directory
+
+            os.makedirs(join(src, 'testdir2'))
+            with open(join(src, 'testdir2', 'test2'), 'w') as f:
+                f.write('test2')
+
+            added, removed = sync_from_log(src, dst, 'logfile', exclude=['testdir2'])
+
+
+            assert added == [
+                join(dst, 'test1'),
+                join(dst, 'testdir', 'test2'),
+                'logfile',
+            ]
+
+            assert removed == []
+
+            assert not os.path.exists(join(dst, 'testdir2'))
+
         finally:
             os.chdir(old_curdir)
 

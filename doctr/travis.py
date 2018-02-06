@@ -376,6 +376,14 @@ def copy_to_tmp(source):
         shutil.copy2(source, new_dir)
     return new_dir
 
+def is_subdir(a, b):
+    """
+    Return true if a is a subdirectory of b
+    """
+    a, b = map(os.path.normpath, [a, b])
+
+    return os.path.commonpath([a, b]) == b
+
 def sync_from_log(src, dst, log_file, exclude=()):
     """
     Sync the files in ``src`` to ``dst``.
@@ -406,7 +414,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
         for new_f in files:
             new_f = new_f.strip()
-            if os.path.normpath(os.path.relpath(new_f, dst)) in exclude:
+            if any(is_subdir(os.path.relpath(new_f, dst), i) for i in exclude):
                 pass
             elif exists(new_f):
                 os.remove(new_f)
@@ -424,7 +432,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
     # sorted makes this easier to test
     for f in sorted(files):
-        if os.path.normpath(os.path.relpath(f, src)) in exclude:
+        if any(is_subdir(os.path.normpath(os.path.relpath(f, src)), i) for i in exclude):
             continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
