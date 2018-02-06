@@ -385,9 +385,11 @@ def sync_from_log(src, dst, log_file, exclude=()):
     ``src``. ``added`` also includes the log file.
 
     ``exclude`` may be a list of paths from ``src`` that should be ignored.
-    Such paths are neither added nor removed.
+    Such paths are neither added nor removed, even if they are in the logfile.
     """
     from os.path import join, exists, isdir
+
+    exclude = [os.path.normpath(i) for i in exclude]
 
     added, removed = [], []
 
@@ -400,7 +402,9 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
         for new_f in files:
             new_f = new_f.strip()
-            if exists(new_f):
+            if os.path.normpath(os.path.relpath(new_f, dst)) in exclude:
+                pass
+            elif exists(new_f):
                 os.remove(new_f)
                 removed.append(new_f)
             else:
@@ -416,8 +420,8 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
     # sorted makes this easier to test
     for f in sorted(files):
-        if f in exclude:
-            pass
+        if os.path.normpath(os.path.relpath(f, src)) in exclude:
+            continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
             os.makedirs(new_f, exist_ok=True)
