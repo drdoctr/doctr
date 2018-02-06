@@ -19,7 +19,7 @@ docs-exclude/_static/doctools.js
 docs-exclude/_static/down-pressed.png
 docs-exclude/_static/down.png
 docs-exclude/_static/file.png
-docs-exclude/_static/jquery-3.1.0.js
+docs-exclude/_static/jquery-3.2.1.js
 docs-exclude/_static/jquery.js
 docs-exclude/_static/minus.png
 docs-exclude/_static/plus.png
