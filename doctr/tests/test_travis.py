@@ -9,7 +9,7 @@ from os.path import join
 
 import pytest
 
-from ..travis import sync_from_log, determine_push_rights
+from ..travis import sync_from_log, determine_push_rights, copy_to_tmp
 
 @pytest.mark.parametrize("src", ["src"])
 @pytest.mark.parametrize("dst", ['.', 'dst'])
@@ -250,3 +250,22 @@ def test_determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
         TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
         TRAVIS_TAG=TRAVIS_TAG,
         build_tags=build_tags) == canpush
+
+@pytest.mark.parametrize("src", ["src", "."])
+def test_copy_to_tmp(src):
+    with tempfile.TemporaryDirectory() as dir:
+        os.makedirs(os.path.join(dir, src), exist_ok=True)
+        with open(os.path.join(dir, src, "test"), 'w') as f:
+            f.write('test')
+
+        new_dir = copy_to_tmp(os.path.join(dir, src))
+
+        assert os.path.exists(new_dir)
+        with open(os.path.join(new_dir, 'test'), 'r') as f:
+            assert f.read() == 'test'
+
+        new_dir2 = copy_to_tmp(os.path.join(dir, src, 'test'))
+
+        assert os.path.exists(new_dir2)
+        with open(os.path.join(new_dir2), 'r') as f:
+            assert f.read() == 'test'
