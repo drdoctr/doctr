@@ -359,7 +359,10 @@ def find_sphinx_build_dir():
 
 def copy_to_tmp(source):
     """
-    Copies ``source`` to a temporary directory, and returns the copied location.
+    Copies ``source`` to a temporary directory, and returns the copied
+    location.
+
+    If source is a file, the copied location is also a file.
     """
     tmp_dir = tempfile.mkdtemp()
     # Use pathlib because os.path.basename is different depending on whether
