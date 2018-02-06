@@ -9,6 +9,7 @@ import base64
 import subprocess
 import re
 from getpass import getpass
+import urllib
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -237,6 +238,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     Returns whether or not the repo is private
     """
+    headers = headers or {}
     if deploy_repo.count("/") != 1:
         raise RuntimeError('"{deploy_repo}" should be in the form username/repo'.format(deploy_repo=deploy_repo))
 
@@ -244,7 +246,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     if service == 'github':
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
     elif service == 'travis':
-        REPO_URL = 'https://api.travis-ci.org/{user}/{repo}'
+        REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
+        headers['Travis-API-Version'] = '3'
     else:
         raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
 
@@ -253,7 +256,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
         wiki = True
         repo = repo[:-5]
 
-    r = requests.get(REPO_URL.format(user=user, repo=repo), auth=auth, headers=headers)
+    r = requests.get(REPO_URL.format(user=urllib.parse.quote(user),
+        repo=urllib.parse.quote(repo)), auth=auth, headers=headers)
 
     if r.status_code == requests.codes.not_found:
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
