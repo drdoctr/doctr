@@ -56,6 +56,34 @@ def test_sync_from_log(src, dst):
             with open(join(src, 'test3'), 'w') as f:
                 f.write('test3')
 
+            # First test it is ignored when excluded
+            added, removed = sync_from_log(src, dst, 'logfile',
+                exclude=['test3'])
+
+            assert added == [
+                join(dst, 'test1'),
+                join(dst, 'testdir', 'test2'),
+                'logfile',
+            ]
+
+
+            assert removed == []
+
+            with open(join(dst, 'test1')) as f:
+                assert f.read() == 'test1'
+
+            with open(join(dst, 'testdir', 'test2')) as f:
+                assert f.read() == 'test2'
+
+            assert not os.path.exists(join(dst, 'test3'))
+
+            with open('logfile') as f:
+                assert f.read() == '\n'.join([
+                    join(dst, 'test1'),
+                    join(dst, 'testdir', 'test2'),
+                    ])
+
+            # Now test it it added normally
             added, removed = sync_from_log(src, dst, 'logfile')
 
             assert added == [
@@ -85,6 +113,36 @@ def test_sync_from_log(src, dst):
 
             # Delete a file
             os.remove(join(src, 'test3'))
+
+            # First test it is ignored with exclude
+            added, removed = sync_from_log(src, dst, 'logfile', exclude=['test3'])
+            assert added == [
+                join(dst, 'test1'),
+                join(dst, 'testdir', 'test2'),
+                'logfile',
+            ]
+
+            assert removed == []
+
+            with open(join(dst, 'test1')) as f:
+                assert f.read() == 'test1'
+
+            with open(join(dst, 'testdir', 'test2')) as f:
+                assert f.read() == 'test2'
+
+            with open(join(dst, 'test3')) as f:
+                assert f.read() == 'test3'
+
+            with open('logfile') as f:
+                assert f.read() == '\n'.join([
+                    join(dst, 'test1'),
+                    join(dst, 'testdir', 'test2'),
+                    ])
+
+            # Then test it is removed normally
+            # (readd it to the log file, since the exclude removed it)
+            with open('logfile', 'a') as f:
+                f.write('\n' + join(dst, 'test3'))
 
             added, removed = sync_from_log(src, dst, 'logfile')
 
