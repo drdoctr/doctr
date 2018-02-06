@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.1+13.gd964312 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.1+17.ge6057be documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.1+13.gd964312',
+        VERSION:     '1.7.1+17.ge6057be',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -400,13 +400,17 @@
 
 <div class="viewcode-block" id="copy_to_tmp"><a class="viewcode-back" href="../../api.html#doctr.travis.copy_to_tmp">[docs]</a><span class="k">def</span> <span class="nf">copy_to_tmp</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Copies ``source`` to a temporary directory, and returns the copied location.</span>
+<span class="sd">    Copies ``source`` to a temporary directory, and returns the copied</span>
+<span class="sd">    location.</span>
+
+<span class="sd">    If source is a file, the copied location is also a file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
     <span class="c1"># Use pathlib because os.path.basename is different depending on whether</span>
     <span class="c1"># the path ends in a /</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-    <span class="n">new_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;temp&#39;</span>
+    <span class="n">new_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">dirname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
