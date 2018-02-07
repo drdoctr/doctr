@@ -317,7 +317,7 @@ def deploy(args, parser):
 
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
-                dst=deploy_dir, log_file=log_file)
+                dst=deploy_dir, log_file=log_file, exclude=exclude)
 
         else:
             added, removed = [], []
