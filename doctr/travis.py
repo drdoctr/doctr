@@ -376,7 +376,15 @@ def copy_to_tmp(source):
         shutil.copy2(source, new_dir)
     return new_dir
 
-def sync_from_log(src, dst, log_file):
+def is_subdir(a, b):
+    """
+    Return true if a is a subdirectory of b
+    """
+    a, b = map(os.path.abspath, [a, b])
+
+    return os.path.commonpath([a, b]) == b
+
+def sync_from_log(src, dst, log_file, exclude=()):
     """
     Sync the files in ``src`` to ``dst``.
 
@@ -387,8 +395,13 @@ def sync_from_log(src, dst, log_file):
     ``src`` (even if it already existed in ``dst``), and ``removed`` is every
     file from ``log_file`` that was removed from ``dst`` because it wasn't in
     ``src``. ``added`` also includes the log file.
+
+    ``exclude`` may be a list of paths from ``src`` that should be ignored.
+    Such paths are neither added nor removed, even if they are in the logfile.
     """
     from os.path import join, exists, isdir
+
+    exclude = [os.path.normpath(i) for i in exclude]
 
     added, removed = [], []
 
@@ -401,7 +414,9 @@ def sync_from_log(src, dst, log_file):
 
         for new_f in files:
             new_f = new_f.strip()
-            if exists(new_f):
+            if any(is_subdir(new_f, os.path.join(dst, i)) for i in exclude):
+                pass
+            elif exists(new_f):
                 os.remove(new_f)
                 removed.append(new_f)
             else:
@@ -417,6 +432,8 @@ def sync_from_log(src, dst, log_file):
 
     # sorted makes this easier to test
     for f in sorted(files):
+        if any(is_subdir(f, os.path.join(src, i)) for i in exclude):
+            continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
             os.makedirs(new_f, exist_ok=True)

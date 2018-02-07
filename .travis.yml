@@ -55,6 +55,8 @@ script:
       python -m doctr deploy --sync --key-path deploy_key.enc "tag-$TRAVIS_TAG" --build-tags --branch-whitelist;
       # Test --branch-whitelist
       python -m doctr deploy --sync --key-path deploy_key.enc "branch-whitelist" --branch-whitelist branch-whitelist;
+      # Test --exclude
+      python -m doctr deploy --sync --key-path deploy_key.enc "exclude-test" --built-docs docs/_build/html --exclude tests.html;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;

@@ -180,7 +180,8 @@ options available.
         The default is %(default)r. The deploy directory should be passed as
         the first argument to 'doctr deploy'. This flag is kept for backwards
         compatibility.""")
-
+    deploy_parser_add_argument('--exclude', nargs='+', default=(), help="""Files and
+        directories from --built-docs that are not copied.""")
 
     if config:
         print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
@@ -301,8 +302,10 @@ def deploy(args, parser):
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
+            exclude = [os.path.relpath(i, built_docs) for i in args.exclude]
             if args.temp_dir:
                 built_docs = copy_to_tmp(built_docs)
+            exclude = [os.path.normpath(os.path.join(built_docs, i)) for i in exclude]
 
         # Reset in case there are modified files that are tracked in the
         # deploy branch.
@@ -314,7 +317,7 @@ def deploy(args, parser):
 
             print("Moving built docs into place")
             added, removed = sync_from_log(src=built_docs,
-                dst=deploy_dir, log_file=log_file)
+                dst=deploy_dir, log_file=log_file, exclude=exclude)
 
         else:
             added, removed = [], []
