@@ -414,7 +414,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
         for new_f in files:
             new_f = new_f.strip()
-            if any(is_subdir(os.path.relpath(new_f, dst), i) for i in exclude):
+            if any(is_subdir(new_f, os.path.join(dst, i)) for i in exclude):
                 pass
             elif exists(new_f):
                 os.remove(new_f)
@@ -432,7 +432,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
     # sorted makes this easier to test
     for f in sorted(files):
-        if any(is_subdir(os.path.normpath(os.path.relpath(f, src)), i) for i in exclude):
+        if any(is_subdir(f, os.path.join(src, i)) for i in exclude):
             continue
         new_f = join(dst, f[len(src):])
         if isdir(f):
