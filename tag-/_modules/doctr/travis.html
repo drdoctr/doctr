@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.1+17.ge6057be documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.1+29.gfabb233 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.7.1+17.ge6057be',
+        VERSION:     '1.7.1+29.gfabb233',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -417,7 +417,15 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_dir</span></div>
 
-<div class="viewcode-block" id="sync_from_log"><a class="viewcode-back" href="../../api.html#doctr.travis.sync_from_log">[docs]</a><span class="k">def</span> <span class="nf">sync_from_log</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">log_file</span><span class="p">):</span>
+<div class="viewcode-block" id="is_subdir"><a class="viewcode-back" href="../../api.html#doctr.travis.is_subdir">[docs]</a><span class="k">def</span> <span class="nf">is_subdir</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return true if a is a subdirectory of b</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span> <span class="o">==</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="sync_from_log"><a class="viewcode-back" href="../../api.html#doctr.travis.sync_from_log">[docs]</a><span class="k">def</span> <span class="nf">sync_from_log</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">()):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sync the files in ``src`` to ``dst``.</span>
 
@@ -428,8 +436,13 @@
 <span class="sd">    ``src`` (even if it already existed in ``dst``), and ``removed`` is every</span>
 <span class="sd">    file from ``log_file`` that was removed from ``dst`` because it wasn&#39;t in</span>
 <span class="sd">    ``src``. ``added`` also includes the log file.</span>
+
+<span class="sd">    ``exclude`` may be a list of paths from ``src`` that should be ignored.</span>
+<span class="sd">    Such paths are neither added nor removed, even if they are in the logfile.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">exists</span><span class="p">,</span> <span class="n">isdir</span>
+
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
 
     <span class="n">added</span><span class="p">,</span> <span class="n">removed</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
 
@@ -442,7 +455,9 @@
 
         <span class="k">for</span> <span class="n">new_f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="n">new_f</span> <span class="o">=</span> <span class="n">new_f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="n">new_f</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_subdir</span><span class="p">(</span><span class="n">new_f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">exists</span><span class="p">(</span><span class="n">new_f</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
                 <span class="n">removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -458,6 +473,8 @@
 
     <span class="c1"># sorted makes this easier to test</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_subdir</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">):</span>
+            <span class="k">continue</span>
         <span class="n">new_f</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">):])</span>
         <span class="k">if</span> <span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">new_f</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
