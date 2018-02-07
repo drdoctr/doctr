@@ -380,7 +380,7 @@ def is_subdir(a, b):
     """
     Return true if a is a subdirectory of b
     """
-    a, b = map(os.path.normpath, [a, b])
+    a, b = map(os.path.abspath, [a, b])
 
     return os.path.commonpath([a, b]) == b
 
