@@ -2,6 +2,24 @@
  Doctr Changelog
 =================
 
+1.7.2 (2018-02-06)
+==================
+
+Major Changes
+-------------
+
+- Update Travis API call to Travis API v3 (``doctr configure`` now works
+  again). (:issue:`298`)
+
+- Add ``--exclude`` flag to ``doctr deploy`` to chose files and directories
+  from ``--built-docs`` that should be excluded from being deployed.
+  (:issue:`296`)
+
+Minor Changes
+-------------
+
+- Fix ``--built-docs .``. (:issue:`294`)
+
 1.7.1 (2018-01-30)
 ==================
 
