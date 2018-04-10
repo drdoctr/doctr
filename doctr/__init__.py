@@ -1,4 +1,4 @@
-from .local import (encrypt_variable, encrypt_file, GitHub_post,
+from .local import (encrypt_variable, encrypt_to_file, GitHub_post,
     generate_GitHub_token, upload_GitHub_deploy_key, generate_ssh_key,
     check_repo_exists, guess_github_repo)
 from .travis import (decrypt_file, setup_deploy_key, get_token, run,
@@ -7,7 +7,7 @@ from .travis import (decrypt_file, setup_deploy_key, get_token, run,
     commit_docs, push_docs, get_current_repo, find_sphinx_build_dir)
 
 __all__ = [
-    'encrypt_variable', 'encrypt_file', 'GitHub_post',
+    'encrypt_variable', 'encrypt_to_file', 'GitHub_post',
     'generate_GitHub_token', 'upload_GitHub_deploy_key', 'generate_ssh_key',
     'check_repo_exists', 'guess_github_repo',
 
