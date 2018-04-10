@@ -2,7 +2,6 @@
 The code that should be run locally
 """
 
-import os
 import json
 import uuid
 import base64
@@ -16,9 +15,10 @@ from requests.auth import HTTPBasicAuth
 
 from cryptography.fernet import Fernet
 
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
+
 
 from .common import red
 
@@ -73,31 +73,28 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
 
     return base64.b64encode(key.encrypt(variable, pad))
 
-def encrypt_file(file, delete=False):
+def encrypt_to_file(contents, filename):
     """
-    Encrypts the file ``file``.
+    Encrypts ``contents`` and writes it to ``filename``.
 
-    The encrypted file is saved to the same location with the ``.enc``
-    extension.
-
-    If ``delete=True``, the unencrypted file is deleted after encryption.
+    ``contents`` should be a bytes string. ``filename`` should end with
+    ``.enc``.
 
     Returns the secret key used for the encryption.
 
     Decrypt the file with :func:`doctr.travis.decrypt_file`.
 
     """
+    if not filename.endswith('.enc'):
+        raise ValueError("%s does not end with .enc" % filename)
+
     key = Fernet.generate_key()
     fer = Fernet(key)
 
-    with open(file, 'rb') as f:
-        encrypted_file = fer.encrypt(f.read())
+    encrypted_file = fer.encrypt(contents)
 
-    with open(file + '.enc', 'wb') as f:
+    with open(filename, 'wb') as f:
         f.write(encrypted_file)
-
-    if delete:
-        os.remove(file)
 
     return key
 
@@ -208,24 +205,28 @@ def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
     }
     return GitHub_post(data, DEPLOY_KEY_URL, **login_kwargs)
 
-def generate_ssh_key(note, keypath='github_deploy_key'):
+def generate_ssh_key():
     """
     Generates an SSH deploy public and private key.
 
-    Returns the public key as a str.
+    Returns (private key, public key), a tuple of byte strings.
     """
-    p = subprocess.run(['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C', note,
-        '-f', keypath, '-N', ''])
 
-    if p.returncode:
-        raise RuntimeError("SSH key generation failed")
+    key = rsa.generate_private_key(
+        backend=default_backend(),
+        public_exponent=65537,
+        key_size=4096
+        )
+    private_key = key.private_bytes(
+        serialization.Encoding.PEM,
+        serialization.PrivateFormat.PKCS8,
+        serialization.NoEncryption())
+    public_key = key.public_key().public_bytes(
+        serialization.Encoding.OpenSSH,
+        serialization.PublicFormat.OpenSSH
+    )
 
-    with open(keypath + ".pub") as f:
-        key = f.read()
-
-    os.remove(keypath + ".pub")
-
-    return key
+    return private_key, public_key
 
 def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None):
     """
