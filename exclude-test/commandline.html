@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.7.2+1.ga11fa65 documentation</title>
+    <title>Doctr Command Line Help &#8212; Doctr 1.7.2+8.gaeff278 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.7.2+1.ga11fa65',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -47,20 +38,20 @@
 <p>doctr</p>
 <p>A tool to automatically deploy docs to GitHub pages from Travis CI.</p>
 <p>The doctr command is two commands in one. To use, first run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
 </pre></div>
 </div>
 <p>on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
 which you should insert into your .travis.yml.</p>
 <p>Then, on Travis, for the build where you build your docs, add:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>to the end of the build to deploy the docs to GitHub pages.  This will only
 run on the master branch, and won’t run on pull requests.</p>
 <p>For more information, see <a class="reference external" href="https://drdoctr.github.io/doctr/docs/">https://drdoctr.github.io/doctr/docs/</a></p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr [-h] [-V] {deploy,configure} ...</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr [-h] [-V] {deploy,configure} ...</span>
 </pre></div>
 </div>
 <dl class="option">
@@ -79,8 +70,8 @@ run on the master branch, and won’t run on pull requests.</p>
 options available.</p>
 <div class="section" id="doctr-configure">
 <h3>doctr configure<a class="headerlink" href="#doctr-configure" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr configure [-h] [--force] [--token] [--no-upload-key]</span>
-<span class="go">                           [--key-path KEY_PATH]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr configure [-h] [--force] [--token] [--no-upload-key]</span>
+<span class="go">                       [--key-path KEY_PATH]</span>
 </pre></div>
 </div>
 <dl class="option">
@@ -123,17 +114,17 @@ options available.</p>
 </div>
 <div class="section" id="doctr-deploy">
 <h3>doctr deploy<a class="headerlink" href="#doctr-deploy" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force | --no-force] [--token | --no-token]</span>
-<span class="go">                        [--key-path KEY_PATH] [--built-docs BUILT_DOCS]</span>
-<span class="go">                        [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
-<span class="go">                        [--deploy-repo DEPLOY_REPO]</span>
-<span class="go">                        [--branch-whitelist [BRANCH [BRANCH ...]]]</span>
-<span class="go">                        [--no-require-master | --require-master]</span>
-<span class="go">                        [--command COMMAND] [--no-sync | --sync] [--no-temp-dir]</span>
-<span class="go">                        [--no-push | --push] [--build-tags | --no-build-tags]</span>
-<span class="go">                        [--gh-pages-docs GH_PAGES_DOCS]</span>
-<span class="go">                        [--exclude EXCLUDE [EXCLUDE ...]]</span>
-<span class="go">                        [deploy_directory]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force | --no-force] [--token | --no-token]</span>
+<span class="go">                    [--key-path KEY_PATH] [--built-docs BUILT_DOCS]</span>
+<span class="go">                    [--deploy-branch-name DEPLOY_BRANCH_NAME]</span>
+<span class="go">                    [--deploy-repo DEPLOY_REPO]</span>
+<span class="go">                    [--branch-whitelist [BRANCH [BRANCH ...]]]</span>
+<span class="go">                    [--no-require-master | --require-master]</span>
+<span class="go">                    [--command COMMAND] [--no-sync | --sync] [--no-temp-dir]</span>
+<span class="go">                    [--no-push | --push] [--build-tags | --no-build-tags]</span>
+<span class="go">                    [--gh-pages-docs GH_PAGES_DOCS]</span>
+<span class="go">                    [--exclude EXCLUDE [EXCLUDE ...]]</span>
+<span class="go">                    [deploy_directory]</span>
 </pre></div>
 </div>
 <dl class="option">
@@ -192,7 +183,7 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-deploy-deploy-branch-name">
 <code class="descname">--deploy-branch-name</code><code class="descclassname"> &lt;deploy_branch_name&gt;</code><a class="headerlink" href="#cmdoption-doctr-deploy-deploy-branch-name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the branch to deploy to (default: ‘master’ for <code class="docutils literal"><span class="pre">*.github.io</span></code>   
+<dd><p>Name of the branch to deploy to (default: ‘master’ for <code class="docutils literal notranslate"><span class="pre">*.github.io</span></code>   
                                and wiki repos, ‘gh-pages’ otherwise)</p>
 </dd></dl>
 
@@ -301,15 +292,15 @@ options available.</p>
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>In addition to command line arguments you can configure <code class="docutils literal"><span class="pre">doctr</span></code> using the
-<code class="docutils literal"><span class="pre">.travis.yml</span></code> files. Command line arguments take precedence over the value
+<p>In addition to command line arguments you can configure <code class="docutils literal notranslate"><span class="pre">doctr</span></code> using the
+<code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> files. Command line arguments take precedence over the value
 present in the configuration file.</p>
-<p>The configuration parameters available from the <code class="docutils literal"><span class="pre">.travis.yml</span></code> file mirror
-their command line siblings except doubledashes <code class="docutils literal"><span class="pre">--</span></code> and <code class="docutils literal"><span class="pre">--no-</span></code> prefix are
+<p>The configuration parameters available from the <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> file mirror
+their command line siblings except doubledashes <code class="docutils literal notranslate"><span class="pre">--</span></code> and <code class="docutils literal notranslate"><span class="pre">--no-</span></code> prefix are
 dropped.</p>
-<p>Use a <code class="docutils literal"><span class="pre">doctr</span></code> section in your <code class="docutils literal"><span class="pre">travis.yml</span></code> file to store your doctr
+<p>Use a <code class="docutils literal notranslate"><span class="pre">doctr</span></code> section in your <code class="docutils literal notranslate"><span class="pre">travis.yml</span></code> file to store your doctr
 configuration:</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
 <span class="o">-</span> <span class="n">script</span><span class="p">:</span>
     <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
     <span class="o">-</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span>
@@ -325,10 +316,10 @@ configuration:</p>
 <p>The following options are available from the configuration file and not from
 the command line:</p>
 <dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">branches</span></code>:</dt>
-<dd>A list of regular expression that matches branches on which <code class="docutils literal"><span class="pre">doctr</span></code> should
-still deploy the documentation. For example <code class="docutils literal"><span class="pre">.*\.x</span></code> will deploy all
-branches like <code class="docutils literal"><span class="pre">3.x</span></code>, <code class="docutils literal"><span class="pre">4.x</span></code> …</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">branches</span></code>:</dt>
+<dd>A list of regular expression that matches branches on which <code class="docutils literal notranslate"><span class="pre">doctr</span></code> should
+still deploy the documentation. For example <code class="docutils literal notranslate"><span class="pre">.*\.x</span></code> will deploy all
+branches like <code class="docutils literal notranslate"><span class="pre">3.x</span></code>, <code class="docutils literal notranslate"><span class="pre">4.x</span></code> …</dd>
 </dl>
 </div>
 </div>
@@ -361,12 +352,14 @@ branches like <code class="docutils literal"><span class="pre">3.x</span></code>
 </p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -377,7 +370,7 @@ branches like <code class="docutils literal"><span class="pre">3.x</span></code>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr &#8212; Doctr 1.7.2+1.ga11fa65 documentation</title>
+    <title>Doctr &#8212; Doctr 1.7.2+8.gaeff278 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.7.2+1.ga11fa65',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -30,8 +22,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -44,7 +35,7 @@
 <p>A tool for automatically deploying docs from Travis CI to GitHub pages.</p>
 <p>Doctr helps deploy things to GitHub pages from Travis CI by managing the
 otherwise complicated tasks of generating, encrypting, managing SSH deploy
-keys, and syncing files to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch. Doctr was originally
+keys, and syncing files to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch. Doctr was originally
 designed for documentation, but it can be used to deploy any kind of website
 to GitHub pages that can be built on Travis CI. For example, you can use Doctr
 to deploy a <a class="reference external" href="http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/">blog</a>
@@ -53,11 +44,11 @@ or website that uses a <a class="reference external" href="https://www.staticgen
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Install Doctr with pip</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
 </pre></div>
 </div>
 <p>or conda</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
 </pre></div>
 </div>
 <p><strong>Note that Doctr requires Python 3.5 or newer.</strong></p>
@@ -69,24 +60,24 @@ or website that uses a <a class="reference external" href="https://www.staticgen
 <p>First use Doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.</p>
 <p>Run</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
 </pre></div>
 </div>
 <p>and enter your data. You will need your GitHub username and password, and the
 repo organization / name for which you want to build the docs.</p>
 <p><strong>Note</strong>: That repo should already be set up with Travis. We recommend enabling
 <a class="reference external" href="https://help.github.com/articles/about-protected-branches/">branch protection</a>
-for the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch and other branches, as the deploy key
+for the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch and other branches, as the deploy key
 used by Doctr has the ability to push to any branch in your repo.</p>
 </div>
 <div class="section" id="edit-your-travis-file">
 <h3>Edit your travis file<a class="headerlink" href="#edit-your-travis-file" title="Permalink to this headline">¶</a></h3>
 <p>Doctr will output a bunch of text as well as instructions for next steps. You
-need to edit your <code class="docutils literal"><span class="pre">.travis.yml</span></code> with this text. It contains the secure key
+need to edit your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> with this text. It contains the secure key
 that lets travis communicate with your GitHub repository, as well as the
-code to run (in <code class="docutils literal"><span class="pre">script:</span></code>) in order to build the docs and deploy Doctr.</p>
-<p>Your <code class="docutils literal"><span class="pre">.travis.yml</span></code> file should look something like this:</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Doctr requires python &gt;=3.5</span>
+code to run (in <code class="docutils literal notranslate"><span class="pre">script:</span></code>) in order to build the docs and deploy Doctr.</p>
+<p>Your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> file should look something like this:</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Doctr requires python &gt;=3.5</span>
 <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
 <span class="n">python</span><span class="p">:</span>
   <span class="o">-</span> <span class="mf">3.6</span>
@@ -109,21 +100,21 @@ code to run (in <code class="docutils literal"><span class="pre">script:</span><
 </div>
 <p>See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the travis config file</a> used by Doctr itself for example.</p>
 <p>You can deploy to a different folder by giving it a different path in the call
-to <code class="docutils literal"><span class="pre">deploy</span></code>. E.g., <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">docs/</span></code>.</p>
+to <code class="docutils literal notranslate"><span class="pre">deploy</span></code>. E.g., <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">docs/</span></code>.</p>
 <p>If you don’t already have a gh_pages branch Doctr will make one for you.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p>Be sure to add <code class="docutils literal"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal"><span class="pre">script</span></code>, to prevent <code class="docutils literal"><span class="pre">doctr</span></code> from running
+<p>Be sure to add <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal notranslate"><span class="pre">script</span></code>, to prevent <code class="docutils literal notranslate"><span class="pre">doctr</span></code> from running
 when the docs build fails.</p>
-<p class="last">Put <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> in the <code class="docutils literal"><span class="pre">script</span></code> section of your <code class="docutils literal"><span class="pre">.travis.yml</span></code>. If
-you use <code class="docutils literal"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
+<p class="last">Put <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> in the <code class="docutils literal notranslate"><span class="pre">script</span></code> section of your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. If
+you use <code class="docutils literal notranslate"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
 the build to fail.</p>
 </div>
 </div>
 <div class="section" id="commit-your-new-files-and-build-your-site">
 <h3>Commit your new files and build your site<a class="headerlink" href="#commit-your-new-files-and-build-your-site" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> will create a new file that contains your key. Commit this as
-well as the changes to <code class="docutils literal"><span class="pre">.travis.yml</span></code>. Once you push to GitHub, travis should
+<p><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will create a new file that contains your key. Commit this as
+well as the changes to <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. Once you push to GitHub, travis should
 now automatically build your documentation and deploy it.</p>
 </div>
 </div>
@@ -134,7 +125,7 @@ Python 3.5 or newer section of your build matrix. It should be in the same
 build in your build matrix as your docs build, as it reuses that.</p>
 <p><strong>Doctr does not require Sphinx.</strong> It will work with deploying anything to
 GitHub pages. However, if you do use Sphinx, Doctr will find your Sphinx
-docs automatically (otherwise use <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
+docs automatically (otherwise use <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
 </div>
 <div class="section" id="faq">
 <h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
@@ -144,9 +135,9 @@ docs automatically (otherwise use <code class="docutils literal"><span class="pr
 difficult enough that we wanted to write the code to do it once. We found
 that Travis docs uploading scripts are cargo culted and done in a way that
 is difficult to reproduce, especially the do-once steps of setting up keys.
-The <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> command handles key generation automatically, and
+The <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> command handles key generation automatically, and
 tells you everything you need to do to set Doctr up. It is also completely
-self-contained (it does not depend on the <code class="docutils literal"><span class="pre">travis</span></code> Ruby gem).  The <code class="docutils literal"><span class="pre">doctr</span>
+self-contained (it does not depend on the <code class="docutils literal notranslate"><span class="pre">travis</span></code> Ruby gem).  The <code class="docutils literal notranslate"><span class="pre">doctr</span>
 <span class="pre">deploy</span></code> command handles key decryption (for deploy keys) and hiding tokens
 from the command output (for personal access tokens).</p>
 <p>Furthermore, most Travis deploy guides that we’ve found recommend setting up
@@ -188,9 +179,9 @@ encrypted to a secure environment variable for Travis using the <a class="refere
 public key</a>.</p>
 <p>Travis does not make secure environment variables available to pull requests
 builds. Furthermore, Doctr itself does not push from any branch other than
-<code class="docutils literal"><span class="pre">master</span></code> by default, although this <a class="reference internal" href="recipes.html#any-branch"><span class="std std-ref">can be changed</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">master</span></code> by default, although this <a class="reference internal" href="recipes.html#any-branch"><span class="std std-ref">can be changed</span></a>.</p>
 <p>By default, Doctr uses deploy keys, but it can also use a GitHub
-personal access token, using the <code class="docutils literal"><span class="pre">--token</span></code> flag. However, this is not
+personal access token, using the <code class="docutils literal notranslate"><span class="pre">--token</span></code> flag. However, this is not
 recommended, as a GitHub personal access token grants access to your entire
 account, whereas a deploy key only grants push access only to a single
 repository.</p>
@@ -198,9 +189,9 @@ repository.</p>
 encryption key from leaking in the build logs.</p>
 <p>At any time, you can revoke the deploy key created by Doctr by going to the
 deploy key settings for the repository in GitHub at
-<code class="samp docutils literal"><span class="pre">https://github.com/</span><em><span class="pre">org</span></em><span class="pre">/</span><em><span class="pre">repo</span></em><span class="pre">/settings/keys</span></code>. Personal access
+<code class="samp docutils literal notranslate"><span class="pre">https://github.com/</span><em><span class="pre">org</span></em><span class="pre">/</span><em><span class="pre">repo</span></em><span class="pre">/settings/keys</span></code>. Personal access
 tokens can be revoked at <a class="reference external" href="https://github.com/settings/tokens">https://github.com/settings/tokens</a>. If you revoke a key, you will need
-to rerun <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> to generate a new one to continue using Doctr.</p>
+to rerun <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> to generate a new one to continue using Doctr.</p>
 </li>
 <li><p class="first"><strong>Can Doctr do X?</strong></p>
 <p>See the <a class="reference internal" href="recipes.html#recipes"><span class="std std-ref">Recipes</span></a> page for many common use case recipes for Doctr.
@@ -331,12 +322,14 @@ feel good.</p>
 </p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -347,7 +340,7 @@ feel good.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
