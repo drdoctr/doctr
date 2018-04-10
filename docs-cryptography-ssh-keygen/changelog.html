@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Changelog &#8212; Doctr 1.7.1+34.g1ef7a86 documentation</title>
+    <title>Doctr Changelog &#8212; Doctr 1.7.2+7.ga52e6bb documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -34,9 +34,28 @@
   <div class="section" id="doctr-changelog">
 <h1>Doctr Changelog<a class="headerlink" href="#doctr-changelog" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>1.7.1 (2018-01-30)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>1.7.2 (2018-02-06)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="major-changes">
 <h3>Major Changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Update Travis API call to Travis API v3 (<code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> now works
+again). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/298">#298</a>)</li>
+<li>Add <code class="docutils literal notranslate"><span class="pre">--exclude</span></code> flag to <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code> to chose files and directories
+from <code class="docutils literal notranslate"><span class="pre">--built-docs</span></code> that should be excluded from being deployed.
+(<a class="reference external" href="https://github.com/drdoctr/doctr/issues/296">#296</a>)</li>
+</ul>
+</div>
+<div class="section" id="minor-changes">
+<h3>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix <code class="docutils literal notranslate"><span class="pre">--built-docs</span> <span class="pre">.</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/294">#294</a>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>1.7.1 (2018-01-30)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Major Changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <style> .red {color:red} .green {color:green} .blue {color:blue}
 .magenta {color:magenta; font-weight:bold} .gray {color:dimgray; font-weight:bold} </style><ul>
 <li><p class="first">Cleanup the <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> code. Output is now
@@ -52,8 +71,8 @@ color-coded according to its meaning:</p>
 </li>
 </ul>
 </div>
-<div class="section" id="minor-changes">
-<h3>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Minor Changes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Retry on invalid username and password in <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code>.  (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/289">#289</a>)</li>
 <li>Print when the 2FA code fails in <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code>.  (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/289">#289</a>)</li>
@@ -61,10 +80,10 @@ color-coded according to its meaning:</p>
 </ul>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>1.7.0 (2017-11-21)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>Major Changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h2>1.7.0 (2017-11-21)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h3>Major Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add support for multiple deploy repos. Thanks <a class="reference external" href="https://github.com/ylemkimon">&#64;ylemkimon</a>. Note, as a
 result of this, the default environment variable name on Travis is now
@@ -87,8 +106,8 @@ that Travis CI runs on tags pushed up to the repository. See
 <a class="reference internal" href="recipes.html#recipe-tags"><span class="std std-ref">the recipes page</span></a> for more information. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/225">#225</a>)</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h3>Minor Changes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Minor Changes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add a global table of contents to the docs sidebar. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/284">#284</a>)</li>
 <li>Note in the docs that doctr will make the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch for you if it
@@ -98,10 +117,10 @@ doesn’t exist. Thanks <a class="reference external" href="https://github.com/C
 </ul>
 </div>
 </div>
-<div class="section" id="id5">
-<h2>1.6.3 (2017-11-11)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>Minor Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h2>1.6.3 (2017-11-11)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3>Minor Changes<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix an error that occured when <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> did not exist and doctr did not
 have the permissions to create it (e.g., on a pull request build).
@@ -110,10 +129,10 @@ have the permissions to create it (e.g., on a pull request build).
 </ul>
 </div>
 </div>
-<div class="section" id="id7">
-<h2>1.6.2 (2017-10-20)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id8">
-<h3>Minor Changes<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h2>1.6.2 (2017-10-20)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h3>Minor Changes<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix some typos in the <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> output. Thanks <a class="reference external" href="https://github.com/bnaul">&#64;bnaul</a> and
 <a class="reference external" href="https://github.com/ocefpaf">&#64;ocefpaf</a>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/261">#261</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/issues/260">#260</a>)</li>
@@ -128,10 +147,10 @@ should be improved in a future version (see <a class="reference external" href="
 </ul>
 </div>
 </div>
-<div class="section" id="id9">
-<h2>1.6.1 (2017-09-27)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id10">
-<h3>Minor Changes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h2>1.6.1 (2017-09-27)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Minor Changes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Revert the change to <code class="docutils literal notranslate"><span class="pre">--command</span></code> from 1.6.0 that makes it run on the
 original branch. If you want to run a command on the original branch, just
@@ -141,10 +160,10 @@ it did before. This does not revert the other change to <code class="docutils li
 </ul>
 </div>
 </div>
-<div class="section" id="id11">
-<h2>1.6.0 (2017-09-26)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id12">
-<h3>Major Changes<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h2>1.6.0 (2017-09-26)<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id15">
+<h3>Major Changes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix pushing to .github.io repos (thanks <a class="reference external" href="https://github.com/danielballan">&#64;danielballan</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/190">#190</a>)</li>
 <li>Run <code class="docutils literal notranslate"><span class="pre">--command</span></code> on the original branch, not the deploy branch.
@@ -166,8 +185,8 @@ are merge conflicts on gh-pages from other non-doctr commits. (<a class="referen
 <li>Allow <code class="docutils literal notranslate"><span class="pre">--built-docs</span></code> to be a file. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/252">#252</a>)</li>
 </ul>
 </div>
-<div class="section" id="id13">
-<h3>Minor Changes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Minor Changes<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Improve instructions (thanks <a class="reference external" href="https://github.com/choldgraf">&#64;choldgraf</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/186">#186</a>)</li>
 <li>Skip GitHub tests if no API token is present (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/187">#187</a>)</li>
@@ -182,26 +201,26 @@ print doctr commands in blue. (<a class="reference external" href="https://githu
 </ul>
 </div>
 </div>
-<div class="section" id="id14">
-<h2>1.5.3 (2017-04-07)<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id17">
+<h2>1.5.3 (2017-04-07)<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> crashing (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/179">#179</a>)</li>
 </ul>
 </div>
-<div class="section" id="id15">
-<h2>1.5.2 (2017-03-29)<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id18">
+<h2>1.5.2 (2017-03-29)<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for bug that prevented deploying using <code class="docutils literal notranslate"><span class="pre">no-require-master</span></code></li>
 </ul>
 </div>
-<div class="section" id="id16">
-<h2>1.5.1 (2017-03-17)<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id19">
+<h2>1.5.1 (2017-03-17)<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for critical bug that allowed pushing docs from any branch. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/160">#160</a>)</li>
 </ul>
 </div>
-<div class="section" id="id17">
-<h2>1.5.0 (2017-03-15)<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id20">
+<h2>1.5.0 (2017-03-15)<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>The <code class="docutils literal notranslate"><span class="pre">--gh-pages-docs</span></code> flag of <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code> has been deprecated.
 Specify the deploy directory like <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> or <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">docs</span></code>.
@@ -219,8 +238,8 @@ the config values set in <code class="docutils literal notranslate"><span class=
 deployed to</li>
 </ul>
 </div>
-<div class="section" id="id18">
-<h2>1.4.1 (2017-01-11)<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id21">
+<h2>1.4.1 (2017-01-11)<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix Travis API endpoint when checking if a repo exists. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/143">#143</a>)</li>
 <li>Add warnings about needing <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/146">#146</a>)</li>
@@ -230,8 +249,8 @@ deployed to</li>
 <li><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> now deletes the public key automatically. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/151">#151</a>)</li>
 </ul>
 </div>
-<div class="section" id="id19">
-<h2>1.4.0 (2016-11-11)<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id22">
+<h2>1.4.0 (2016-11-11)<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Set the git <code class="docutils literal notranslate"><span class="pre">user.email</span></code> configuration option. This is now required by the
 latest versions of git. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/138">#138</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/139">#139</a>)</li>
@@ -247,8 +266,8 @@ option. Thanks <a class="reference external" href="https://github.com/Carreau">&
 <li>Check that the build repo exists on Travis. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/114">#114</a>, <a class="reference external" href="https://github.com/drdoctr/doctr/issues/123">#123</a>)</li>
 </ul>
 </div>
-<div class="section" id="id20">
-<h2>1.3.3 (2016-09-20)<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id23">
+<h2>1.3.3 (2016-09-20)<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add support for private GitHub repositories using travis-ci.com (thanks
 <a class="reference external" href="https://github.com/dan-blanchard">&#64;dan-blanchard</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/121">#121</a>)</li>
@@ -257,36 +276,36 @@ option. Thanks <a class="reference external" href="https://github.com/Carreau">&
 <li>Swap “description” and “long_description” in setup.py. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/120">#120</a>)</li>
 </ul>
 </div>
-<div class="section" id="id21">
-<h2>1.3.2 (2016-09-01)<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id22">
-<h3>Major Changes<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id24">
+<h2>1.3.2 (2016-09-01)<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id25">
+<h3>Major Changes<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix the –built-docs option. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/111">#111</a>)</li>
 </ul>
 </div>
-<div class="section" id="id23">
-<h3>Minor Changes<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id26">
+<h3>Minor Changes<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Get the setup.py description from the README. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/103">#103</a>)</li>
 <li>Add link to GitHub docs for branch protection (thanks <a class="reference external" href="https://github.com/willingc">&#64;willingc</a>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/100">#100</a>)</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id24">
-<h2>1.3.1 (2016-08-31)<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id25">
-<h3>Major Changes<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id27">
+<h2>1.3.1 (2016-08-31)<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h3>Major Changes<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix a bug that would cause doctr to fail if run on a pull request from a
 fork. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/101">#101</a>)</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id26">
-<h2>1.3 (2016-08-30)<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id27">
-<h3>Major Changes<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id29">
+<h2>1.3 (2016-08-30)<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id30">
+<h3>Major Changes<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Remove the <code class="docutils literal notranslate"><span class="pre">--tmp-dir</span></code> flag from the command line (doctr now always
 deploys using a log file). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
@@ -304,8 +323,8 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">--command</span></code>). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/97">#97</a>)</li>
 </ul>
 </div>
-<div class="section" id="id28">
-<h3>Minor Changes<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id31">
+<h3>Minor Changes<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Correctly commit the log file. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
 <li>Fix sync_from_log to create dst if it doesn’t exist, and add tests for this. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/92">#92</a>)</li>
@@ -315,10 +334,10 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 </ul>
 </div>
 </div>
-<div class="section" id="id29">
-<h2>1.2 (2016-08-29)<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id30">
-<h3>Major Changes<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id32">
+<h2>1.2 (2016-08-29)<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id33">
+<h3>Major Changes<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Allow <code class="docutils literal notranslate"><span class="pre">--gh-pages-docs</span> <span class="pre">.</span></code> (deploying to the root directory of the
 <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch). (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/73">#73</a>)</li>
@@ -327,8 +346,8 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 <li>Add <code class="docutils literal notranslate"><span class="pre">--no-require-master</span></code> flag to allow pushing from branches other than master. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/70">#70</a>)</li>
 </ul>
 </div>
-<div class="section" id="id31">
-<h3>Minor Changes<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id34">
+<h3>Minor Changes<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add a GitHub banner to the docs. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/64">#64</a>)</li>
 <li>Move to the GitHub organization <a class="reference external" href="https://github.com/drdoctr">drdoctr</a>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/67">#67</a>)</li>
@@ -338,10 +357,10 @@ and deploying. (<a class="reference external" href="https://github.com/drdoctr/d
 </ul>
 </div>
 </div>
-<div class="section" id="id32">
-<h2>1.1.1 (2016-08-09)<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id33">
-<h3>Minor Changes<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id35">
+<h2>1.1.1 (2016-08-09)<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id36">
+<h3>Minor Changes<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add installation instructions to the documentation. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/60">#60</a>)</li>
 <li>Fix some lingering “Travis docs builder” -&gt; “Doctr”, including in the git
@@ -351,18 +370,18 @@ attributes on Travis. (<a class="reference external" href="https://github.com/dr
 </ul>
 </div>
 </div>
-<div class="section" id="id34">
-<h2>1.1 (2016-08-09)<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id35">
-<h3>Major Changes<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id37">
+<h2>1.1 (2016-08-09)<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id38">
+<h3>Major Changes<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add a real command line interface with argparse. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/23">#23</a>)</li>
 <li>Split the command line into <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> and <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/28">#28</a>)</li>
 <li>Add support for using GitHub deploy keys (now the default) (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/30">#30</a>)</li>
 </ul>
 </div>
-<div class="section" id="id36">
-<h3>Minor Changes<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id39">
+<h3>Minor Changes<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add flags to <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code> to change the build and deploy locations of
 the docs. (<a class="reference external" href="https://github.com/drdoctr/doctr/issues/52">#52</a>)</li>
@@ -371,10 +390,10 @@ the docs. (<a class="reference external" href="https://github.com/drdoctr/doctr/
 </ul>
 </div>
 </div>
-<div class="section" id="id37">
-<h2>1.0 (2016-07-22)<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id38">
-<h3>Major Changes<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id40">
+<h2>1.0 (2016-07-22)<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id41">
+<h3>Major Changes<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>First release. Basic support for configuring doctr to push to Travis (using
 a token) and deploying to gh-pages from Travis.</li>
@@ -396,26 +415,27 @@ a token) and deploying to gh-pages from Travis.</li>
 <li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Doctr Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">1.7.1 (2018-01-30)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">1.7.0 (2017-11-21)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">1.6.3 (2017-11-11)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">1.6.2 (2017-10-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">1.6.1 (2017-09-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id11">1.6.0 (2017-09-26)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id14">1.5.3 (2017-04-07)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id15">1.5.2 (2017-03-29)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id16">1.5.1 (2017-03-17)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id17">1.5.0 (2017-03-15)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id18">1.4.1 (2017-01-11)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id19">1.4.0 (2016-11-11)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id20">1.3.3 (2016-09-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id21">1.3.2 (2016-09-01)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id24">1.3.1 (2016-08-31)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id26">1.3 (2016-08-30)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id29">1.2 (2016-08-29)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id32">1.1.1 (2016-08-09)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id34">1.1 (2016-08-09)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id37">1.0 (2016-07-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">1.7.2 (2018-02-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1.7.1 (2018-01-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">1.7.0 (2017-11-21)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">1.6.3 (2017-11-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">1.6.2 (2017-10-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">1.6.1 (2017-09-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id14">1.6.0 (2017-09-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">1.5.3 (2017-04-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">1.5.2 (2017-03-29)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id19">1.5.1 (2017-03-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id20">1.5.0 (2017-03-15)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">1.4.1 (2017-01-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id22">1.4.0 (2016-11-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">1.3.3 (2016-09-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">1.3.2 (2016-09-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">1.3.1 (2016-08-31)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id29">1.3 (2016-08-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id32">1.2 (2016-08-29)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id35">1.1.1 (2016-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id37">1.1 (2016-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id40">1.0 (2016-07-22)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing</a></li>
