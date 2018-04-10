@@ -16,6 +16,7 @@ exclude-test/_static/comment-close.png
 exclude-test/_static/comment.png
 exclude-test/_static/custom.css
 exclude-test/_static/doctools.js
+exclude-test/_static/documentation_options.js
 exclude-test/_static/down-pressed.png
 exclude-test/_static/down.png
 exclude-test/_static/file.png
