@@ -34,7 +34,7 @@ from pathlib import Path
 
 from textwrap import dedent
 
-from .local import (generate_GitHub_token, encrypt_variable, encrypt_file,
+from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
     GitHub_login, guess_github_repo, AuthenticationFailed)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
@@ -433,9 +433,11 @@ def configure(args, parser):
     else:
         deploy_key_repo, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path)
 
-        ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(
+        private_ssh_key, public_ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(
             deploy_repo=deploy_key_repo), keypath=keypath)
-        key = encrypt_file(keypath, delete=True)
+        key = encrypt_to_file(private_ssh_key, keypath + '.enc')
+        del private_ssh_key # Prevent accidental use below
+        public_ssh_key = public_ssh_key.decode('ASCII')
         encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
             build_repo=build_repo, is_private=is_private, **login_kwargs)
 
@@ -443,7 +445,7 @@ def configure(args, parser):
 
         if args.upload_key:
 
-            upload_GitHub_deploy_key(deploy_key_repo, ssh_key, **login_kwargs)
+            upload_GitHub_deploy_key(deploy_key_repo, public_ssh_key, **login_kwargs)
 
             print(dedent("""
             The deploy key has been added for {deploy_repo}.
@@ -459,7 +461,7 @@ def configure(args, parser):
 
                 {ssh_key}
                {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
-            """.format(ssh_key=ssh_key, deploy_keys_url=deploy_keys_url, N=N,
+            """.format(ssh_key=public_ssh_key, deploy_keys_url=deploy_keys_url, N=N,
                 BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
 
