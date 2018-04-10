@@ -433,8 +433,7 @@ def configure(args, parser):
     else:
         deploy_key_repo, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path)
 
-        private_ssh_key, public_ssh_key = generate_ssh_key("doctr deploy key for {deploy_repo}".format(
-            deploy_repo=deploy_key_repo))
+        private_ssh_key, public_ssh_key = generate_ssh_key()
         key = encrypt_to_file(private_ssh_key, keypath + '.enc')
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')

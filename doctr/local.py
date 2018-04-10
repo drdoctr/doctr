@@ -205,7 +205,7 @@ def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
     }
     return GitHub_post(data, DEPLOY_KEY_URL, **login_kwargs)
 
-def generate_ssh_key(note):
+def generate_ssh_key():
     """
     Generates an SSH deploy public and private key.
 
