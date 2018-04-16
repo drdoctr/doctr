@@ -2,6 +2,17 @@
  Doctr Changelog
 =================
 
+1.7.3 (2018-04-16)
+==================
+
+Minor Changes
+-------------
+
+- Use the ``cryptography`` module to generate the SSH deploy key instead of
+  ``ssh-keygen``. This makes it possible to run ``doctr configure`` on
+  Windows. (:issue:`303`)
+
+
 1.7.2 (2018-02-06)
 ==================
 
