@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Recipes &#8212; Doctr 1.7.1+30.g8940da4 documentation</title>
+    <title>Recipes &#8212; Doctr 1.7.2+9.geaf31bf documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.7.1+30.g8940da4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -45,13 +36,13 @@
 <p>Here are some useful recipes for Doctr.</p>
 <div class="section" id="deploy-docs-from-any-branch">
 <span id="any-branch"></span><h2>Deploy docs from any branch<a class="headerlink" href="#deploy-docs-from-any-branch" title="Permalink to this headline">¶</a></h2>
-<p>By default, Doctr only deploys docs from the <code class="docutils literal"><span class="pre">master</span></code> branch, but it can be
+<p>By default, Doctr only deploys docs from the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch, but it can be
 useful to deploy docs from other branches, to test them out.</p>
-<p>The branch name on Travis is stored in the <code class="docutils literal"><span class="pre">$TRAVIS_BRANCH</span></code> environment
+<p>The branch name on Travis is stored in the <code class="docutils literal notranslate"><span class="pre">$TRAVIS_BRANCH</span></code> environment
 variable. One suggestion would be to deploy the docs to a special directory
-for each branch. The following will deploy the docs to <code class="docutils literal"><span class="pre">docs</span></code> on master and
+for each branch. The following will deploy the docs to <code class="docutils literal notranslate"><span class="pre">docs</span></code> on master and
 <span class="raw-html"><code>docs-<i>branch</i></code></span> on <em>branch</em>.</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="k">if</span> <span class="p">[[</span> <span class="s2">&quot;$</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;master&quot;</span> <span class="p">]];</span> <span class="n">then</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="k">if</span> <span class="p">[[</span> <span class="s2">&quot;$</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;master&quot;</span> <span class="p">]];</span> <span class="n">then</span>
     <span class="n">doctr</span> <span class="n">deploy</span> <span class="n">docs</span><span class="p">;</span>
   <span class="k">else</span>
     <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">require</span><span class="o">-</span><span class="n">master</span> <span class="s2">&quot;docs-$TRAVIS_BRANCH&quot;</span><span class="p">;</span>
@@ -69,12 +60,12 @@ request, you will need to push it up to the main repository.</p>
 <div class="section" id="deploy-docs-from-a-non-master-branch">
 <span id="non-master-branch"></span><h2>Deploy docs from a non-master branch<a class="headerlink" href="#deploy-docs-from-a-non-master-branch" title="Permalink to this headline">¶</a></h2>
 <p>If you want to deploy docs from only specific branches other than just
-<code class="docutils literal"><span class="pre">master</span></code>, you can use the <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> flag. This is useful if
-your default branch is named something other than <code class="docutils literal"><span class="pre">master</span></code>. The default
-<code class="docutils literal"><span class="pre">--branch-whitelist</span></code> is <code class="docutils literal"><span class="pre">master</span></code>. <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> can take any
-number of arguments, so it should generally go last in your <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>
+<code class="docutils literal notranslate"><span class="pre">master</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">--branch-whitelist</span></code> flag. This is useful if
+your default branch is named something other than <code class="docutils literal notranslate"><span class="pre">master</span></code>. The default
+<code class="docutils literal notranslate"><span class="pre">--branch-whitelist</span></code> is <code class="docutils literal notranslate"><span class="pre">master</span></code>. <code class="docutils literal notranslate"><span class="pre">--branch-whitelist</span></code> can take any
+number of arguments, so it should generally go last in your <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code>
 call.</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">.</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span> <span class="n">develop</span>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">.</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span> <span class="n">develop</span>
 </pre></div>
 </div>
 </div>
@@ -82,12 +73,12 @@ call.</p>
 <span id="recipe-tags"></span><h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
 <p>Travis CI runs separate builds for git tags that are pushed to your repo. By
 default, doctr does not deploy on these builds, but it can be enabled with the
-<code class="docutils literal"><span class="pre">--build-tags</span></code> flag to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. This is useful if you want to use
+<code class="docutils literal notranslate"><span class="pre">--build-tags</span></code> flag to <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code>. This is useful if you want to use
 doctr to deploy versioned docs for releases, for example.</p>
-<p>On Travis CI, the tag is set to the environment variable <code class="docutils literal"><span class="pre">$TRAVIS_TAG</span></code>,
-which is empty otherwise. The following will deploy the docs to <code class="docutils literal"><span class="pre">dev</span></code> for
-normal <code class="docutils literal"><span class="pre">master</span></code> builds, and <code class="docutils literal"><span class="pre">version-&lt;TAG</span> <span class="pre">NAME&gt;</span></code> for tag builds:</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span>- if [[ -z &quot;$TRAVIS_TAG&quot; ]]; then
+<p>On Travis CI, the tag is set to the environment variable <code class="docutils literal notranslate"><span class="pre">$TRAVIS_TAG</span></code>,
+which is empty otherwise. The following will deploy the docs to <code class="docutils literal notranslate"><span class="pre">dev</span></code> for
+normal <code class="docutils literal notranslate"><span class="pre">master</span></code> builds, and <code class="docutils literal notranslate"><span class="pre">version-&lt;TAG</span> <span class="pre">NAME&gt;</span></code> for tag builds:</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span>- if [[ -z &quot;$TRAVIS_TAG&quot; ]]; then
     DEPLOY_DIR=dev;
   else
     DEPLOY_DIR=&quot;version-$TRAVIS_TAG&quot;;
@@ -95,45 +86,45 @@ normal <code class="docutils literal"><span class="pre">master</span></code> bui
 - doctr deploy --build-tags --built-docs build/ $DEPLOY_DIR
 </pre></div>
 </div>
-<p>If you want to deploy only on a tag, use <code class="docutils literal"><span class="pre">--branch-whitelist</span></code> with no
+<p>If you want to deploy only on a tag, use <code class="docutils literal notranslate"><span class="pre">--branch-whitelist</span></code> with no
 arguments to tell doctr to not deploy from any branch. For instance, to deploy
-only tags to <code class="docutils literal"><span class="pre">latest</span></code>:</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="n">latest</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">tags</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span>
+only tags to <code class="docutils literal notranslate"><span class="pre">latest</span></code>:</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="n">latest</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">build</span><span class="o">/</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">tags</span> <span class="o">--</span><span class="n">branch</span><span class="o">-</span><span class="n">whitelist</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="deploy-to-a-separate-repo">
 <h2>Deploy to a separate repo<a class="headerlink" href="#deploy-to-a-separate-repo" title="Permalink to this headline">¶</a></h2>
-<p>By default, Doctr deploys to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch of the same repository it
-is run from, but you can deploy to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch of any repository.</p>
+<p>By default, Doctr deploys to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch of the same repository it
+is run from, but you can deploy to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch of any repository.</p>
 <p>To do this, specify a separate deploy and build repository when running
-<code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> (it will ask you for the two separately). You will need
-admin access to the deploy repository to upload the deploy key (<code class="docutils literal"><span class="pre">doctr</span>
+<code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> (it will ask you for the two separately). You will need
+admin access to the deploy repository to upload the deploy key (<code class="docutils literal notranslate"><span class="pre">doctr</span>
 <span class="pre">configure</span></code> will prompt you for your GitHub credentials). If you do not have
-access, you can run <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span> <span class="pre">--no-upload-key</span></code>. This will print out the
+access, you can run <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span> <span class="pre">--no-upload-key</span></code>. This will print out the
 public deploy key, which you can then give to someone who has admin access to
-add to the form on GitHub (<code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> will print the public key and
+add to the form on GitHub (<code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will print the public key and
 the url of the form for someone with admin access to paste it in).</p>
-<p>In your <code class="docutils literal"><span class="pre">.travis.yml</span></code>, specify the deploy repository with</p>
-<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="o">&lt;</span><span class="n">deploy</span> <span class="n">repo</span><span class="o">&gt;</span> <span class="n">deploy_dir</span>
+<p>In your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>, specify the deploy repository with</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="o">&lt;</span><span class="n">deploy</span> <span class="n">repo</span><span class="o">&gt;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
-<p>The instructions from <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> will also give you the correct
+<p>The instructions from <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will also give you the correct
 command to run.</p>
 </div>
 <div class="section" id="setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">
 <h2>Setting up Doctr for a repo you don’t have admin access to<a class="headerlink" href="#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code> by default asks for your GitHub credentials so that it can
+<p><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> by default asks for your GitHub credentials so that it can
 upload the deploy key it creates. However, if you do not have admin access to
 the repository you are deploying to, you cannot upload the deploy key.</p>
 <p>No worries, you can still help. Run</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">upload</span><span class="o">-</span><span class="n">key</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">upload</span><span class="o">-</span><span class="n">key</span>
 </pre></div>
 </div>
 <p>This will set up doctr, but not require any GitHub credentials. Follow the
 instructions on screen. Create a new branch, commit the
-<code class="docutils literal"><span class="pre">github_deploy_key_org_repo.enc</span></code> file, and edit <code class="docutils literal"><span class="pre">.travis.yml</span></code> to include the
-encrypted environment variable and the call to <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">github_deploy_key_org_repo.enc</span></code> file, and edit <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> to include the
+encrypted environment variable and the call to <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code>.</p>
 <p>Then, create a pull request to the repository. Tell the owner of the
 repository to add the public key which Doctr has printed as a deploy key for
 the repo (Doctr will also print the url where they can add this). Don’t worry,
@@ -142,23 +133,23 @@ request.</p>
 </div>
 <div class="section" id="post-processing-the-docs-on-gh-pages">
 <h2>Post-processing the docs on gh-pages<a class="headerlink" href="#post-processing-the-docs-on-gh-pages" title="Permalink to this headline">¶</a></h2>
-<p>Sometimes you may want to post-process your docs on the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch.
+<p>Sometimes you may want to post-process your docs on the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch.
 For example, you may want to add some links to other versions in your
 index.html.</p>
-<p>You can run any command on the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch with the <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">deploy</span>
-<span class="pre">--command</span></code> flag. This is run after the docs are synced to <code class="docutils literal"><span class="pre">gh-pages</span></code> but
+<p>You can run any command on the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch with the <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span>
+<span class="pre">--command</span></code> flag. This is run after the docs are synced to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> but
 before they are committed and uploaded.</p>
-<p>For example, if you have a script in <code class="docutils literal"><span class="pre">gh-pages</span></code> called <code class="docutils literal"><span class="pre">post-process.py</span></code>,
+<p>For example, if you have a script in <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> called <code class="docutils literal notranslate"><span class="pre">post-process.py</span></code>,
 you can run</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;post-process.py&#39;</span> <span class="n">deploy_dir</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;post-process.py&#39;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="using-a-separate-command-to-deploy-to-gh-pages">
 <h2>Using a separate command to deploy to gh-pages<a class="headerlink" href="#using-a-separate-command-to-deploy-to-gh-pages" title="Permalink to this headline">¶</a></h2>
-<p>If you already have an existing tool to deploy to <code class="docutils literal"><span class="pre">gh-pages</span></code>, you can still
+<p>If you already have an existing tool to deploy to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>, you can still
 use Doctr to manage your deploy key. Use</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sync</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;command to deploy&#39;</span> <span class="n">deploy_dir</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sync</span> <span class="o">--</span><span class="n">command</span> <span class="s1">&#39;command to deploy&#39;</span> <span class="n">deploy_dir</span>
 </pre></div>
 </div>
 <p>The command to deploy should add any files that you want committed to the
@@ -166,9 +157,9 @@ index.</p>
 </div>
 <div class="section" id="deploying-to-a-github-wiki">
 <span id="recipe-wikis"></span><h2>Deploying to a GitHub wiki<a class="headerlink" href="#deploying-to-a-github-wiki" title="Permalink to this headline">¶</a></h2>
-<p>Doctr supports deploying to GitHub wikis. Just use <code class="docutils literal"><span class="pre">org/repo.wiki</span></code> when
-as the deploy repo running <code class="docutils literal"><span class="pre">doctr</span> <span class="pre">configure</span></code>. When deploying, use</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="n">org</span><span class="o">/</span><span class="n">repo</span><span class="o">.</span><span class="n">wiki</span> <span class="o">.</span>
+<p>Doctr supports deploying to GitHub wikis. Just use <code class="docutils literal notranslate"><span class="pre">org/repo.wiki</span></code> when
+as the deploy repo running <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code>. When deploying, use</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="n">org</span><span class="o">/</span><span class="n">repo</span><span class="o">.</span><span class="n">wiki</span> <span class="o">.</span>
 </pre></div>
 </div>
 <p>The deploy key for pushing to a wiki is the same as for pushing to the repo
@@ -211,12 +202,14 @@ key.</p>
 </p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -227,7 +220,7 @@ key.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

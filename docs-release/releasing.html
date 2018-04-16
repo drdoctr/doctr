@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Releasing &#8212; Doctr 1.7.1+30.g8940da4 documentation</title>
+    <title>Releasing &#8212; Doctr 1.7.2+9.geaf31bf documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.7.1+30.g8940da4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -48,16 +39,16 @@
 directly to master, so you have to release from a branch). I recommend
 naming the branch something other than the release number, as that makes the
 below commands not work until you delete the branch.</li>
-<li>Update <code class="docutils literal"><span class="pre">docs/changelog.rst</span></code>. Add the release date.</li>
+<li>Update <code class="docutils literal notranslate"><span class="pre">docs/changelog.rst</span></code>. Add the release date.</li>
 <li>Make a pull request with the release branch.</li>
 <li>Make sure all the Travis checks pass on the commit you plan to tag.</li>
 <li>Tag the release. The tag name should be the version number of the release,
-like <code class="docutils literal"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">2.0</span> <span class="pre">-a</span></code>. Include the <code class="docutils literal"><span class="pre">-a</span></code> flag. This will ask for some
+like <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">2.0</span> <span class="pre">-a</span></code>. Include the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag. This will ask for some
 commit message for the tag (you can just use something like “Doctr 2.0
 release”, or you can put the changelog in there if you want).</li>
-<li>Do <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
+<li>Do <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
 you need to do this after you tag.</li>
-<li>Push up the tag (<code class="docutils literal"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">2.0</span></code>).</li>
+<li>Push up the tag (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">2.0</span></code>).</li>
 <li>Merge the pull request.</li>
 <li>Create a pull request to the <a class="reference external" href="https://github.com/conda-forge/doctr-feedstock">conda-forge feedstock</a> to update it. Make sure
 to do a pull request from a fork. Merge it once those tests pass.</li>
@@ -88,12 +79,14 @@ to do a pull request from a fork. Merge it once those tests pass.</li>
 </p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -104,7 +97,7 @@ to do a pull request from a fork. Merge it once those tests pass.</li>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
