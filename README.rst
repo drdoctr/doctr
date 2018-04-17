@@ -232,4 +232,8 @@ Projects using Doctr
 
 - `xonsh <http://xon.sh>`_
 
+- `regro-cf-autotick-bot <https://github.com/regro/cf-scripts>`_
+
+- `XPD stack <http://xpdacq.github.io/>`_
+
 Are you using Doctr?  Please add your project to the list!
