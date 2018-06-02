@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API &#8212; Doctr 1.7.1+30.gb3a5d14 documentation</title>
+    <title>API &#8212; Doctr 1.7.3+5.gacd688a documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -77,12 +77,11 @@ repo.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="doctr.local.encrypt_file">
-<code class="descclassname">doctr.local.</code><code class="descname">encrypt_file</code><span class="sig-paren">(</span><em>file</em>, <em>delete=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Encrypts the file <code class="docutils literal notranslate"><span class="pre">file</span></code>.</p>
-<p>The encrypted file is saved to the same location with the <code class="docutils literal notranslate"><span class="pre">.enc</span></code>
-extension.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">delete=True</span></code>, the unencrypted file is deleted after encryption.</p>
+<dt id="doctr.local.encrypt_to_file">
+<code class="descclassname">doctr.local.</code><code class="descname">encrypt_to_file</code><span class="sig-paren">(</span><em>contents</em>, <em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts <code class="docutils literal notranslate"><span class="pre">contents</span></code> and writes it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">contents</span></code> should be a bytes string. <code class="docutils literal notranslate"><span class="pre">filename</span></code> should end with
+<code class="docutils literal notranslate"><span class="pre">.enc</span></code>.</p>
 <p>Returns the secret key used for the encryption.</p>
 <p>Decrypt the file with <a class="reference internal" href="#doctr.travis.decrypt_file" title="doctr.travis.decrypt_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">doctr.travis.decrypt_file()</span></code></a>.</p>
 </dd></dl>
@@ -111,9 +110,9 @@ command line.</p>
 
 <dl class="function">
 <dt id="doctr.local.generate_ssh_key">
-<code class="descclassname">doctr.local.</code><code class="descname">generate_ssh_key</code><span class="sig-paren">(</span><em>note</em>, <em>keypath='github_deploy_key'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_ssh_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_ssh_key" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">generate_ssh_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#generate_ssh_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.generate_ssh_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates an SSH deploy public and private key.</p>
-<p>Returns the public key as a str.</p>
+<p>Returns (private key, public key), a tuple of byte strings.</p>
 </dd></dl>
 
 <dl class="function">
@@ -177,7 +176,7 @@ repos and <code class="docutils literal notranslate"><span class="pre">master</s
 decrypted file is saved to the same location without the <code class="docutils literal notranslate"><span class="pre">.enc</span></code>
 extension.</p>
 <p>The permissions on the decrypted file are automatically set to 0o600.</p>
-<p>See also <a class="reference internal" href="#doctr.local.encrypt_file" title="doctr.local.encrypt_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">doctr.local.encrypt_file()</span></code></a>.</p>
+<p>See also <code class="xref py py-func docutils literal notranslate"><span class="pre">doctr.local.encrypt_file()</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
