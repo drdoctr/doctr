@@ -61,7 +61,9 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCT
         raise RuntimeError("{env_name} or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set"
             .format(env_name=env_name))
 
-    if not os.path.isfile(keypath + key_ext):
+    # Legacy keyfile name
+    if (not os.path.isfile(keypath + key_ext) and
+        os.path.isfile('github_deploy_key' + key_ext)):
         keypath = 'github_deploy_key'
     key_filename = os.path.basename(keypath)
     key = key.encode('utf-8')
