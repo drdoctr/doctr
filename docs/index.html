@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr &#8212; Doctr 1.7.3+6.g8e8d137 documentation</title>
+    <title>Doctr &#8212; Doctr 1.7.3+8.g28f3dc5 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -171,10 +171,9 @@ features help keep the Doctr code cleaner and more maintainable.</p>
 install Python 3.6 in Travis to run Doctr.</p>
 </li>
 <li><p class="first"><strong>Is this secure?</strong></p>
-<p>Doctr enables creates an encrypted SSH deploy key, which allows any Travis
-build on your repo to push to the deploy repo. The deploy key is encrypted using
-<a class="reference external" href="https://cryptography.io/en/latest/fernet/">Fernet encryption from the Python cryptography
-module</a>. The Fernet key is then
+<p>Doctr creates an encrypted SSH deploy key, which allows any Travis build on
+your repo to push to the deploy repo. The deploy key is encrypted using
+<a class="reference external" href="https://cryptography.io/en/latest/fernet/">Fernet encryption from the Python cryptography module</a>. The Fernet key is then
 encrypted to a secure environment variable for Travis using the <a class="reference external" href="https://docs.travis-ci.com/user/encryption-keys/">Travis
 public key</a>.</p>
 <p>Travis does not make secure environment variables available to pull requests
