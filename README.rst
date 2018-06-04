@@ -175,10 +175,10 @@ FAQ
 
 - **Is this secure?**
 
-  Doctr enables creates an encrypted SSH deploy key, which allows any Travis
-  build on your repo to push to the deploy repo. The deploy key is encrypted using
-  `Fernet encryption from the Python cryptography
-  module <https://cryptography.io/en/latest/fernet/>`_. The Fernet key is then
+  Doctr creates an encrypted SSH deploy key, which allows any Travis build on
+  your repo to push to the deploy repo. The deploy key is encrypted using
+  `Fernet encryption from the Python cryptography module
+  <https://cryptography.io/en/latest/fernet/>`_. The Fernet key is then
   encrypted to a secure environment variable for Travis using the `Travis
   public key <https://docs.travis-ci.com/user/encryption-keys/>`_.
 
