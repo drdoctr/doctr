@@ -236,4 +236,6 @@ Projects using Doctr
 
 - `XPD stack <http://xpdacq.github.io/>`_
 
+- `Spyder IDE <https://www.spyder-ide.org/>`_
+
 Are you using Doctr?  Please add your project to the list!
