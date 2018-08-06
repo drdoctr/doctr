@@ -237,8 +237,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     Raises ``RuntimeError`` if the repo is not valid.
 
-    Returns whether or not the repo is on travis-ci.com (which requires
-    authorization to access, regardless of whether or not it is private)
+    Returns whether or not the repo requires authorization to access. Private
+    repos require authorization, as to repos on travis-ci.com, regardless of
+    whether or not it is private.
+
     """
     headers = headers or {}
     if deploy_repo.count("/") != 1:
