@@ -237,7 +237,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     Raises ``RuntimeError`` if the repo is not valid.
 
-    Returns whether or not the repo is private
+    Returns whether or not the repo is on travis-ci.com (which requires
+    authorization to access, regardless of whether or not it is private)
     """
     headers = headers or {}
     if deploy_repo.count("/") != 1:
@@ -247,6 +248,9 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     if service == 'github':
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
     elif service == 'travis':
+        REPO_URL = 'https://api.travis-ci.com/repo/{user}%2F{repo}'
+        headers['Travis-API-Version'] = '3'
+    elif service == 'travis-org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers['Travis-API-Version'] = '3'
     else:
@@ -261,6 +265,9 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
         repo=urllib.parse.quote(repo)), auth=auth, headers=headers)
 
     if r.status_code == requests.codes.not_found:
+        if service == 'travis':
+            return check_repo_exists(deploy_repo, service='travis-org',
+                                     auth=auth, headers=headers)
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
                                                                            repo=repo,
                                                                            service=service))
@@ -276,7 +283,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
             raise RuntimeError('Wiki not found. Please create a wiki')
         return False
 
-    return private
+    return private or (service == 'travis')
 
 GIT_URL = re.compile(r'(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?')
 
