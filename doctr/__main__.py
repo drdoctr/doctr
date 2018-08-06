@@ -391,7 +391,7 @@ def configure(args, parser):
     while not get_build_repo:
         try:
             if default_repo:
-                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=blue(default_repo)))
+                build_repo = input("What repo do you want to build the docs for? [{default_repo}] ".format(default_repo=blue(default_repo)))
                 if not build_repo:
                     build_repo = default_repo
             else:
