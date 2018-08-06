@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives import serialization
 
 from .common import red
 
-def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
+def encrypt_variable(variable, build_repo, *, public_key=None, dotcom=False, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
 
@@ -33,6 +33,11 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
+
+    ``dotcom`` should be True if the service is travis-ci.com and False if it
+    is travis-ci.org. Not that travis-ci.com requires creating a temporary
+    authentication on GitHub, which is deleted automatically (regardless of
+    whether or not the repo is private).
     """
     if not isinstance(variable, bytes):
         raise TypeError("variable should be bytes")
@@ -40,30 +45,36 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
     if not b"=" in variable:
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
+    APIv2 = {'Accept': 'application/vnd.travis-ci.2+json'}
+    APIv3 = {"Travis-API-Version": "3"}
     if not public_key:
-        headers = {'Accept': 'application/vnd.travis-ci.2+json',
-                   'Content-Type': 'application/json',
-                   'User-Agent': 'MyClient/1.0.0'}
-        if is_private:
+        headers = {
+            'Content-Type': 'application/json',
+            'User-Agent': 'MyClient/1.0.0',
+        }
+        headersv2 = {**headers, **APIv2}
+        headers = headersv3 = {**headers, **APIv3}
+        if dotcom:
+            # /auth/github doesn't seem to exist in the Travis API v3.
             tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
-                                             note="temporary token to auth against travis",
+                                             note="temporary token for doctr to auth against travis (delete me)",
                                              **login_kwargs)
             data = {'github_token': tok_dict['token']}
             token_id = tok_dict['id']
-            res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headers)
+            res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
             res.raise_for_status()
             headers['Authorization'] = 'token {}'.format(res.json()['access_token'])
             tld = 'com'
         else:
             tld = 'org'
-        res = requests.get('https://api.travis-ci.{tld}/repos/{build_repo}/key'.format(build_repo=build_repo, tld=tld),
-            headers=headers)
+        res = requests.get('https://api.travis-ci.{tld}/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
+            safe=''), tld=tld), headers=headersv3)
         if res.status_code == requests.codes.not_found:
             raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
         res.raise_for_status()
-        public_key = res.json()['key']
+        public_key = res.json()['public_key']
         # Remove temporary GH token
-        if is_private:
+        if dotcom:
             delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
