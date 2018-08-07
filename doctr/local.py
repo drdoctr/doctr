@@ -65,7 +65,7 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
             res.raise_for_status()
             headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
             res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
-            safe=''), headers=headersv3))
+                safe=''), headers=headersv3))
             public_key = res.json()['public_key']
         else:
             res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
@@ -274,7 +274,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers['Travis-API-Version'] = '3'
     else:
-        raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
+        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org"}')
 
     wiki = False
     if repo.endswith('.wiki') and service == 'github':
