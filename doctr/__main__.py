@@ -397,7 +397,7 @@ def configure(args, parser):
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
-            check_repo_exists(build_repo, service='travis')
+            is_private = check_repo_exists(build_repo, service='travis', ask=True) or is_private
             get_build_repo = True
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))
@@ -423,7 +423,7 @@ def configure(args, parser):
     if args.token:
         token = generate_GitHub_token(**login_kwargs)['token']
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-            build_repo=build_repo, dotcom=True, **login_kwargs)
+            build_repo=build_repo, is_private=is_private, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
