@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.7.3+20.g6fcd844 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.7.3+23.g564c69d documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -99,11 +99,12 @@
             <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
             <span class="n">headersv3</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;token </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;access_token&#39;</span><span class="p">])</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.travis-ci.com/repo/</span><span class="si">{build_repo}</span><span class="s1">/key_pair/generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_repo</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">build_repo</span><span class="p">,</span>
-            <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headersv3</span><span class="p">))</span>
+                <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headersv3</span><span class="p">))</span>
             <span class="n">public_key</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;public_key&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.travis-ci.org/repos/</span><span class="si">{build_repo}</span><span class="s1">/key&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_repo</span><span class="o">=</span><span class="n">build_repo</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headersv2</span><span class="p">)</span>
             <span class="n">public_key</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find requested repo on Travis.  Is Travis enabled?&#39;</span><span class="p">)</span>
         <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
@@ -308,7 +309,7 @@
         <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
         <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Travis-API-Version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Invalid service specified for repo check (neither &quot;travis&quot; nor &quot;github&quot;)&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Invalid service specified for repo check (should be one of {&quot;github&quot;, &quot;travis&quot;, &quot;travis-ci.com&quot;, &quot;travis-ci.org&quot;}&#39;</span><span class="p">)</span>
 
     <span class="n">wiki</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.wiki&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
