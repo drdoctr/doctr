@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API &#8212; Doctr 1.7.3+16.gf2fc924 documentation</title>
+    <title>API &#8212; Doctr 1.7.3+20.g6fcd844 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -64,7 +64,7 @@ authenticated connections to GitHub.</p>
 
 <dl class="function">
 <dt id="doctr.local.check_repo_exists">
-<code class="descclassname">doctr.local.</code><code class="descname">check_repo_exists</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>service='github'</em>, <em>*</em>, <em>auth=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#check_repo_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.check_repo_exists" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">check_repo_exists</code><span class="sig-paren">(</span><em>deploy_repo</em>, <em>service='github'</em>, <em>*</em>, <em>auth=None</em>, <em>headers=None</em>, <em>ask=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#check_repo_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.check_repo_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks that the repository exists on GitHub.</p>
 <p>This should be done before attempting generate a key to deploy to that
 repo.</p>
@@ -72,6 +72,11 @@ repo.</p>
 <p>Returns whether or not the repo requires authorization to access. Private
 repos require authorization, as to repos on travis-ci.com, regardless of
 whether or not it is private.</p>
+<p>For service=’travis’, if ask=True, it will ask at the command line if both
+travis-ci.org and travis-ci.com exist. If ask=False, service=’travis’ will
+check travis-ci.com first and only check travis-ci.org if it doesn’t
+exist. ask=True does nothing for service=’github’,
+service=’travis-ci.com’, service=’travis-ci.org’.</p>
 </dd></dl>
 
 <dl class="function">
@@ -92,7 +97,7 @@ whether or not it is private.</p>
 
 <dl class="function">
 <dt id="doctr.local.encrypt_variable">
-<code class="descclassname">doctr.local.</code><code class="descname">encrypt_variable</code><span class="sig-paren">(</span><em>variable</em>, <em>build_repo</em>, <em>*</em>, <em>public_key=None</em>, <em>dotcom=False</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_variable" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">doctr.local.</code><code class="descname">encrypt_variable</code><span class="sig-paren">(</span><em>variable</em>, <em>build_repo</em>, <em>*</em>, <em>public_key=None</em>, <em>is_private=False</em>, <em>**login_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/doctr/local.html#encrypt_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#doctr.local.encrypt_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encrypt an environment variable for <code class="docutils literal notranslate"><span class="pre">build_repo</span></code> for Travis</p>
 <p><code class="docutils literal notranslate"><span class="pre">variable</span></code> should be a bytes object, of the form <code class="docutils literal notranslate"><span class="pre">b'ENV=value'</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">build_repo</span></code> is the repo that <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span></code> will be run from. It
