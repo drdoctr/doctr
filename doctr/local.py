@@ -260,10 +260,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     user, repo = deploy_repo.split('/')
     if service == 'github':
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
-    elif service == 'travis' or service == 'travis.com':
+    elif service == 'travis' or service == 'travis-ci.com':
         REPO_URL = 'https://api.travis-ci.com/repo/{user}%2F{repo}'
         headers['Travis-API-Version'] = '3'
-    elif service == 'travis.org':
+    elif service == 'travis-ci.org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers['Travis-API-Version'] = '3'
     else:
@@ -279,14 +279,14 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     if r.status_code == requests.codes.not_found:
         if service == 'travis':
-            return check_repo_exists(deploy_repo, service='travis-org',
+            return check_repo_exists(deploy_repo, service='travis-ci.org',
                                      auth=auth, headers=headers)
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
                                                                            repo=repo,
                                                                            service=service))
 
     if service == 'travis':
-        service = 'travis.com'
+        service = 'travis-ci.com'
 
     r.raise_for_status()
     private = r.json().get('private', False)
@@ -299,7 +299,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
             raise RuntimeError('Wiki not found. Please create a wiki')
         return False
 
-    return private or (service == 'travis.com')
+    return private or (service == 'travis-ci.com')
 
 GIT_URL = re.compile(r'(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?')
 
