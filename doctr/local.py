@@ -70,6 +70,7 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
         else:
             res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
             public_key = res.json()['key']
+
         if res.status_code == requests.codes.not_found:
             raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
         res.raise_for_status()

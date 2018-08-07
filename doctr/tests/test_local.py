@@ -49,8 +49,8 @@ def test_travis_bad_repo():
         check_repo_exists('drdoctr/DoCtR', service='travis')
 
 def test_travis_repo_exists():
-    assert not check_repo_exists('drdoctr/doctr', service='travis.org')
-    assert check_repo_exists('drdoctr/doctr', service='travis.com')
+    assert not check_repo_exists('drdoctr/doctr', service='travis-ci.org')
+    assert check_repo_exists('drdoctr/doctr', service='travis-ci.com')
     assert check_repo_exists('drdoctr/doctr', service='travis')
 
 def test_GIT_URL():
