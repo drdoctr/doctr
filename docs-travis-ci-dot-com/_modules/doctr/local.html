@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.7.3+14.g7ed3640 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.7.3+16.gf2fc924 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -294,10 +294,10 @@
     <span class="n">user</span><span class="p">,</span> <span class="n">repo</span> <span class="o">=</span> <span class="n">deploy_repo</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
         <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/repos/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&#39;</span>
-    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span> <span class="ow">or</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis.com&#39;</span><span class="p">:</span>
         <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.com/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
         <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Travis-API-Version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span>
-    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis-org&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis.org&#39;</span><span class="p">:</span>
         <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
         <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Travis-API-Version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -319,6 +319,9 @@
                                                                            <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
                                                                            <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">))</span>
 
+    <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span><span class="p">:</span>
+        <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis.com&#39;</span>
+
     <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
     <span class="n">private</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
@@ -330,7 +333,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Wiki not found. Please create a wiki&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">return</span> <span class="n">private</span> <span class="ow">or</span> <span class="p">(</span><span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">private</span> <span class="ow">or</span> <span class="p">(</span><span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis.com&#39;</span><span class="p">)</span></div>
 
 <span class="n">GIT_URL</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?&#39;</span><span class="p">)</span>
 
