@@ -20,7 +20,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
-from .common import red
+from .common import red, blue
 
 def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
@@ -239,7 +239,8 @@ def generate_ssh_key():
 
     return private_key, public_key
 
-def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None):
+def check_repo_exists(deploy_repo, service='github', *, auth=None,
+    headers=None, ask=False):
     """
     Checks that the repository exists on GitHub.
 
@@ -251,6 +252,12 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     Returns whether or not the repo requires authorization to access. Private
     repos require authorization, as to repos on travis-ci.com, regardless of
     whether or not it is private.
+
+    For service='travis', if ask=True, it will ask at the command line if both
+    travis-ci.org and travis-ci.com exist. If ask=False, service='travis' will
+    check travis-ci.com first and only check travis-ci.org if it doesn't
+    exist. ask=True does nothing for service='github',
+    service='travis-ci.com', service='travis-ci.org'.
 
     """
     headers = headers or {}
@@ -274,21 +281,48 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
         wiki = True
         repo = repo[:-5]
 
-    r = requests.get(REPO_URL.format(user=urllib.parse.quote(user),
-        repo=urllib.parse.quote(repo)), auth=auth, headers=headers)
+    def _try(url):
+        r = requests.get(url, auth=auth, headers=headers)
 
-    if r.status_code == requests.codes.not_found:
-        if service == 'travis':
-            return check_repo_exists(deploy_repo, service='travis-ci.org',
-                                     auth=auth, headers=headers)
+        if r.status_code == requests.codes.not_found:
+            return False
+        r.raise_for_status()
+        return r
+
+    r = _try(REPO_URL.format(user=urllib.parse.quote(user),
+        repo=urllib.parse.quote(repo)))
+
+    if service == 'travis':
+        REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
+        r_org = _try(REPO_URL.format(user=urllib.parse.quote(user),
+            repo=urllib.parse.quote(repo)))
+        if not r:
+            r = r_org
+        else:
+            if r and r_org:
+                if ask:
+                    while True:
+                        print("{user}/{repo} appears to exist on both travis-ci.org and travis-ci.com.".format(user=user, repo=repo))
+                        preferred = input("Which do you want to use? [{default}/travis-ci.org] ".format(default=blue("travis-ci.com")))
+                        preferred = preferred.lower().strip()
+                        if preferred in ['o', 'org', '.org', 'travis-ci.org']:
+                            r = r_org
+                            service = 'travis-ci.org'
+                            break
+                        elif preferred in ['c', 'com', '.com', 'travis-ci.com']:
+                            service = 'travis-ci.com'
+                            break
+                        else:
+                            print(red("Please type 'travis-ci.com' or 'travis-ci.org'."))
+                else:
+                    service = 'travis-ci.com'
+
+
+    if not r:
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
                                                                            repo=repo,
                                                                            service=service))
 
-    if service == 'travis':
-        service = 'travis-ci.com'
-
-    r.raise_for_status()
     private = r.json().get('private', False)
 
     if wiki and not private:
