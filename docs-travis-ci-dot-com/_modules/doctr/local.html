@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.7.3+23.g564c69d documentation</title>
+    <title>doctr.local &#8212; Doctr 1.7.3+24.gd99639e documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -89,6 +89,8 @@
         <span class="n">headersv2</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">APIv2</span><span class="p">}</span>
         <span class="n">headersv3</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">APIv3</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">is_private</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I need to generate a temporary token with GitHub to authenticate with Travis.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.&quot;</span><span class="p">)</span>
             <span class="c1"># /auth/github doesn&#39;t seem to exist in the Travis API v3.</span>
             <span class="n">tok_dict</span> <span class="o">=</span> <span class="n">generate_GitHub_token</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read:org&quot;</span><span class="p">,</span> <span class="s2">&quot;user:email&quot;</span><span class="p">,</span> <span class="s2">&quot;repo&quot;</span><span class="p">],</span>
                                              <span class="n">note</span><span class="o">=</span><span class="s2">&quot;temporary token for doctr to auth against travis (delete me)&quot;</span><span class="p">,</span>
