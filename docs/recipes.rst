@@ -183,22 +183,43 @@ The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
 
-Separating source and output in Github username and orgname pages
-=================================================================
+Using doctr with Github username and orgname pages
+==================================================
 
-Github allows users to create pages at the root url of users or organizations
-http://github.io pages. For example an organization ``coolteam`` can setup a
-repository with the name ``coolteam.github.io`` and the html files in the
-master branch of this repository will be served to https://coolteam.github.io.
-If you are using a static site generator you may want to separate your web
-site's source files from the generated output. To do this, create a new branch,
-e.g. ``source``, and push this to Github. Set this branch as the default branch
-in the Github settings for the repository. Only commit source files to this
-branch and run the ``doctr configure`` command in this branch committing the
-generated key and the necessary ``.travis.yml`` file. The source and output
-repositories should be set to ``coolteam/coolteam.github.io`` in the
-configuration questions. Lastly, in the ``.travis.yml`` make sure that the
-``doctr deploy`` command has the flag: ``--branch-whitelist source`` if
-``source`` is the default branch name. Change ``source`` to whatever your
-default branch is set to. All output files will be pushed to the master branch
-during the Travis builds and the source is separated from the output.
+Github allows users to create pages at the root url of users' or organizations'
+http://github.io pages. For example, an organization ``coolteam`` can setup a
+repository at https://github.com/coolteam/coolteam.github.io and the html files
+in the ``master`` branch of this repository will be served to
+https://coolteam.github.io.
+
+With doctr, it is necessary to separate the website source files, e.g. input to
+a static site generator, from the output HTML files into two different
+branches. The output files must be stored in the ``master`` branch, as per
+Github's specification. The source files can be stored in another custom branch
+of your choosing, below the name ``source`` is chosen.
+
+.. warning:: Combining the source and output files in the master branch will
+   result in an infinite loop of Travis builds.
+
+To do this:
+
+1. Create a new branch for the source files, e.g. named ``source``, and push
+   this to Github.
+2. Set this branch as the default branch in the Github settings for the
+   repository.
+3. Run the ``doctr configure`` command in the ``source`` branch. The source and
+   output repositories should both be set to ``coolteam/coolteam.github.io`` in
+   the configuration options.
+4. Commit the generated encryption key and the ``.travis.yml`` file to the
+   ``source`` branch. Do not commit a ``.travis.yml`` file to both the
+   ``master`` and ``source`` branches, as this will also cause and infinite
+   loop of Travis builds.
+5. Lastly, in ``.travis.yml`` make sure that the ``doctr deploy`` command white
+   lists the ``source`` branch, like so:
+
+.. code:: bash
+
+   doctr deploy --branch-whitelist source  --built-docs output-directory/ .
+
+The source files should only be pushed to the ``source`` branch and all output
+files will be pushed to the ``master`` branch during the Travis builds.
