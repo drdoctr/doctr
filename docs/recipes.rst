@@ -186,11 +186,12 @@ key.
 Using doctr with ``*.github.io`` pages
 ======================================
 
-Github allows users to create pages at the root url of users' or organizations'
-http://github.io pages. For example, an organization ``coolteam`` can setup a
-repository at https://github.com/coolteam/coolteam.github.io and the html files
-in the ``master`` branch of this repository will be served to
-https://coolteam.github.io.
+Github allows users to create pages at the root url of users' or
+organizations' http://github.io pages. For example, an organization
+``coolteam`` can setup a repository at
+``https://github.com/coolteam/coolteam.github.io`` and the html files in the
+``master`` branch of this repository will be served to
+``https://coolteam.github.io``.
 
 With doctr, it is necessary to separate the website source files, e.g. input to
 a static site generator, from the output HTML files into two different
