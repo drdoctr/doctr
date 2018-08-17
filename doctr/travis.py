@@ -257,11 +257,11 @@ def set_git_user_email():
     Set global user and email for git user if not already present on system
     """
     username = subprocess.run(shlex.split('git config user.name'), stdout=subprocess.PIPE)
-    if not username.stdout:
+    if not username.stdout or username.stdout == "Travis CI User":
         run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
 
     email = subprocess.run(shlex.split('git config user.email'), stdout=subprocess.PIPE)
-    if not email.stdout:
+    if not email.stdout or email.stdout == "<travis@example.org>":
         # We need a dummy email or git will fail. We use this one as per
         # https://help.github.com/articles/keeping-your-email-address-private/.
         run(['git', 'config', '--global', 'user.email', 'drdoctr@users.noreply.github.com'])
