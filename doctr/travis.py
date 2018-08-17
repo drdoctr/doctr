@@ -566,8 +566,8 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
         canpush = False
 
     if last_commit_by_doctr():
-        print("The last commit on this branch was pushed by doctr. Not pushing to "
-        "avoid an infinite build-loop.")
+        print(red("The last commit on this branch was pushed by doctr. Not pushing to "
+        "avoid an infinite build-loop."), file=sys.stderr)
         canpush = False
 
     return canpush
