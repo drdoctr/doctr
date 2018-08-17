@@ -182,3 +182,23 @@ as the deploy repo running ``doctr configure``. When deploying, use
 The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
+
+Separating source and output in Github username and orgname pages
+=================================================================
+
+Github allows users to create pages at the root url of users or organizations
+http://github.io pages. For example an organization ``coolteam`` can setup a
+repository with the name ``coolteam.github.io`` and the html files in the
+master branch of this repository will be served to https://coolteam.github.io.
+If you are using a static site generator you may want to separate your web
+site's source files from the generated output. To do this, create a new branch,
+e.g. ``source``, and push this to Github. Set this branch as the default branch
+in the Github settings for the repository. Only commit source files to this
+branch and run the ``doctr configure`` command in this branch committing the
+generated key and the necessary ``.travis.yml`` file. The source and output
+repositories should be set to ``coolteam/coolteam.github.io`` in the
+configuration questions. Lastly, in the ``.travis.yml`` make sure that the
+``doctr deploy`` command has the flag: ``--branch-whitelist source`` if
+``source`` is the default branch name. Change ``source`` to whatever your
+default branch is set to. All output files will be pushed to the master branch
+during the Travis builds and the source is separated from the output.
