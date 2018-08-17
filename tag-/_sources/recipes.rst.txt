@@ -183,23 +183,21 @@ The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
 
-Using doctr with Github username and orgname pages
-==================================================
+Using doctr with ``*.github.io`` pages
+======================================
 
-Github allows users to create pages at the root url of users' or organizations'
-http://github.io pages. For example, an organization ``coolteam`` can setup a
-repository at https://github.com/coolteam/coolteam.github.io and the html files
-in the ``master`` branch of this repository will be served to
-https://coolteam.github.io.
+Github allows users to create pages at the root url of users' or
+organizations' http://github.io pages. For example, an organization
+``coolteam`` can setup a repository at
+``https://github.com/coolteam/coolteam.github.io`` and the html files in the
+``master`` branch of this repository will be served to
+``https://coolteam.github.io``.
 
 With doctr, it is necessary to separate the website source files, e.g. input to
 a static site generator, from the output HTML files into two different
 branches. The output files must be stored in the ``master`` branch, as per
 Github's specification. The source files can be stored in another custom branch
 of your choosing, below the name ``source`` is chosen.
-
-.. warning:: Combining the source and output files in the master branch will
-   result in an infinite loop of Travis builds.
 
 To do this:
 
