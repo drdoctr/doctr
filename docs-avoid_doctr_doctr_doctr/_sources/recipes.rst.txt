@@ -183,8 +183,8 @@ The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
 
-Using doctr with Github username and orgname pages
-==================================================
+Using doctr with ``*.github.io`` pages
+======================================
 
 Github allows users to create pages at the root url of users' or organizations'
 http://github.io pages. For example, an organization ``coolteam`` can setup a
