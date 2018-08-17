@@ -534,6 +534,15 @@ def push_docs(deploy_branch='gh-pages', retries=3):
             return
     sys.exit("Giving up...")
 
+def last_commit_by_doctr():
+    """Check whether the author of `HEAD` is `doctr` to avoid starting an
+    infinite loop"""
+
+    email = run(["git", "show", "--format=%ae", "HEAD"])
+    if email.strip() == "drdoctr@users.noreply.github.com":
+        return True
+    return False
+
 def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
     TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
@@ -554,6 +563,11 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        canpush = False
+
+    if last_commit_by_doctr():
+        print("The last commit on this branch was pushed by doctr. Not pushing to "
+        "avoid an infinite build-loop.")
         canpush = False
 
     return canpush
