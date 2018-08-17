@@ -538,7 +538,7 @@ def last_commit_by_doctr():
     """Check whether the author of `HEAD` is `doctr` to avoid starting an
     infinite loop"""
 
-    email = run(["git", "show", "--format=%ae", "HEAD"])
+    email = subprocess.check_output(["git", "show", "--format=%ae", "HEAD"]).decode('utf-8')
     if email.strip() == "drdoctr@users.noreply.github.com":
         return True
     return False
