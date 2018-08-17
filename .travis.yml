@@ -6,13 +6,8 @@ env:
     - DOCS="true"
     - TESTS="true"
   global:
-    # Deploy key for drdoctr/doctr
-    - secure: "DnMBexSob9FJwOaIE3OaA2szQ3e+NwpFv3imT3UyAIbxxxXGCHLAwQdeJrB7ivDJPUdEBUvbKBdKo8O4GdiUeTJHZvmr2cT+k0iCj5fkEaLyCqwtfXmQWP5hjQ9RKshqsyHgfkooo2ItLDEnZD/XTonnIzohUQobWzOTW6W3a0A+FRNq8cIvZIslmX8xPF7wxisBH8XiZad2c+HbSWIIJcfGbBN+k+KzvqqG2LNXX3s9iP27h+Fgluk48q0bSbglGAe/F87z2ZUOACCFFT2VhVn8yNrtaZyWfQhR2jFPUqCUffIyNozH2SYXooLuY0DqzEH7rIgCZDMF3homSvTITfeDMYxnW7LefGqrG7eh4rpE9w4Kdenuqcf1UbRBv0dy1jun+wAgUlQ2ZGqBG1dTeZRKlabrBHYDjNReRKdcqqYQmEIYc/S3G4jYOxzY4Eo4sFLeOKqcZCPigGE3pEt4oq1OBwIA5AuT8k28Sm6BneBibe0JgxpwVIbOOBkiHcgjrXxF/q9gp7B3pFSeQlNNIhEzIbHObiPQHwh++wGpccqmtD0FwenhhbBGDuAvLX+GFmjKve+8k/9+k41uvxP9FhNNmtYvozzYcJ+8BvXybU3kodJZfMw7+cIdwIW4x0s/8qJCiQhABo9Bpgx4Uw7y2ljb/K9kd6Kv8k62CsM7oMg="
-    # Deploy key for drdoctr/drdoctr.github.io
-    - secure: "miMtYnqGtt26LT3Tr23OwHOST2NGEJZsng5oMSP26lRv81ZQZ+VsFhEcjptUR1KfQia05t2viVTuyedZIgZe23dn3KDEm6Lqp8COAERe6jnW3/qZdHyD1zC3ddaku0dS4LVnk7jaRsjpu1mSdODxGZ9pCKA861uDDKk8DUeWx40sOte6MYL7OS38HavPCGJI0s4OL9eVqN++TAiZ9ts+Wa1O0M5wEkxaR4ES5cmzC0TLErKCnjyzy4aVU9+ykU43qVncq7w0857TSicBhh/zp0/6mvrBzv3lVCC0vUUiPrca0cn6mNTLggHFiur/BCfVAuEE5MPsZlW79jqtsYb+3lr45ELx22zUkZtXJtYOhlsA9AIG42iRMuOilt1Db0aVvlOAisvUZtSN1X314zYnqNLgCf32VpIsFFCuTBmW99UfvXpqOt0zRgnD50PEM4vDVO1L5HslNAmnAfa/l/jAFWD3xVMd+mSik2kVZo1i3ntjRiMjs6CGJulVS/psKSG6umTFyV1v9MCRHKLtfPatXVnlQ1OtdtP6w1DDsmWSxu+lHGmcSzcBqBzq6PrIRv3JmVghEloQVhYDaeb1/IXJu7l4uAV2M8vXaQU2syDbYpC/mP/1WNt0zFh0rHHRvhfqXylW65h7jxqt3mDMJq0IkaGCw3hXo63h4hjcZG+E7C4="
-python:
-  - 3.5
-  - 3.6
+    - secure: "Q4/CS/5/BhPbZdH7hjJooF0ucmlSMyM+iDJsmrAsZPI4lBccIEWHoWrqReCWn8AgxvfUMvZ1+PwIsPn47lftfX0zdOsJ92p8P8QovM9BRRf1I+/3imNWvWrAvwkRKWiNblfHPddjcv6TYwl/eQhNS56+wwabAcVmkPljc0iZS6MLCxwdkmcfrwA6DM7nNtofeb60XKBxOVXZ4ASUitIqUyH6CyVmTkV3bvjbeTPpp6vCxybAj/HsgaiqG1q8vbUWGK9Ie5eqm18CJ03M/yVd/St6cwApPcBhSzAnQDSAySKqC0Xesp8nDVC0HQ9S8NxtZyG36+PK7v3shiosvkZR7x7pJUBUZiMV7Bb5DNEUCUqdnXlZ3E5cBHwF7hRM2e4GGM47aQWAhCBwRwr7wowDz5oORfj4oei7bI32xLE0i3DKU1D3IXUFiartqjIZqzky4IGm8wdEWOroN1fd1uR1DPLkNgt9QPlNpX8BrWXUd89iSe+n+QUVoalZciR/QH7MSOXbFBwaUFacPm8b1bTxTFGalqfeMvrJNoBJqcHX0WlXlszAoOFnlwQguBoiVnmxT5KAlmskukHAa1cdHVrGGFei5ucTieeR/U+OZMbL4nrziMYIjyT4BFyI05QiS4D8CqcnJm4TZsejVlptZpEWwYI7e/w/y2J0yXaM7S8cf1g="
+
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -23,47 +18,22 @@ install:
   - conda config --add channels conda-forge # For sphinxcontrib.autoprogram
   - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues pyyaml
+  - conda create -q -n test-environment python=3.5 requests cryptography sphinx pyflakes sphinxcontrib-autoprogram pytest sphinx-issues
   - source activate test-environment
 
 script:
   - set -e
   - set -x
-  # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
-  - |
-    if [[ "${DOCS}" == "true" ]]; then
+  - if [[ "${DOCS}" == "true" ]]; then
       cd docs;
       make html;
       cd ..;
-      python -m doctr deploy --sync --key-path deploy_key.enc .;
-      python -m doctr deploy --sync --key-path deploy_key.enc --gh-pages-docs docs;
-      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master  --built-docs docs/_build/html "docs-$TRAVIS_BRANCH" --command "echo test && ls && touch docs-$TRAVIS_BRANCH/test-file && git add docs-$TRAVIS_BRANCH/test-file"
-      echo `date` >> test
-      python -m doctr deploy --key-path deploy_key.enc --no-require-master docs;
-      # Test syncing a tracked file with a change
-      python -m doctr deploy --sync --key-path deploy_key.enc stash-test --built-docs test;
-      # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
-      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-branch gh-pages-testing docs;
-      # Test pushing to .github.io
-      python -m doctr deploy --sync --no-require-master --deploy-repo drdoctr/drdoctr.github.io "docs-$TRAVIS_BRANCH";
-      # Actual docs deployment
-      python -m doctr deploy --sync --deploy-repo drdoctr/drdoctr.github.io .;
-      # GitHub Wiki deploy
-      echo "This page was automatically deployed by doctr on $(date)" > deploy-test.md;
-      python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-repo drdoctr/doctr.wiki . --built-docs deploy-test.md;
-      # Build on tags
-      python -m doctr deploy --sync --key-path deploy_key.enc "tag-$TRAVIS_TAG" --build-tags --branch-whitelist;
-      # Test --branch-whitelist
-      python -m doctr deploy --sync --key-path deploy_key.enc "branch-whitelist" --branch-whitelist branch-whitelist;
-      # Test --exclude
-      python -m doctr deploy --sync --key-path deploy_key.enc "exclude-test" --built-docs docs/_build/html --exclude tests.html;
+      python -m doctr deploy --gh-pages-docs . --key-path deploy_key.enc;
+      python -m doctr deploy --gh-pages-docs docs --key-path deploy_key.enc;
+      python -m doctr deploy --no-require-master --gh-pages-docs "docs-$TRAVIS_BRANCH" --built-docs docs/_build/html --key-path deploy_key.enc;
+      python -m doctr deploy --no-require-master --key-path deploy_key.enc --no-sync --command "echo test";
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
       py.test doctr;
     fi
-
-doctr:
-  require-master: true
-  sync: False
-  lubalubadubdub: False
