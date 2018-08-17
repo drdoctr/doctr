@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.3+16.g47693d7 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.3+18.gd2f2e61 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -600,8 +600,8 @@
         <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">last_commit_by_doctr</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The last commit on this branch was pushed by doctr. Not pushing to &quot;</span>
-        <span class="s2">&quot;avoid an infinite build-loop.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;The last commit on this branch was pushed by doctr. Not pushing to &quot;</span>
+        <span class="s2">&quot;avoid an infinite build-loop.&quot;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="n">canpush</span></div>

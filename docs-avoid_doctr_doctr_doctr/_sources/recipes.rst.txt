@@ -198,9 +198,6 @@ branches. The output files must be stored in the ``master`` branch, as per
 Github's specification. The source files can be stored in another custom branch
 of your choosing, below the name ``source`` is chosen.
 
-.. warning:: Combining the source and output files in the master branch will
-   result in an infinite loop of Travis builds.
-
 To do this:
 
 1. Create a new branch for the source files, e.g. named ``source``, and push
