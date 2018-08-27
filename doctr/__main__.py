@@ -36,7 +36,7 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo, AuthenticationFailed)
+    GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
@@ -401,6 +401,8 @@ def configure(args, parser):
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
             check_repo_exists(build_repo, service='travis')
             get_build_repo = True
+        except GitHubError:
+            raise
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))
 
@@ -415,6 +417,8 @@ def configure(args, parser):
                 check_repo_exists(deploy_repo, service='github', **login_kwargs)
 
             get_deploy_repo = True
+        except GitHubError:
+            raise
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))
 
