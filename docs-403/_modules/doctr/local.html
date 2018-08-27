@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.7.3+30.ge3dc252 documentation</title>
+    <title>doctr.local &#8212; Doctr 1.7.3+31.g40545d2 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -210,7 +210,7 @@
         <span class="k">def</span> <span class="nf">plural</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02d</span><span class="s2"> minute</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> minute</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">hh</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> hour</span><span class="si">%s</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">hh</span><span class="p">)</span> <span class="o">+</span> <span class="n">s</span>
         <span class="k">if</span> <span class="n">relative_reset_datetime</span><span class="o">.</span><span class="n">days</span><span class="p">:</span>
