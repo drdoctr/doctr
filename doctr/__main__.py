@@ -249,6 +249,8 @@ def process_args(parser):
         return args.func(args, parser)
     except RuntimeError as e:
         sys.exit("Error: " + e.args[0])
+    except KeyboardInterrupt:
+        sys.exit(red("Interrupted by user"))
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
