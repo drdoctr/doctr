@@ -10,7 +10,6 @@ import re
 from getpass import getpass
 import urllib
 import datetime
-import textwrap
 
 import requests
 from requests.auth import HTTPBasicAuth
