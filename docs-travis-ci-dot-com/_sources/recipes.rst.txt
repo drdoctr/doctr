@@ -182,3 +182,42 @@ as the deploy repo running ``doctr configure``. When deploying, use
 The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
+
+Using doctr with ``*.github.io`` pages
+======================================
+
+Github allows users to create pages at the root url of users' or
+organizations' http://github.io pages. For example, an organization
+``coolteam`` can setup a repository at
+``https://github.com/coolteam/coolteam.github.io`` and the html files in the
+``master`` branch of this repository will be served to
+``https://coolteam.github.io``.
+
+With doctr, it is necessary to separate the website source files, e.g. input to
+a static site generator, from the output HTML files into two different
+branches. The output files must be stored in the ``master`` branch, as per
+Github's specification. The source files can be stored in another custom branch
+of your choosing, below the name ``source`` is chosen.
+
+To do this:
+
+1. Create a new branch for the source files, e.g. named ``source``, and push
+   this to Github.
+2. Set this branch as the default branch in the Github settings for the
+   repository.
+3. Run the ``doctr configure`` command in the ``source`` branch. The source and
+   output repositories should both be set to ``coolteam/coolteam.github.io`` in
+   the configuration options.
+4. Commit the generated encryption key and the ``.travis.yml`` file to the
+   ``source`` branch. Do not commit a ``.travis.yml`` file to both the
+   ``master`` and ``source`` branches, as this will also cause and infinite
+   loop of Travis builds.
+5. Lastly, in ``.travis.yml`` make sure that the ``doctr deploy`` command white
+   lists the ``source`` branch, like so:
+
+.. code:: bash
+
+   doctr deploy --branch-whitelist source  --built-docs output-directory/ .
+
+The source files should only be pushed to the ``source`` branch and all output
+files will be pushed to the ``master`` branch during the Travis builds.
