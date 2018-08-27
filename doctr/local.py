@@ -68,6 +68,8 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
             headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
             res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
                 safe='')), headers=headersv3)
+            if res.json().get('file') == 'not found':
+                raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
             public_key = res.json()['public_key']
         else:
             res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
