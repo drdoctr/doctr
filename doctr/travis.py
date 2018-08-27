@@ -256,15 +256,19 @@ def set_git_user_email():
     """
     Set global user and email for git user if not already present on system
     """
-    username = subprocess.run(shlex.split('git config user.name'), stdout=subprocess.PIPE)
-    if not username.stdout:
+    username = subprocess.run(shlex.split('git config user.name'), stdout=subprocess.PIPE).stdout.strip().decode('utf-8')
+    if not username or username == "Travis CI User":
         run(['git', 'config', '--global', 'user.name', "Doctr (Travis CI)"])
+    else:
+        print("Not setting git user name, as it's already set to %r" % username)
 
-    email = subprocess.run(shlex.split('git config user.email'), stdout=subprocess.PIPE)
-    if not email.stdout:
+    email = subprocess.run(shlex.split('git config user.email'), stdout=subprocess.PIPE).stdout.strip().decode('utf-8')
+    if not email or email == "travis@example.org":
         # We need a dummy email or git will fail. We use this one as per
         # https://help.github.com/articles/keeping-your-email-address-private/.
         run(['git', 'config', '--global', 'user.email', 'drdoctr@users.noreply.github.com'])
+    else:
+        print("Not setting git user email, as it's already set to %r" % email)
 
 def checkout_deploy_branch(deploy_branch, canpush=True):
     """
@@ -534,6 +538,15 @@ def push_docs(deploy_branch='gh-pages', retries=3):
             return
     sys.exit("Giving up...")
 
+def last_commit_by_doctr():
+    """Check whether the author of `HEAD` is `doctr` to avoid starting an
+    infinite loop"""
+
+    email = subprocess.check_output(["git", "show", "-s", "--format=%ae", "HEAD"]).decode('utf-8')
+    if email.strip() == "drdoctr@users.noreply.github.com":
+        return True
+    return False
+
 def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
     TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
@@ -554,6 +567,11 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        canpush = False
+
+    if last_commit_by_doctr():
+        print(red("The last commit on this branch was pushed by doctr. Not pushing to "
+        "avoid an infinite build-loop."), file=sys.stderr)
         canpush = False
 
     return canpush
