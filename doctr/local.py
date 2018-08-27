@@ -176,7 +176,7 @@ def GitHub_raise_for_status(r):
         def plural(n):
             return n, abs(n) != 1 and "s" or ""
 
-        s = "%02d minute%s" % plural(mm)
+        s = "%d minute%s" % plural(mm)
         if hh:
             s = "%d hour%s, " % plural(hh) + s
         if relative_reset_datetime.days:
