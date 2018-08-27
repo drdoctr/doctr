@@ -75,12 +75,14 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
             res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
             public_key = res.json()['key']
 
-        if res.status_code == requests.codes.not_found:
-            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
-        res.raise_for_status()
-        # Remove temporary GH token
-        if is_private:
-            delete_GitHub_token(token_id, **login_kwargs)
+        try:
+            if res.status_code == requests.codes.not_found:
+                raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
+            res.raise_for_status()
+        finally:
+            # Remove temporary GH token
+            if is_private:
+                delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
     key = serialization.load_pem_public_key(public_key, backend=default_backend())
