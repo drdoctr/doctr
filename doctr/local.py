@@ -54,34 +54,37 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
         }
         headersv2 = {**_headers, **APIv2}
         headersv3 = {**_headers, **APIv3}
-        if is_private:
-            print("I need to generate a temporary token with GitHub to authenticate with Travis.")
-            print("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.")
-            # /auth/github doesn't seem to exist in the Travis API v3.
-            tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
-                                             note="temporary token for doctr to auth against travis (delete me)",
-                                             **login_kwargs)
-            data = {'github_token': tok_dict['token']}
-            token_id = tok_dict['id']
-            res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
-            res.raise_for_status()
-            headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
-            res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
-                safe='')), headers=headersv3)
-            if res.json().get('file') == 'not found':
-                raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
-            public_key = res.json()['public_key']
-        else:
-            res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
-            public_key = res.json()['key']
-
+        token_id = None
         try:
+            if is_private:
+                print("I need to generate a temporary token with GitHub to authenticate with Travis.")
+                print("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.")
+                # /auth/github doesn't seem to exist in the Travis API v3.
+                tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+                                                 note="temporary token for doctr to auth against travis (delete me)",
+                                                 **login_kwargs)
+                data = {'github_token': tok_dict['token']}
+                token_id = tok_dict['id']
+                res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
+                res.raise_for_status()
+                headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
+                res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
+                    safe='')), headers=headersv3)
+                if res.json().get('file') == 'not found':
+                    print(headersv3)
+                    raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
+                public_key = res.json()['public_key']
+            else:
+                res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
+                public_key = res.json()['key']
+
             if res.status_code == requests.codes.not_found:
                 raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
             res.raise_for_status()
+
         finally:
             # Remove temporary GH token
-            if is_private:
+            if is_private and token_id:
                 delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
