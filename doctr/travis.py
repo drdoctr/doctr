@@ -588,5 +588,8 @@ def travis_tld():
     # https://github.com/travis-ci/travis-ci/issues/7552#issuecomment-416443383.
     # A request on each domain will return 200 on that domain and 401 on the
     # other.
-    r = requests.get('https://api.travis-ci.com/jobs')
-    return '.com' if r.status_code == 200 else '.org'
+    rcom = requests.get('https://api.travis-ci.com/jobs')
+    rorg = requests.get('https://api.travis-ci.org/jobs')
+    print('travis-ci.com status code', rcom.status_code)
+    print('travis-ci.org status code', rorg.status_code)
+    return '.com' if rorg.status_code == 200 else '.org'
