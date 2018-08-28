@@ -258,7 +258,7 @@ def deploy(args, parser):
         parser.error("doctr does not appear to be running on Travis. Use "
                      "doctr deploy <target-dir> --force to run anyway.")
 
-    print("We seem to be running on travis-ci{tld}".format(travis_tld))
+    print("We seem to be running on travis-ci{tld}".format(tld=travis_tld()))
 
     config = get_config()
 
