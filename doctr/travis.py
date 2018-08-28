@@ -14,6 +14,7 @@ import tempfile
 import time
 
 from cryptography.fernet import Fernet
+import requests
 
 from .common import red, blue
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
@@ -575,3 +576,17 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
         canpush = False
 
     return canpush
+
+def travis_tld():
+    """
+    Determines if the job is being run on travis-ci.com or travis-ci.org
+
+    Returns the tld ('.com' or '.org'). For maximum compatibility, if the tld
+    cannot be determined, it returns '.org'.
+    """
+    # See
+    # https://github.com/travis-ci/travis-ci/issues/7552#issuecomment-416443383.
+    # A request on each domain will return 200 on that domain and 401 on the
+    # other.
+    r = requests.get('https://api.travis-ci.com/jobs')
+    return '.com' if r.status_code == 200 else '.org'
