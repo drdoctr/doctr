@@ -148,6 +148,8 @@ def run(args, shell=False, exit=True):
     sys.stdout.flush()
 
     returncode = run_command_hiding_token(args, token, shell=shell)
+    sys.stdout.flush()
+    sys.stderr.flush()
 
     if exit and returncode != 0:
         sys.exit(red("%s failed: %s" % (command, returncode)))
