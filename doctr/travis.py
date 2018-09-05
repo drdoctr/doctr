@@ -18,6 +18,10 @@ from cryptography.fernet import Fernet
 from .common import red, blue
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
 
+# Force all prints to flush to keep the output in order on Travis
+builtin_print = print
+print = lambda *args, **kwargs: builtin_print(*args, **{'flush': True, **kwargs})
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.

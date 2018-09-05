@@ -45,6 +45,10 @@ from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESE
 
 from . import __version__
 
+# Force all prints to flush to keep the output in order on Travis
+builtin_print = print
+print = lambda *args, **kwargs: builtin_print(*args, **{'flush': True, **kwargs})
+
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
 
