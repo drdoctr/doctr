@@ -2,6 +2,33 @@
  Doctr Changelog
 =================
 
+1.7.4 (2018-08-19)
+==================
+
+Major Changes
+-------------
+
+- Run a single ``git add`` and ``git rm`` command for all the files. This
+  drastically improves the performance of doctr when there are many files that
+  are synced. (:issue:`325`)
+
+- Improve the error messaging in ``doctr configure`` when the 2FA code
+  expires, and when the GitHub API rate limit is hit. The GitHub API rate
+  limit is shared across all OAuth applications, and is often hit after
+  clicking the "sync account" button on travis-ci.org, especially if you have
+  access to a large number of repos. If this happens, you must wait an hour
+  and run ``doctr configure`` again. (:issue:`320`)
+
+Minor Changes
+-------------
+
+- Improve error messages when the deploy key isn't found. (:issue:`306`)
+
+- Doctr doesn't commit when the most recent commit on the main repo was by
+  doctr. This avoids infinite loops if you accidentally run doctr from the
+  ``master`` branch of a ``.github.io`` instead of a separate branch. See
+  the :ref:`recipe-github-io` recipe. (:issue:`318`)
+
 1.7.3 (2018-04-16)
 ==================
 
