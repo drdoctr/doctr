@@ -36,7 +36,7 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo, AuthenticationFailed)
+    GitHub_login, guess_github_repo, activate_travis, AuthenticationFailed)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
@@ -397,7 +397,27 @@ def configure(args, parser):
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
-            check_repo_exists(build_repo, service='travis')
+            try:
+                check_repo_exists(build_repo, service='travis')
+            except RuntimeError:
+                if not args.upload_key:
+                    # Activating a repo on Travis requires authentication
+                    raise
+                activate = 'x'
+                while activate not in 'yn':
+                    activate = input("{build_repo} is not activated on Travis. Would you like to activate it? [Y/n] ".format(build_repo=build_repo))
+                    if not activate:
+                        activate = 'y'
+                    activate = activate[0].lower()
+                if activate == 'n':
+                    raise
+                tld = ''
+                while tld not in ['.com', '.org']:
+                    tld = input("Would you like to activate on travis-ci.org or travis-ci.com? [.org] ")
+                    if not tld:
+                        tld = '.org'
+                activate_travis(build_repo, tld=tld, **login_kwargs)
+
             get_build_repo = True
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))

@@ -296,3 +296,33 @@ def guess_github_repo():
     if not m:
         return False
     return m.group(1)
+
+def activate_travis(repo, tld='.org', **login_kwargs):
+    APIv2 = {'Accept': 'application/vnd.travis-ci.2+json'}
+    APIv3 = {"Travis-API-Version": "3"}
+    _headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'MyClient/1.0.0',
+    }
+    headersv2 = {**_headers, **APIv2}
+    headersv3 = {**_headers, **APIv3}
+
+    token_id = None
+    try:
+        print("I need to generate a temporary token with GitHub to authenticate with Travis.")
+        print("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.")
+        # /auth/github doesn't seem to exist in the Travis API v3.
+        tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+            note="temporary token for doctr to auth against travis (delete me)",
+            **login_kwargs)
+        data = {'github_token': tok_dict['token']}
+        token_id = tok_dict['id']
+        res = requests.post('https://api.travis-ci{tld}/auth/github'.format(tld=tld), data=json.dumps(data), headers=headersv2)
+        res.raise_for_status()
+        headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
+        res = requests.get('https://api.travis-ci{tld}/repo/{repo}/activate'.format(tld=tld, repo=urllib.parse.quote(repo, safe='')), headers=headersv3)
+        res.raise_for_status()
+    finally:
+        # Remove temporary GH token
+        if token_id:
+            delete_GitHub_token(token_id, **login_kwargs)
