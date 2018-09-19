@@ -476,10 +476,11 @@ def commit_docs(*, added, removed):
 
     DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
-    for f in added:
-        run(['git', 'add', f])
-    for f in removed:
-        run(['git', 'rm', f])
+
+    if added:
+        run(['git', 'add', *added])
+    if removed:
+        run(['git', 'rm', *removed])
 
     commit_message = """\
 Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
