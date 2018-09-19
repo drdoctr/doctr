@@ -248,7 +248,7 @@ def process_args(parser):
     try:
         return args.func(args, parser)
     except RuntimeError as e:
-        sys.exit("Error: " + e.args[0])
+        sys.exit(red("Error: " + e.args[0]))
     except KeyboardInterrupt:
         sys.exit(red("Interrupted by user"))
 
