@@ -57,6 +57,10 @@ script:
       python -m doctr deploy --sync --key-path deploy_key.enc "branch-whitelist" --branch-whitelist branch-whitelist;
       # Test --exclude
       python -m doctr deploy --sync --key-path deploy_key.enc "exclude-test" --built-docs docs/_build/html --exclude tests.html;
+      # Test syncing lots of files
+      mkdir -p lots-of-files-test;
+      python -c "for i in range(10000): open('lots-of-files-test/test-%s' % i, 'w')";
+      python -m doctr deploy --sync --key-path deploy_key.enc lots-of-files-test --built-docs lots-of-files-test;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
