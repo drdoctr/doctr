@@ -60,7 +60,7 @@ script:
       # Test syncing lots of files
       mkdir -p lots-of-files-test;
       python -c "for i in range(10000): open('lots-of-files-test/test-%s' % i, 'w')";
-      python -m doctr deploy --sync --key-path deploy_key.enc lots-of-files-test" --built-docs lots-of-files-test;
+      python -m doctr deploy --sync --key-path deploy_key.enc lots-of-files-test --built-docs lots-of-files-test;
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
