@@ -477,8 +477,8 @@ def commit_docs(*, added, removed):
     DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
 
-    for f in added:
-        run(['git', 'add', f])
+    if added:
+        run(['git', 'add', *added])
     if removed:
         run(['git', 'rm', *removed])
 
