@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Releasing &#8212; Doctr 1.7.3+45.g90b34f9 documentation</title>
+    <title>Releasing &#8212; Doctr 1.7.4+1.g8be8ea3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -49,7 +49,7 @@ below commands not work until you delete the branch.</li>
 like <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">2.0</span> <span class="pre">-a</span></code>. Include the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag. This will ask for some
 commit message for the tag (you can just use something like “Doctr 2.0
 release”, or you can put the changelog in there if you want).</li>
-<li>Do <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
+<li>Do <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">bdist_wheel</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
 you need to do this after you tag.</li>
 <li>Push up the tag (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">2.0</span></code>).</li>
 <li>Merge the pull request.</li>
