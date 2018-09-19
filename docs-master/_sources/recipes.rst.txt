@@ -183,6 +183,8 @@ The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
 
+.. _recipe-github-io:
+
 Using doctr with ``*.github.io`` pages
 ======================================
 
