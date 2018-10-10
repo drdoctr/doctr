@@ -16,10 +16,11 @@ docs-branch-whitelist/_static/comment-close.png
 docs-branch-whitelist/_static/comment.png
 docs-branch-whitelist/_static/custom.css
 docs-branch-whitelist/_static/doctools.js
+docs-branch-whitelist/_static/documentation_options.js
 docs-branch-whitelist/_static/down-pressed.png
 docs-branch-whitelist/_static/down.png
 docs-branch-whitelist/_static/file.png
-docs-branch-whitelist/_static/jquery-3.1.0.js
+docs-branch-whitelist/_static/jquery-3.2.1.js
 docs-branch-whitelist/_static/jquery.js
 docs-branch-whitelist/_static/minus.png
 docs-branch-whitelist/_static/plus.png
