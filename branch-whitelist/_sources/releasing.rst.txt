@@ -14,7 +14,7 @@ Here is how to do a release:
   like ``git tag 2.0 -a``. Include the ``-a`` flag. This will ask for some
   commit message for the tag (you can just use something like "Doctr 2.0
   release", or you can put the changelog in there if you want).
-- Do ``python setup.py sdist upload``. It uses the tag to get the version number, so
+- Do ``python setup.py sdist bdist_wheel upload``. It uses the tag to get the version number, so
   you need to do this after you tag.
 - Push up the tag (``git push origin 2.0``).
 - Merge the pull request.
