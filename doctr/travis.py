@@ -220,7 +220,7 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     TRAVIS_REPO_SLUG = os.environ["TRAVIS_REPO_SLUG"]
     REPO_URL = 'https://api.github.com/repos/{slug}'
     r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
-    fork = r.json()['fork']
+    fork = r.json().get('fork', False)
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
