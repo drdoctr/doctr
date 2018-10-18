@@ -29,6 +29,7 @@ install:
 script:
   - set -e
   - set -x
+  - echo $TRAVIS_SECURE_ENV_VARS
   # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
   - |
     if [[ "${DOCS}" == "true" ]]; then
