@@ -470,11 +470,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
         if isdir(f) or f.endswith(os.sep):
             os.makedirs(new_f, exist_ok=True)
         else:
-            try:
-                shutil.copy2(f, new_f)
-            except:
-                print("DEBUG:", src, dst, f, new_f, file=sys.stderr)
-                raise
+            shutil.copy2(f, new_f)
             added.append(new_f)
             if new_f in removed:
                 removed.remove(new_f)
