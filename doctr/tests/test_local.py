@@ -67,7 +67,7 @@ def test_GIT_URL():
 def test_guess_github_repo():
     """
     Only works if run in this repo, and if cloned from origin. For safety,
-    only run on Travis
+    only run on Travis and not run on fork builds.
     """
-    if on_travis():
+    if on_travis() and os.environ.get('TRAVIS_SECURE_ENV_VARS', 'false') == 'true':
         assert guess_github_repo() == 'drdoctr/doctr'
