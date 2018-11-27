@@ -466,11 +466,15 @@ def sync_from_log(src, dst, log_file, exclude=()):
         if any(is_subdir(f, os.path.join(src, i)) for i in exclude):
             continue
         new_f = join(dst, f[len(src):])
-        print(src, dst, f, new_f)
+
         if isdir(f) or f.endswith(os.sep):
             os.makedirs(new_f, exist_ok=True)
         else:
-            shutil.copy2(f, new_f)
+            try:
+                shutil.copy2(f, new_f)
+            except:
+                print("DEBUG:", src, dst, f, new_f)
+                raise
             added.append(new_f)
             if new_f in removed:
                 removed.remove(new_f)
