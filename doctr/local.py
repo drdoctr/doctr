@@ -379,7 +379,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
                             r = r_org
                             service = 'travis-ci.org'
                             break
-                        elif preferred in ['c', 'com', '.com', 'travis-ci.com']:
+                        elif preferred in ['c', 'com', '.com', 'travis-ci.com', '']:
                             service = 'travis-ci.com'
                             break
                         else:
