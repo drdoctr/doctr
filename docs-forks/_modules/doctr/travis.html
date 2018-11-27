@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.4+33.g282f92f documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.4+34.g14e49f7 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -504,11 +504,7 @@
         <span class="k">if</span> <span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">new_f</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_f</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG:&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">new_f</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-                <span class="k">raise</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_f</span><span class="p">)</span>
             <span class="n">added</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">new_f</span> <span class="ow">in</span> <span class="n">removed</span><span class="p">:</span>
                 <span class="n">removed</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
