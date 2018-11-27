@@ -473,7 +473,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
             try:
                 shutil.copy2(f, new_f)
             except:
-                print("DEBUG:", src, dst, f, new_f)
+                print("DEBUG:", src, dst, f, new_f, file=sys.stderr)
                 raise
             added.append(new_f)
             if new_f in removed:
