@@ -183,10 +183,12 @@ The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.
 
+.. _recipe-github-io:
+
 Using doctr with ``*.github.io`` pages
 ======================================
 
-Github allows users to create pages at the root url of users' or
+Github allows users to create pages at the root URL of users' or
 organizations' http://github.io pages. For example, an organization
 ``coolteam`` can setup a repository at
 ``https://github.com/coolteam/coolteam.github.io`` and the html files in the
