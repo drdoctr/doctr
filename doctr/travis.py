@@ -447,19 +447,9 @@ def sync_from_log(src, dst, log_file, exclude=()):
         files = glob.iglob(join(src, '**'), recursive=True)
     else:
         files = [src]
+        src = os.path.dirname(src) + os.sep if os.sep in src else ''
 
-        if dst.endswith(os.sep):
-            os.makedirs(dst, exist_ok=True)
-        elif not isdir(dst) and os.sep not in dst:
-            # src is a file and dst doesn't end in / or exist as a directory,
-            # so make it a file
-            shutil.copy2(src, dst)
-            added.append(dst)
-            if dst in removed:
-                removed.remove(dst)
-            files = []
-
-        src = os.path.dirname(src) + os.sep if os.path.isabs(src) else ''
+        os.makedirs(dst, exist_ok=True)
 
     # sorted makes this easier to test
     for f in sorted(files):

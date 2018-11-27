@@ -221,57 +221,14 @@ def test_sync_from_log(src, dst):
             os.chdir(old_curdir)
 
 
-def test_sync_from_log_file_to_file():
+@pytest.mark.parametrize("dst", ['dst', 'dst/'])
+def test_sync_from_log_file_to_dir(dst):
     with tempfile.TemporaryDirectory() as dir:
         try:
             old_curdir = os.path.abspath(os.curdir)
             os.chdir(dir)
 
-            # src is a file and dst doesn't exist as a directory or end in /,
-            # so should sync to a file called 'dst'
             src = 'file'
-            dst = 'dst'
-
-            with open(src, 'w') as f:
-                f.write('test1')
-
-            # Test that the sync happens
-            added, removed = sync_from_log(src, dst, 'logfile')
-
-            assert added == [
-                'dst',
-                'logfile',
-                ]
-
-            assert removed == []
-
-            # Make sure dst is a file
-            with open(dst) as f:
-                assert f.read() == 'test1'
-
-
-            with open('logfile') as f:
-                assert f.read() == '\n'.join([
-                    dst,
-                    ])
-
-            # Now make sure that the dst is created as a directory if it
-            # ends in /
-
-        finally:
-            os.chdir(old_curdir)
-
-
-def test_sync_from_log_file_to_dir():
-    with tempfile.TemporaryDirectory() as dir:
-        try:
-            old_curdir = os.path.abspath(os.curdir)
-            os.chdir(dir)
-
-            # src is a file but dst ends in / (even though it doesn't exist),
-            # so it should sync to dst/file
-            src = 'file'
-            dst = 'dst/'
 
             with open(src, 'w') as f:
                 f.write('test1')

@@ -44,7 +44,7 @@ script:
       python -m doctr deploy --sync --key-path deploy_key.enc stash-test/ --built-docs test;
       # Test syncing a single file
       echo `date` >> test-file
-      python -m doctr deploy --sync --key-path deploy_key.enc test-file --built-docs test-file;
+      python -m doctr deploy --sync --key-path deploy_key.enc . --built-docs test-file;
       # Test deploy branch creation. Delete the branch gh-pages-testing on drdoctr/doctr whenever you want to test this.
       python -m doctr deploy --sync --key-path deploy_key.enc --no-require-master --deploy-branch gh-pages-testing docs;
       # Test pushing to .github.io
