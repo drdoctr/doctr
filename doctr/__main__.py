@@ -39,7 +39,7 @@ from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp, checkout_deploy_branch, travis_tld)
+    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 
 from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESET
 
@@ -259,8 +259,6 @@ def deploy(args, parser):
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
                      "doctr deploy <target-dir> --force to run anyway.")
-
-    print("We seem to be running on travis-ci{tld}".format(tld=travis_tld()))
 
     config = get_config()
 

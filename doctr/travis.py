@@ -14,7 +14,6 @@ import tempfile
 import time
 
 from cryptography.fernet import Fernet
-import requests
 
 from .common import red, blue
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
@@ -471,7 +470,7 @@ def commit_docs(*, added, removed):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "<unknown>")
     TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
     TRAVIS_REPO_SLUG = os.environ.get("TRAVIS_REPO_SLUG", "<unknown>")
-    TRAVIS_JOB_ID = os.environ.get("TRAVIS_JOB_ID", "")
+    TRAVIS_JOB_WEB_URL = os.environ.get("TRAVIS_JOB_WEB_URL", "<unknown>")
     TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
     branch = "tag" if TRAVIS_TAG else "branch"
 
@@ -491,7 +490,7 @@ The docs were built from the {branch} '{TRAVIS_BRANCH}' against the commit
 {TRAVIS_COMMIT}.
 
 The Travis build that generated this commit is at
-https://travis-ci.org/{TRAVIS_REPO_SLUG}/jobs/{TRAVIS_JOB_ID}.
+{TRAVIS_JOB_WEB_URL}.
 
 The doctr command that was run is
 
@@ -502,7 +501,7 @@ The doctr command that was run is
     TRAVIS_BRANCH=TRAVIS_BRANCH,
     TRAVIS_COMMIT=TRAVIS_COMMIT,
     TRAVIS_REPO_SLUG=TRAVIS_REPO_SLUG,
-    TRAVIS_JOB_ID=TRAVIS_JOB_ID,
+    TRAVIS_JOB_WEB_URL=TRAVIS_JOB_WEB_URL,
     DOCTR_COMMAND=DOCTR_COMMAND,
     )
 
@@ -577,20 +576,3 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
         canpush = False
 
     return canpush
-
-def travis_tld():
-    """
-    Determines if the job is being run on travis-ci.com or travis-ci.org
-
-    Returns the tld ('.com' or '.org'). For maximum compatibility, if the tld
-    cannot be determined, it returns '.org'.
-    """
-    # See
-    # https://github.com/travis-ci/travis-ci/issues/7552#issuecomment-416443383.
-    # A request on each domain will return 200 on that domain and 401 on the
-    # other.
-    rcom = requests.get('https://api.travis-ci.com/jobs')
-    rorg = requests.get('https://api.travis-ci.org/jobs')
-    print('travis-ci.com status code', rcom.status_code)
-    print('travis-ci.org status code', rorg.status_code)
-    return '.com' if rorg.status_code == 200 else '.org'
