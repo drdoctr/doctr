@@ -64,10 +64,11 @@ def test_GIT_URL():
 
     assert not GIT_URL.fullmatch('https://gitlab.com/drdoctr/doctr.git')
 
+@pytest.mark.skipif(not on_travis(), reason="Not on Travis")
+@pytest.mark.skipif(os.environ.get('TRAVIS_SECURE_ENV_VARS', 'false') != 'true', reason="Not run on Travis fork builds")
 def test_guess_github_repo():
     """
     Only works if run in this repo, and if cloned from origin. For safety,
     only run on Travis and not run on fork builds.
     """
-    if on_travis() and os.environ.get('TRAVIS_SECURE_ENV_VARS', 'false') == 'true':
-        assert guess_github_repo() == 'drdoctr/doctr'
+    assert guess_github_repo() == 'drdoctr/doctr'
