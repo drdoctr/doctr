@@ -36,7 +36,7 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo, AuthenticationFailed)
+    GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch, travis_tld)
@@ -249,6 +249,8 @@ def process_args(parser):
         return args.func(args, parser)
     except RuntimeError as e:
         sys.exit(red("Error: " + e.args[0]))
+    except KeyboardInterrupt:
+        sys.exit(red("Interrupted by user"))
 
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
@@ -289,11 +291,11 @@ def deploy(args, parser):
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
         branch_whitelist = set() if args.require_master else set(get_travis_branch())
-        branch_whitelist.update(set(config.get('branches',set({}))))
+        branch_whitelist.update(set(config.get('branches', set())))
         if args.branch_whitelist is not None:
             branch_whitelist.update(set(args.branch_whitelist))
-            if not args.branch_whitelist:
-                branch_whitelist = {'master'}
+        elif not branch_whitelist:
+            branch_whitelist = {'master'}
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
@@ -401,6 +403,8 @@ def configure(args, parser):
             is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
             is_private = check_repo_exists(build_repo, service='travis', ask=True) or is_private
             get_build_repo = True
+        except GitHubError:
+            raise
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))
 
@@ -415,6 +419,8 @@ def configure(args, parser):
                 check_repo_exists(deploy_repo, service='github', **login_kwargs)
 
             get_deploy_repo = True
+        except GitHubError:
+            raise
         except RuntimeError as e:
             print(red('\n{!s:-^{}}\n'.format(e, 70)))
 

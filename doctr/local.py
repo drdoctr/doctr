@@ -9,6 +9,7 @@ import subprocess
 import re
 from getpass import getpass
 import urllib
+import datetime
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -151,11 +152,13 @@ def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
         if two_factor:
             if OTP:
                 print(red("Invalid authentication code"))
+            # For SMS, we have to make a fake request (that will fail without
+            # the OTP) to get GitHub to send it. See https://github.com/drdoctr/doctr/pull/203
             auth_header = base64.urlsafe_b64encode(bytes(username + ':' + password, 'utf8')).decode()
             login_kwargs = {'auth': None, 'headers': {'Authorization': 'Basic {}'.format(auth_header)}}
             try:
                 generate_GitHub_token(**login_kwargs)
-            except requests.exceptions.HTTPError:
+            except (requests.exceptions.HTTPError, GitHubError):
                 pass
             print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
             OTP = input("Authentication code: ")
@@ -163,8 +166,62 @@ def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
 
         raise AuthenticationFailed("invalid username or password")
 
-    r.raise_for_status()
+    GitHub_raise_for_status(r)
     return {'auth': auth, 'headers': headers}
+
+
+class GitHubError(RuntimeError):
+    pass
+
+def GitHub_raise_for_status(r):
+    """
+    Call instead of r.raise_for_status() for GitHub requests
+
+    Checks for common GitHub response issues and prints messages for them.
+    """
+    # This will happen if the doctr session has been running too long and the
+    # OTP code gathered from GitHub_login has expired.
+
+    # TODO: Refactor the code to re-request the OTP without exiting.
+    if r.status_code == 401 and r.headers.get('X-GitHub-OTP'):
+        raise GitHubError("The two-factor authentication code has expired. Please run doctr configure again.")
+    if r.status_code == 403 and r.headers.get('X-RateLimit-Remaining') == '0':
+        reset = int(r.headers['X-RateLimit-Reset'])
+        limit = int(r.headers['X-RateLimit-Limit'])
+        reset_datetime = datetime.datetime.fromtimestamp(reset, datetime.timezone.utc)
+        relative_reset_datetime = reset_datetime - datetime.datetime.now(datetime.timezone.utc)
+        # Based on datetime.timedelta.__str__
+        mm, ss = divmod(relative_reset_datetime.seconds, 60)
+        hh, mm = divmod(mm, 60)
+        def plural(n):
+            return n, abs(n) != 1 and "s" or ""
+
+        s = "%d minute%s" % plural(mm)
+        if hh:
+            s = "%d hour%s, " % plural(hh) + s
+        if relative_reset_datetime.days:
+            s = ("%d day%s, " % plural(relative_reset_datetime.days)) + s
+        authenticated = limit >= 100
+        message = """\
+Your GitHub API rate limit has been hit. GitHub allows {limit} {un}authenticated
+requests per hour. See {documentation_url}
+for more information.
+""".format(limit=limit, un="" if authenticated else "un", documentation_url=r.json()["documentation_url"])
+        if authenticated:
+            message += """
+Note that GitHub's API limits are shared across all oauth applications. A
+common cause of hitting the rate limit is the Travis "sync account" button.
+"""
+        else:
+            message += """
+You can get a higher API limit by authenticating. Try running doctr configure
+again without the --no-upload-key flag.
+"""
+        message += """
+Your rate limits will reset in {s}.\
+""".format(s=s)
+        raise GitHubError(message)
+    r.raise_for_status()
 
 
 def GitHub_post(data, url, *, auth, headers):
@@ -175,7 +232,7 @@ def GitHub_post(data, url, *, auth, headers):
 
     """
     r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
-    r.raise_for_status()
+    GitHub_raise_for_status(r)
     return r.json()
 
 
@@ -206,7 +263,7 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
 def delete_GitHub_token(token_id, *, auth, headers):
     """Delete a temporary GitHub token"""
     r = requests.delete('https://api.github.com/authorizations/{id}'.format(id=token_id), auth=auth, headers=headers)
-    r.raise_for_status()
+    GitHub_raise_for_status(r)
 
 
 def upload_GitHub_deploy_key(deploy_repo, ssh_key, *, read_only=False,
@@ -296,7 +353,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
         if r.status_code == requests.codes.not_found:
             return False
-        r.raise_for_status()
+        if service == 'github':
+            GitHub_raise_for_status(r)
+        else:
+            r.raise_for_status()
         return r
 
     r = _try(REPO_URL.format(user=urllib.parse.quote(user),
