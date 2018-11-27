@@ -221,9 +221,8 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     REPO_URL = 'https://api.github.com/repos/{slug}'
     r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
     fork = r.json().get('fork', False)
-    # if 'fork' not in r.json():
-    #     r.raise_for_status()
-    #     raise RuntimeError("fork key not found")
+    if r.status_code == 403:
+        print(red("Warning: GitHub's API rate limits prevented us from detecting if this build is a fork. If it is, doctr will fail with an error like 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set'. This error can be safely ignored. If this is not a fork build, the error likely indicates you need to run 'doctr configure' again for this repo."))
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
