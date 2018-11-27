@@ -459,7 +459,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
                 removed.remove(dst)
             files = []
 
-        src = ''
+        src = os.path.dirname(src) + os.sep if os.path.isabs(src) else ''
 
     # sorted makes this easier to test
     for f in sorted(files):
