@@ -417,7 +417,6 @@ def sync_from_log(src, dst, log_file, exclude=()):
     ``exclude`` may be a list of paths from ``src`` that should be ignored.
     Such paths are neither added nor removed, even if they are in the logfile.
     """
-    print('dst is', dst)
     from os.path import join, exists, isdir
 
     exclude = [os.path.normpath(i) for i in exclude]
@@ -466,6 +465,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
         if any(is_subdir(f, os.path.join(src, i)) for i in exclude):
             continue
         new_f = join(dst, f[len(src):])
+        print(src, dst, f, new_f)
         if isdir(f) or f.endswith(os.sep):
             os.makedirs(new_f, exist_ok=True)
         else:
