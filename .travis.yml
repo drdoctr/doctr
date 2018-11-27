@@ -64,7 +64,7 @@ script:
     fi
   - if [[ "${TESTS}" == "true" ]]; then
       pyflakes doctr;
-      py.test doctr -v;
+      py.test doctr -v -rs;
     fi
 
 doctr:
