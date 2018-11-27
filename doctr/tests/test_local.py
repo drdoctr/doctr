@@ -64,7 +64,7 @@ def test_GIT_URL():
 
     assert not GIT_URL.fullmatch('https://gitlab.com/drdoctr/doctr.git')
 
-@pytest.mark.skipif(os.environ.get('TRAVIS_SECURE_ENV_VARS', 'false') != 'true', reason="Not run on Travis fork builds")
+@pytest.mark.skipif(os.environ.get('TRAVIS_REPO_SLUG', '') != 'drdoctr/doctr', reason="Not run on Travis fork builds")
 @pytest.mark.skipif(not on_travis(), reason="Not on Travis")
 def test_guess_github_repo():
     """
