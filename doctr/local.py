@@ -58,8 +58,8 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
         token_id = None
         try:
             if is_private:
-                print("I need to generate a temporary token with GitHub to authenticate with Travis.")
-                print("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.")
+                print(green("I need to generate a temporary token with GitHub to authenticate with Travis. You may get a warning email from GitHub about this."))
+                print(green("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually."))
                 # /auth/github doesn't seem to exist in the Travis API v3.
                 tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
                                                  note="temporary token for doctr to auth against travis (delete me)",
