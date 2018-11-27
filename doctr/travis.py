@@ -221,9 +221,9 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     REPO_URL = 'https://api.github.com/repos/{slug}'
     r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
     fork = r.json().get('fork', False)
-    if 'fork' not in r.json():
-        r.raise_for_status()
-        raise RuntimeError("fork key not found")
+    # if 'fork' not in r.json():
+    #     r.raise_for_status()
+    #     raise RuntimeError("fork key not found")
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
