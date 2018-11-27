@@ -224,7 +224,7 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     # Rate limits prevent this check from working every time. By default, we
     # assume it isn't a fork so that things just work on non-fork builds.
     if r.status_code == 403:
-        print(red("Warning: GitHub's API rate limits prevented us from detecting if this build is a fork. If it is, doctr will fail with an error like 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set'. This error can be safely ignored. If this is not a fork build, you can ignore this warning."))
+        print(red("Warning: GitHub's API rate limits prevented us from detecting if this build is a fork. If it is, doctr will fail with an error like 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set'. This error can be safely ignored. If this is not a fork build, you can ignore this warning."), file=sys.stderr)
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
