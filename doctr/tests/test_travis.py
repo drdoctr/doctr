@@ -221,6 +221,86 @@ def test_sync_from_log(src, dst):
             os.chdir(old_curdir)
 
 
+def test_sync_from_log_file_to_file():
+    with tempfile.TemporaryDirectory() as dir:
+        try:
+            old_curdir = os.path.abspath(os.curdir)
+            os.chdir(dir)
+
+            # src is a file and dst doesn't exist as a directory or end in /,
+            # so should sync to a file called 'dst'
+            src = 'file'
+            dst = 'dst'
+
+            with open(src, 'w') as f:
+                f.write('test1')
+
+            # Test that the sync happens
+            added, removed = sync_from_log(src, dst, 'logfile')
+
+            assert added == [
+                'dst',
+                'logfile',
+                ]
+
+            assert removed == []
+
+            # Make sure dst is a file
+            with open(dst) as f:
+                assert f.read() == 'test1'
+
+
+            with open('logfile') as f:
+                assert f.read() == '\n'.join([
+                    dst,
+                    ])
+
+            # Now make sure that the dst is created as a directory if it
+            # ends in /
+
+        finally:
+            os.chdir(old_curdir)
+
+
+def test_sync_from_log_file_to_dir():
+    with tempfile.TemporaryDirectory() as dir:
+        try:
+            old_curdir = os.path.abspath(os.curdir)
+            os.chdir(dir)
+
+            # src is a file but dst ends in / (even though it doesn't exist),
+            # so it should sync to dst/file
+            src = 'file'
+            dst = 'dst/'
+
+            with open(src, 'w') as f:
+                f.write('test1')
+
+            # Test that the sync happens
+            added, removed = sync_from_log(src, dst, 'logfile')
+
+            assert added == [
+                os.path.join('dst', 'file'),
+                'logfile',
+                ]
+
+            assert removed == []
+
+            assert os.path.isdir(dst)
+            # Make sure dst is a file
+            with open(os.path.join('dst', 'file')) as f:
+                assert f.read() == 'test1'
+
+
+            with open('logfile') as f:
+                assert f.read() == '\n'.join([
+                    os.path.join('dst', 'file')
+                    ])
+
+        finally:
+            os.chdir(old_curdir)
+
+
 @pytest.mark.parametrize("""branch_whitelist, TRAVIS_BRANCH,
                          TRAVIS_PULL_REQUEST, TRAVIS_TAG, fork, build_tags,
                          canpush""",
