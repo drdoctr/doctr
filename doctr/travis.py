@@ -450,7 +450,7 @@ def sync_from_log(src, dst, log_file, exclude=()):
 
         if dst.endswith(os.sep):
             os.makedirs(dst, exist_ok=True)
-        elif not isdir(dst) and os.sep not in src:
+        elif not isdir(dst) and os.sep not in dst:
             # src is a file and dst doesn't end in / or exist as a directory,
             # so make it a file
             shutil.copy2(src, dst)
