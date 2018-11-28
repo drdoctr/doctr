@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.4+6.g94e330b documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.4+9.g74f650a documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -232,7 +232,7 @@
     <span class="c1"># Set to the name of the tag for tag builds</span>
     <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">branch_whitelist</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">branch_whitelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">branch_whitelist</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;master&#39;</span><span class="p">}</span>
 
     <span class="k">if</span> <span class="n">require_master</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
