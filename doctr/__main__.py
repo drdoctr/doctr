@@ -256,6 +256,8 @@ def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
 
 def deploy(args, parser):
+    print("Running doctr deploy, version", __version__)
+
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
                      "doctr deploy <target-dir> --force to run anyway.")
