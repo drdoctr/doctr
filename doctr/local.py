@@ -21,7 +21,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
-from .common import red, blue
+from .common import red, blue, green
 
 def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
