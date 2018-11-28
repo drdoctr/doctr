@@ -198,7 +198,7 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     # Set to the name of the tag for tag builds
     TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
 
-    if not branch_whitelist:
+    if branch_whitelist is None:
         branch_whitelist={'master'}
 
     if require_master is not None:
