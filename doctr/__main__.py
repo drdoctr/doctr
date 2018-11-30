@@ -196,9 +196,14 @@ options available.
         public repositories for the user. This option is not recommended
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
-        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. If you select this
-        option, you will not be prompted for your GitHub credentials, so this option is not compatible with
-        private repositories.""")
+        dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. To prevent doctr
+        configure from asking for your GitHub credentials, use
+        --no-authenticate.""")
+    configure_parser.add_argument("--no-authenticate", action="store_false",
+        default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. Note:
+        it is not possible to configure travis-ci.com with this option, only
+        .org (see https://github.com/travis-ci/travis-ci/issues/9954). This
+        option is also not compatible with private repositories.""")
     configure_parser.add_argument('--key-path', default=None,
         help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
         deploy respository name. The .enc extension is added to the file automatically.""")
@@ -256,6 +261,8 @@ def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
 
 def deploy(args, parser):
+    print("Running doctr deploy, version", __version__)
+
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
                      "doctr deploy <target-dir> --force to run anyway.")
@@ -370,6 +377,8 @@ def configure(args, parser):
         parser.error(red("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway."))
 
+    if not args.authenticate:
+        args.upload_key = False
 
     print(green(dedent("""\
     Welcome to Doctr.
@@ -379,7 +388,8 @@ def configure(args, parser):
     """)))
 
     login_kwargs = {}
-    if args.upload_key:
+
+    if args.authenticate:
         while not login_kwargs:
             try:
                 login_kwargs = GitHub_login()
@@ -393,13 +403,20 @@ def configure(args, parser):
     while not get_build_repo:
         try:
             if default_repo:
-                build_repo = input("What repo do you want to build the docs for [{default_repo}]? ".format(default_repo=blue(default_repo)))
+                build_repo = input("What repo do you want to build the docs for? [{default_repo}] ".format(default_repo=blue(default_repo)))
                 if not build_repo:
                     build_repo = default_repo
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
-            is_private = check_repo_exists(build_repo, service='github', **login_kwargs)
-            check_repo_exists(build_repo, service='travis')
+            is_private = check_repo_exists(build_repo, service='github',
+    **login_kwargs)
+            if is_private and not args.authenticate:
+                sys.exit(red("--no-authenticate is not supported for private repositories."))
+
+            is_private = check_repo_exists(build_repo, service='travis', ask=True) or is_private
+            if is_private and not args.authenticate:
+                sys.exit(red("--no-authenticate is not supported for travis-ci.com. See https://github.com/travis-ci/travis-ci/issues/9954."))
+
             get_build_repo = True
         except GitHubError:
             raise

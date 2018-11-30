@@ -48,8 +48,12 @@ def test_travis_bad_repo():
         # Travis is case-sensitive
         check_repo_exists('drdoctr/DoCtR', service='travis')
 
+# This test may need to be adjusted as travis-ci.org gets merged into
+# travis-ci.com. Currently drdoctr/doctr is enabled on both.
 def test_travis_repo_exists():
-    assert not check_repo_exists('drdoctr/doctr', service='travis')
+    assert not check_repo_exists('drdoctr/doctr', service='travis-ci.org')
+    assert check_repo_exists('drdoctr/doctr', service='travis-ci.com')
+    assert check_repo_exists('drdoctr/doctr', service='travis')
 
 def test_GIT_URL():
     for url in [

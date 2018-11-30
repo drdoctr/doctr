@@ -2,6 +2,15 @@
 Code used for both Travis and local (deploy and configure)
 """
 
+# Color guide
+#
+# - red: Error and warning messages
+# - green: Welcome messages (use sparingly)
+# - blue: Default values
+# - bold_magenta: Action items
+# - bold_black: Parts of code to be run or copied that should be modified
+
+
 def red(text):
     return "\033[31m%s\033[0m" % text
 
