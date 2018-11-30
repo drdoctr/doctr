@@ -470,7 +470,7 @@ def commit_docs(*, added, removed):
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "<unknown>")
     TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
     TRAVIS_REPO_SLUG = os.environ.get("TRAVIS_REPO_SLUG", "<unknown>")
-    TRAVIS_JOB_ID = os.environ.get("TRAVIS_JOB_ID", "")
+    TRAVIS_JOB_WEB_URL = os.environ.get("TRAVIS_JOB_WEB_URL", "<unknown>")
     TRAVIS_TAG = os.environ.get("TRAVIS_TAG", "")
     branch = "tag" if TRAVIS_TAG else "branch"
 
@@ -490,7 +490,7 @@ The docs were built from the {branch} '{TRAVIS_BRANCH}' against the commit
 {TRAVIS_COMMIT}.
 
 The Travis build that generated this commit is at
-https://travis-ci.org/{TRAVIS_REPO_SLUG}/jobs/{TRAVIS_JOB_ID}.
+{TRAVIS_JOB_WEB_URL}.
 
 The doctr command that was run is
 
@@ -501,7 +501,7 @@ The doctr command that was run is
     TRAVIS_BRANCH=TRAVIS_BRANCH,
     TRAVIS_COMMIT=TRAVIS_COMMIT,
     TRAVIS_REPO_SLUG=TRAVIS_REPO_SLUG,
-    TRAVIS_JOB_ID=TRAVIS_JOB_ID,
+    TRAVIS_JOB_WEB_URL=TRAVIS_JOB_WEB_URL,
     DOCTR_COMMAND=DOCTR_COMMAND,
     )
 

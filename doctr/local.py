@@ -21,7 +21,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
-from .common import red
+from .common import red, blue, green
 
 def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
     """
@@ -34,6 +34,11 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
 
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
+
+    ``dotcom`` should be True if the service is travis-ci.com and False if it
+    is travis-ci.org. Not that travis-ci.com requires creating a temporary
+    authentication on GitHub, which is deleted automatically (regardless of
+    whether or not the repo is private).
     """
     if not isinstance(variable, bytes):
         raise TypeError("variable should be bytes")
@@ -41,31 +46,47 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
     if not b"=" in variable:
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
+    APIv2 = {'Accept': 'application/vnd.travis-ci.2+json'}
+    APIv3 = {"Travis-API-Version": "3"}
     if not public_key:
-        headers = {'Accept': 'application/vnd.travis-ci.2+json',
-                   'Content-Type': 'application/json',
-                   'User-Agent': 'MyClient/1.0.0'}
-        if is_private:
-            tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
-                                             note="temporary token to auth against travis",
-                                             **login_kwargs)
-            data = {'github_token': tok_dict['token']}
-            token_id = tok_dict['id']
-            res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headers)
+        _headers = {
+            'Content-Type': 'application/json',
+            'User-Agent': 'MyClient/1.0.0',
+        }
+        headersv2 = {**_headers, **APIv2}
+        headersv3 = {**_headers, **APIv3}
+        token_id = None
+        try:
+            if is_private:
+                print(green("I need to generate a temporary token with GitHub to authenticate with Travis. You may get a warning email from GitHub about this."))
+                print(green("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually."))
+                # /auth/github doesn't seem to exist in the Travis API v3.
+                tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+                                                 note="temporary token for doctr to auth against travis (delete me)",
+                                                 **login_kwargs)
+                data = {'github_token': tok_dict['token']}
+                token_id = tok_dict['id']
+                res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
+                res.raise_for_status()
+                headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
+                res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
+                    safe='')), headers=headersv3)
+                if res.json().get('file') == 'not found':
+                    print(headersv3)
+                    raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
+                public_key = res.json()['public_key']
+            else:
+                res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
+                public_key = res.json()['key']
+
+            if res.status_code == requests.codes.not_found:
+                raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
             res.raise_for_status()
-            headers['Authorization'] = 'token {}'.format(res.json()['access_token'])
-            tld = 'com'
-        else:
-            tld = 'org'
-        res = requests.get('https://api.travis-ci.{tld}/repos/{build_repo}/key'.format(build_repo=build_repo, tld=tld),
-            headers=headers)
-        if res.status_code == requests.codes.not_found:
-            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
-        res.raise_for_status()
-        public_key = res.json()['key']
-        # Remove temporary GH token
-        if is_private:
-            delete_GitHub_token(token_id, **login_kwargs)
+
+        finally:
+            # Remove temporary GH token
+            if is_private and token_id:
+                delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
     key = serialization.load_pem_public_key(public_key, backend=default_backend())
@@ -285,7 +306,8 @@ def generate_ssh_key():
 
     return private_key, public_key
 
-def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None):
+def check_repo_exists(deploy_repo, service='github', *, auth=None,
+    headers=None, ask=False):
     """
     Checks that the repository exists on GitHub.
 
@@ -294,7 +316,16 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
 
     Raises ``RuntimeError`` if the repo is not valid.
 
-    Returns whether or not the repo is private
+    Returns whether or not the repo requires authorization to access. Private
+    repos require authorization, as to repos on travis-ci.com, regardless of
+    whether or not it is private.
+
+    For service='travis', if ask=True, it will ask at the command line if both
+    travis-ci.org and travis-ci.com exist. If ask=False, service='travis' will
+    check travis-ci.com first and only check travis-ci.org if it doesn't
+    exist. ask=True does nothing for service='github',
+    service='travis-ci.com', service='travis-ci.org'.
+
     """
     headers = headers or {}
     if deploy_repo.count("/") != 1:
@@ -303,29 +334,64 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
     user, repo = deploy_repo.split('/')
     if service == 'github':
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
-    elif service == 'travis':
+    elif service == 'travis' or service == 'travis-ci.com':
+        REPO_URL = 'https://api.travis-ci.com/repo/{user}%2F{repo}'
+        headers['Travis-API-Version'] = '3'
+    elif service == 'travis-ci.org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers['Travis-API-Version'] = '3'
     else:
-        raise RuntimeError('Invalid service specified for repo check (neither "travis" nor "github")')
+        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org"}')
 
     wiki = False
     if repo.endswith('.wiki') and service == 'github':
         wiki = True
         repo = repo[:-5]
 
-    r = requests.get(REPO_URL.format(user=urllib.parse.quote(user),
-        repo=urllib.parse.quote(repo)), auth=auth, headers=headers)
+    def _try(url):
+        r = requests.get(url, auth=auth, headers=headers)
 
-    if r.status_code == requests.codes.not_found:
+        if r.status_code == requests.codes.not_found:
+            return False
+        if service == 'github':
+            GitHub_raise_for_status(r)
+        else:
+            r.raise_for_status()
+        return r
+
+    r = _try(REPO_URL.format(user=urllib.parse.quote(user),
+        repo=urllib.parse.quote(repo)))
+
+    if service == 'travis':
+        REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
+        r_org = _try(REPO_URL.format(user=urllib.parse.quote(user),
+            repo=urllib.parse.quote(repo)))
+        if not r:
+            r = r_org
+        else:
+            if r and r_org:
+                if ask:
+                    while True:
+                        print("{user}/{repo} appears to exist on both travis-ci.org and travis-ci.com.".format(user=user, repo=repo))
+                        preferred = input("Which do you want to use? [{default}/travis-ci.org] ".format(default=blue("travis-ci.com")))
+                        preferred = preferred.lower().strip()
+                        if preferred in ['o', 'org', '.org', 'travis-ci.org']:
+                            r = r_org
+                            service = 'travis-ci.org'
+                            break
+                        elif preferred in ['c', 'com', '.com', 'travis-ci.com', '']:
+                            service = 'travis-ci.com'
+                            break
+                        else:
+                            print(red("Please type 'travis-ci.com' or 'travis-ci.org'."))
+                else:
+                    service = 'travis-ci.com'
+
+
+    if not r:
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
                                                                            repo=repo,
                                                                            service=service))
-
-    if service == 'github':
-        GitHub_raise_for_status(r)
-    else:
-        r.raise_for_status()
 
     private = r.json().get('private', False)
 
@@ -337,7 +403,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None, headers=None)
             raise RuntimeError('Wiki not found. Please create a wiki')
         return False
 
-    return private
+    return private or (service == 'travis-ci.com')
 
 GIT_URL = re.compile(r'(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?')
 
