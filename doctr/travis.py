@@ -13,6 +13,8 @@ import pathlib
 import tempfile
 import time
 
+import requests
+
 from cryptography.fernet import Fernet
 
 from .common import red, blue
@@ -214,10 +216,21 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
 
+    # Check if the repo is a fork
+    TRAVIS_REPO_SLUG = os.environ["TRAVIS_REPO_SLUG"]
+    REPO_URL = 'https://api.github.com/repos/{slug}'
+    r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
+    fork = r.json().get('fork', False)
+    # Rate limits prevent this check from working every time. By default, we
+    # assume it isn't a fork so that things just work on non-fork builds.
+    if r.status_code == 403:
+        print(red("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a fork. If it is, doctr will fail with an error like 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set'. This error can be safely ignored. If this is not a fork build, you can ignore this warning."), file=sys.stderr)
+
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
         TRAVIS_BRANCH=TRAVIS_BRANCH,
         TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
+        fork=fork,
         TRAVIS_TAG=TRAVIS_TAG,
         build_tags=build_tags)
 
@@ -434,14 +447,17 @@ def sync_from_log(src, dst, log_file, exclude=()):
         files = glob.iglob(join(src, '**'), recursive=True)
     else:
         files = [src]
-        src = os.path.dirname(src) + os.sep
+        src = os.path.dirname(src) + os.sep if os.sep in src else ''
+
+        os.makedirs(dst, exist_ok=True)
 
     # sorted makes this easier to test
     for f in sorted(files):
         if any(is_subdir(f, os.path.join(src, i)) for i in exclude):
             continue
         new_f = join(dst, f[len(src):])
-        if isdir(f):
+
+        if isdir(f) or f.endswith(os.sep):
             os.makedirs(new_f, exist_ok=True)
         else:
             shutil.copy2(f, new_f)
@@ -549,7 +565,7 @@ def last_commit_by_doctr():
     return False
 
 def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
-    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
+    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, fork):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
     determine if we can/should push the docs to the deploy repo
     """
@@ -568,6 +584,10 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
+        canpush = False
+
+    if fork:
+        print("The website and docs are not pushed to gh-pages on fork builds.", file=sys.stderr)
         canpush = False
 
     if last_commit_by_doctr():

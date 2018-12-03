@@ -68,10 +68,11 @@ def test_GIT_URL():
 
     assert not GIT_URL.fullmatch('https://gitlab.com/drdoctr/doctr.git')
 
+@pytest.mark.skipif(os.environ.get('TRAVIS_REPO_SLUG', '') != 'drdoctr/doctr', reason="Not run on Travis fork builds")
+@pytest.mark.skipif(not on_travis(), reason="Not on Travis")
 def test_guess_github_repo():
     """
     Only works if run in this repo, and if cloned from origin. For safety,
-    only run on Travis
+    only run on Travis and not run on fork builds.
     """
-    if on_travis():
-        assert guess_github_repo() == 'drdoctr/doctr'
+    assert guess_github_repo() == 'drdoctr/doctr'

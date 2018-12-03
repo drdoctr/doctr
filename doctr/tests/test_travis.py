@@ -221,46 +221,91 @@ def test_sync_from_log(src, dst):
             os.chdir(old_curdir)
 
 
+@pytest.mark.parametrize("dst", ['dst', 'dst/'])
+def test_sync_from_log_file_to_dir(dst):
+    with tempfile.TemporaryDirectory() as dir:
+        try:
+            old_curdir = os.path.abspath(os.curdir)
+            os.chdir(dir)
+
+            src = 'file'
+
+            with open(src, 'w') as f:
+                f.write('test1')
+
+            # Test that the sync happens
+            added, removed = sync_from_log(src, dst, 'logfile')
+
+            assert added == [
+                os.path.join('dst', 'file'),
+                'logfile',
+                ]
+
+            assert removed == []
+
+            assert os.path.isdir(dst)
+            # Make sure dst is a file
+            with open(os.path.join('dst', 'file')) as f:
+                assert f.read() == 'test1'
+
+
+            with open('logfile') as f:
+                assert f.read() == '\n'.join([
+                    os.path.join('dst', 'file')
+                    ])
+
+        finally:
+            os.chdir(old_curdir)
+
+
 @pytest.mark.parametrize("""branch_whitelist, TRAVIS_BRANCH,
-                         TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags,
+                         TRAVIS_PULL_REQUEST, TRAVIS_TAG, fork, build_tags,
                          canpush""",
                          [
 
-                             ('master', 'doctr', 'true', "", False, False),
-                             ('master', 'doctr', 'false', "", False, False),
-                             ('master', 'master', 'true', "", False, False),
-                             ('master', 'master', 'false', "", False, True),
-                             ('doctr', 'doctr', 'True', "", False, False),
-                             ('doctr', 'doctr', 'false', "", False, True),
-                             ('set()', 'doctr', 'false', "", False, False),
+                             ('master', 'doctr', 'true', "", False, False, False),
+                             ('master', 'doctr', 'false', "", False, False, False),
+                             ('master', 'master', 'true', "", False, False, False),
+                             ('master', 'master', 'false', "", False, False, True),
+                             ('doctr', 'doctr', 'True', "", False, False, False),
+                             ('doctr', 'doctr', 'false', "", False, False, True),
+                             ('set()', 'doctr', 'false', "", False, False, False),
 
-                             ('master', 'doctr', 'true', "tagname", False, False),
-                             ('master', 'doctr', 'false', "tagname", False, False),
-                             ('master', 'master', 'true', "tagname", False, False),
-                             ('master', 'master', 'false', "tagname", False, False),
-                             ('doctr', 'doctr', 'True', "tagname", False, False),
-                             ('doctr', 'doctr', 'false', "tagname", False, False),
-                             ('set()', 'doctr', 'false', "tagname", False, False),
+                             ('master', 'doctr', 'true', "tagname", False, False, False),
+                             ('master', 'doctr', 'false', "tagname", False, False, False),
+                             ('master', 'master', 'true', "tagname", False, False, False),
+                             ('master', 'master', 'false', "tagname", False, False, False),
+                             ('doctr', 'doctr', 'True', "tagname", False, False, False),
+                             ('doctr', 'doctr', 'false', "tagname", False, False, False),
+                             ('set()', 'doctr', 'false', "tagname", False, False, False),
 
-                             ('master', 'doctr', 'true', "", True, False),
-                             ('master', 'doctr', 'false', "", True, False),
-                             ('master', 'master', 'true', "", True, False),
-                             ('master', 'master', 'false', "", True, True),
-                             ('doctr', 'doctr', 'True', "", True, False),
-                             ('doctr', 'doctr', 'false', "", True, True),
-                             ('set()', 'doctr', 'false', "", True, False),
+                             ('master', 'doctr', 'true', "", False, True, False),
+                             ('master', 'doctr', 'false', "", False, True, False),
+                             ('master', 'master', 'true', "", False, True, False),
+                             ('master', 'master', 'false', "", False, True, True),
+                             ('doctr', 'doctr', 'True', "", False, True, False),
+                             ('doctr', 'doctr', 'false', "", False, True, True),
+                             ('set()', 'doctr', 'false', "", False, True, False),
 
-                             ('master', 'doctr', 'true', "tagname", True, True),
-                             ('master', 'doctr', 'false', "tagname", True, True),
-                             ('master', 'master', 'true', "tagname", True, True),
-                             ('master', 'master', 'false', "tagname", True, True),
-                             ('doctr', 'doctr', 'True', "tagname", True, True),
-                             ('doctr', 'doctr', 'false', "tagname", True, True),
-                             ('set()', 'doctr', 'false', "tagname", True, True),
+                             ('master', 'doctr', 'true', "tagname", False, True, True),
+                             ('master', 'doctr', 'false', "tagname", False, True, True),
+                             ('master', 'master', 'true', "tagname", False, True, True),
+                             ('master', 'master', 'false', "tagname", False, True, True),
+                             ('doctr', 'doctr', 'True', "tagname", False, True, True),
+                             ('doctr', 'doctr', 'false', "tagname", False, True, True),
+                             ('set()', 'doctr', 'false', "tagname", False, True, True),
+
+                             ('master', 'doctr', 'true', "", True, False, False),
+                             ('master', 'doctr', 'false', "", True, False, False),
+                             ('master', 'master', 'true', "", True, False, False),
+                             ('master', 'master', 'false', "", True, False, False),
+                             ('doctr', 'doctr', 'True', "", True, False, False),
+                             ('doctr', 'doctr', 'false', "", True, False, False),
+                             ('set()', 'doctr', 'false', "", True, False, False),
 
                          ])
 def test_determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
-    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, canpush, monkeypatch):
+    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, fork, canpush, monkeypatch):
     branch_whitelist = {branch_whitelist}
 
     assert determine_push_rights(
@@ -268,6 +313,7 @@ def test_determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
         TRAVIS_BRANCH=TRAVIS_BRANCH,
         TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
         TRAVIS_TAG=TRAVIS_TAG,
+        fork=fork,
         build_tags=build_tags) == canpush
 
 @pytest.mark.parametrize("src", ["src", "."])
