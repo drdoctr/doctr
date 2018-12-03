@@ -2,6 +2,55 @@
  Doctr Changelog
 =================
 
+1.8.0 (2018-12-03)
+==================
+
+Major Changes
+-------------
+
+- Doctr now supports repos hosted on travis-ci.com (as opposed to .org).
+  (:issue:`310`)
+
+  Some important notes about travis-ci.com support:
+
+  * If only one of travis-ci.org or travis-ci.com is enabled, ``doctr
+    configure`` will configure the repo for that one.
+
+  * Only one of travis-ci.org or travis-ci.com can be used for a given repo.
+    This is because the public encryption keys for each are different. If you
+    enable Travis on both, the one it isn't configured for will fail with
+    ``DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set``. To switch
+    from one to the other, rerun ``doctr configure`` to generate a new deploy
+    key.
+
+  * travis-ci.com requires authentication with GitHub to configure. See also
+    the new ``--no-authenticate`` flag below. travis-ci.org can still be
+    configured without authentication.
+
+
+- New ``-no-authenticate`` flag to ``doctr configure``. This disables
+  authentication with GitHub. If GitHub authentication is required (e.g.,
+  because the repo uses travis-ci.com, see above), then it will fail. This
+  flag implies ``-no-upload-key``, which now no longer disables
+  authentication. (:issue:`310`)
+
+- Doctr does not attempt to push on Travis builds of forks. Note, this
+  requires using the GitHub API to check if the repo is a fork, which often
+  fails. If it does, it will attempt to push anyway, assuming the build is not
+  a fork build, which can lead to false positives on fork builds and false
+  negative on non-fork builds. (:issue:`332`)
+
+Minor Changes
+-------------
+
+- Fix the ``--branch-whitelist`` flag with no arguments. (:issue:`330`,
+  :issue:`334`)
+
+- Print the doctr version at the beginning of deploy. (:issue:`333`)
+
+- Fix ``doctr deploy --built-docs file`` when the deploy directory doesn't
+  exist. (:issue:`332)`
+
 1.7.4 (2018-08-19)
 ==================
 
