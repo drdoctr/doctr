@@ -409,13 +409,15 @@ def configure(args, parser):
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github',
-    **login_kwargs)
+    **login_kwargs)['private']
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
-            is_private = check_repo_exists(build_repo, service='travis', ask=True) or is_private
+            c = check_repo_exists(build_repo, service='travis', ask=True)
+            tld = c['service'][-4:]
+            is_private = c['private'] or is_private
             if is_private and not args.authenticate:
-                sys.exit(red("--no-authenticate is not supported for travis-ci.com. See https://github.com/travis-ci/travis-ci/issues/9954."))
+                sys.exit(red("--no-authenticate is not supported for private repos."))
 
             get_build_repo = True
         except GitHubError:

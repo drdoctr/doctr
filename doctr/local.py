@@ -316,9 +316,12 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     Raises ``RuntimeError`` if the repo is not valid.
 
-    Returns whether or not the repo requires authorization to access. Private
-    repos require authorization, as to repos on travis-ci.com, regardless of
-    whether or not it is private.
+    Returns a dictionary with the following keys:
+
+    - 'private': Indicates whether or not the repo requires authorization to
+    access. Private repos require authorization.
+    - 'service': For service='travis', is 'travis-ci.com' or 'travis-ci.org',
+    depending on which should be used. Otherwise it is just equal to ``service``.
 
     For service='travis', if ask=True, it will ask at the command line if both
     travis-ci.org and travis-ci.com exist. If ask=False, service='travis' will
@@ -361,15 +364,21 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     r = _try(REPO_URL.format(user=urllib.parse.quote(user),
         repo=urllib.parse.quote(repo)))
+    r_active = r and r.json().get('active', False)
 
     if service == 'travis':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         r_org = _try(REPO_URL.format(user=urllib.parse.quote(user),
             repo=urllib.parse.quote(repo)))
-        if not r:
+        r_org_active = r_org and r_org.json().get('active', False)
+        if not r_active:
+            if not r_org_active:
+                raise RuntimeError('"{user}/{repo}" not found on travis-ci.org or travis-ci.com'.format(user=user, repo=repo))
             r = r_org
+            r_active = r_org_active
+            service = 'travis-ci.org'
         else:
-            if r and r_org:
+            if r_active and r_org_active:
                 if ask:
                     while True:
                         print("{user}/{repo} appears to exist on both travis-ci.org and travis-ci.com.".format(user=user, repo=repo))
@@ -386,7 +395,9 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
                             print(red("Please type 'travis-ci.com' or 'travis-ci.org'."))
                 else:
                     service = 'travis-ci.com'
-
+            else:
+                # .com but not .org.
+                service = 'travis-ci.com'
 
     if not r:
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
@@ -401,9 +412,11 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
             user=user, repo=repo)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         if p.stderr or p.returncode:
             raise RuntimeError('Wiki not found. Please create a wiki')
-        return False
 
-    return private or (service == 'travis-ci.com')
+    return {
+        'private': private,
+        'service': service,
+        }
 
 GIT_URL = re.compile(r'(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?')
 
