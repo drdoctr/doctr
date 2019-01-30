@@ -448,7 +448,7 @@ def configure(args, parser):
     if args.token:
         token = generate_GitHub_token(**login_kwargs)['token']
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-            build_repo=build_repo, is_private=is_private, **login_kwargs)
+            build_repo=build_repo, tld=tld, is_private=is_private, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -463,7 +463,7 @@ def configure(args, parser):
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
         encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
-            build_repo=build_repo, is_private=is_private, **login_kwargs)
+            build_repo=build_repo, tld=tld, is_private=is_private, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 

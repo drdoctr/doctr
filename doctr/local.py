@@ -20,10 +20,9 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
-
 from .common import red, blue, green
 
-def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False, **login_kwargs):
+def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_private=False, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
 
@@ -32,13 +31,16 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
     ``build_repo`` is the repo that ``doctr deploy`` will be run from. It
     should be like 'drdoctr/doctr'.
 
+    ``tld`` should be ``'.org'`` for travis-ci.org and ``'.com'`` for
+    travis-ci.com.
+
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
 
-    ``dotcom`` should be True if the service is travis-ci.com and False if it
-    is travis-ci.org. Not that travis-ci.com requires creating a temporary
-    authentication on GitHub, which is deleted automatically (regardless of
-    whether or not the repo is private).
+    ``is_private`` should be True if the repo is private. This requires
+    creating a temporary authentication on GitHub, which is deleted
+    automatically. ``is_private=True`` automatically implies ``tld='.com'``.
+
     """
     if not isinstance(variable, bytes):
         raise TypeError("variable should be bytes")
@@ -46,7 +48,7 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
     if not b"=" in variable:
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
-    APIv2 = {'Accept': 'application/vnd.travis-ci.2+json'}
+    APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
     APIv3 = {"Travis-API-Version": "3"}
     if not public_key:
         _headers = {
@@ -76,7 +78,8 @@ def encrypt_variable(variable, build_repo, *, public_key=None, is_private=False,
                     raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
                 public_key = res.json()['public_key']
             else:
-                res = requests.get('https://api.travis-ci.org/repos/{build_repo}/key'.format(build_repo=build_repo), headers=headersv2)
+                res = requests.get('https://api.travis-ci{tld}/repos/{build_repo}/key'.format(build_repo=build_repo),
+                                   headers=headersv2, tld=tld)
                 public_key = res.json()['key']
 
             if res.status_code == requests.codes.not_found:
