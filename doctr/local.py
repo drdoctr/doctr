@@ -322,9 +322,9 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
     Returns a dictionary with the following keys:
 
     - 'private': Indicates whether or not the repo requires authorization to
-    access. Private repos require authorization.
+      access. Private repos require authorization.
     - 'service': For service='travis', is 'travis-ci.com' or 'travis-ci.org',
-    depending on which should be used. Otherwise it is just equal to ``service``.
+      depending on which should be used. Otherwise it is just equal to ``service``.
 
     For service='travis', if ask=True, it will ask at the command line if both
     travis-ci.org and travis-ci.com exist. If ask=False, service='travis' will
