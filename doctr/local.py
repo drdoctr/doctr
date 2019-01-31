@@ -385,7 +385,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
             if r_active and r_org_active:
                 if ask:
                     while True:
-                        print("{user}/{repo} appears to exist on both travis-ci.org and travis-ci.com.".format(user=user, repo=repo))
+                        print(green("{user}/{repo} appears to exist on both travis-ci.org and travis-ci.com.".format(user=user, repo=repo)))
                         preferred = input("Which do you want to use? [{default}/travis-ci.org] ".format(default=blue("travis-ci.com")))
                         preferred = preferred.lower().strip()
                         if preferred in ['o', 'org', '.org', 'travis-ci.org']:
