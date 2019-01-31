@@ -22,6 +22,9 @@ from cryptography.hazmat.primitives import serialization
 
 from .common import red, blue, green, input
 
+Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
+Travis_APIv3 = {"Travis-API-Version": "3"}
+
 def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_private=False, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
@@ -48,15 +51,13 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_pr
     if not b"=" in variable:
         raise ValueError("variable should be of the form 'VARIABLE=value'")
 
-    APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
-    APIv3 = {"Travis-API-Version": "3"}
     if not public_key:
         _headers = {
             'Content-Type': 'application/json',
             'User-Agent': 'MyClient/1.0.0',
         }
-        headersv2 = {**_headers, **APIv2}
-        headersv3 = {**_headers, **APIv3}
+        headersv2 = {**_headers, **Travis_APIv2}
+        headersv3 = {**_headers, **Travis_APIv3}
         token_id = None
         try:
             if is_private:
@@ -343,10 +344,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         REPO_URL = 'https://api.github.com/repos/{user}/{repo}'
     elif service == 'travis' or service == 'travis-ci.com':
         REPO_URL = 'https://api.travis-ci.com/repo/{user}%2F{repo}'
-        headers['Travis-API-Version'] = '3'
+        headers = {**headers, **Travis_APIv3}
     elif service == 'travis-ci.org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
-        headers['Travis-API-Version'] = '3'
+        headers = {**headers, **Travis_APIv3}
     else:
         raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org"}')
 
