@@ -40,7 +40,8 @@ def test_check_repo_exists_org_com(repo, service):
         repo == 'com' and service == 'travis-ci.org'):
         with raises(RuntimeError):
             check_repo_exists(deploy_repo, service, headers=HEADERS)
-    elif repo == 'org':
+    elif (repo == 'org' or
+          repo == 'both' and service == 'travis-ci.org'):
         assert check_repo_exists(deploy_repo, service, headers=HEADERS) == {'private': False,
                                                            'service': 'travis-ci.org'}
     else:
