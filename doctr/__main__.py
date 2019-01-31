@@ -205,6 +205,11 @@ options available.
     configure_parser.add_argument('--key-path', default=None,
         help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
         deploy respository name. The .enc extension is added to the file automatically.""")
+    configure_parser.add_argument('--travis-tld', default=None,
+        help="""Travis tld to use. Should be either '.com' or '.org'. The default is to
+        check which the repo is activated on and ask if it is activated on
+    both""", choices=['c', 'com', '.com', 'travis-ci.com', 'o', 'org', '.org',
+    'travis-ci.org'])
 
     return parser
 
@@ -378,6 +383,12 @@ def configure(args, parser):
     if not args.authenticate:
         args.upload_key = False
 
+    if args.travis_tld:
+        if args.travis_tld in ['c', 'com', '.com', 'travis-ci.com']:
+            args.travis_tld = 'travis-ci.com'
+        else:
+            args.travis_tld = 'travis-ci.org'
+
     print(green(dedent("""\
     Welcome to Doctr.
 
@@ -411,7 +422,8 @@ def configure(args, parser):
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
-            c = check_repo_exists(build_repo, service='travis', ask=True)
+            service = args.travis_tld if args.travis_tld else 'travis'
+            c = check_repo_exists(build_repo, service=service, ask=True)
             tld = c['service'][-4:]
             is_private = c['private'] or is_private
             if is_private and not args.authenticate:
