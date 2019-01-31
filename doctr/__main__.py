@@ -420,7 +420,7 @@ def configure(args, parser):
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
             is_private = check_repo_exists(build_repo, service='github',
-    **login_kwargs)['private']
+                                           **login_kwargs)['private']
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
