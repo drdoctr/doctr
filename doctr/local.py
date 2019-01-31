@@ -26,7 +26,7 @@ Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
 Travis_APIv3 = {"Travis-API-Version": "3"}
 
 def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
-    token=None, **login_kwargs):
+    travis_token=None, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
 
@@ -41,9 +41,8 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
 
-    If the repo is private, token should be as returned by
-    get_temporary_token(**login_kwargs). This function does not delete the
-    automatically. A token being present automatically implies ``tld='.com'``.
+    If the repo is private, travis_token should be as returned by
+    get_temporary_token(**login_kwargs). A token being present automatically implies ``tld='.com'``.
 
     """
     if not isinstance(variable, bytes):
@@ -59,8 +58,8 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
         }
         headersv2 = {**_headers, **Travis_APIv2}
         headersv3 = {**_headers, **Travis_APIv3}
-        if token:
-            headersv3['Authorization'] = 'token {}'.format(token)
+        if travis_token:
+            headersv3['Authorization'] = 'token {}'.format(travis_token)
             res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
                 safe='')), headers=headersv3)
             if res.json().get('file') == 'not found':
