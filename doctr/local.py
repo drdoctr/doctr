@@ -402,7 +402,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
                 # .com but not .org.
                 service = 'travis-ci.com'
 
-    if not r:
+    if not r_active:
         raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
                                                                            repo=repo,
                                                                            service=service))
