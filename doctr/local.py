@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
-from .common import red, blue, green
+from .common import red, blue, green, input
 
 def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_private=False, **login_kwargs):
     """

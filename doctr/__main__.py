@@ -45,6 +45,11 @@ from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESE
 
 from . import __version__
 
+_input = input
+def input(prompt=None):
+    res = _input(prompt)
+    return res.strip()
+
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
 
