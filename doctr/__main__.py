@@ -200,9 +200,7 @@ options available.
         configure from asking for your GitHub credentials, use
         --no-authenticate.""")
     configure_parser.add_argument("--no-authenticate", action="store_false",
-        default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. Note:
-        it is not possible to configure travis-ci.com with this option, only
-        .org (see https://github.com/travis-ci/travis-ci/issues/9954). This
+        default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. This
         option is also not compatible with private repositories.""")
     configure_parser.add_argument('--key-path', default=None,
         help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
