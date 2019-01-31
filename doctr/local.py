@@ -404,9 +404,11 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
                 service = 'travis-ci.com'
 
     if not r_active:
-        raise RuntimeError('"{user}/{repo}" not found on {service}'.format(user=user,
-                                                                           repo=repo,
-                                                                           service=service))
+        msg = '' if auth else '. If the repo is private, then you need to authenticate.'
+        raise RuntimeError('"{user}/{repo}" not found on {service}{msg}'.format(user=user,
+                                                                                repo=repo,
+                                                                                service=service,
+                                                                                msg=msg))
 
     private = r.json().get('private', False)
 
