@@ -42,7 +42,8 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
     not provided.
 
     If the repo is private, travis_token should be as returned by
-    get_temporary_token(**login_kwargs). A token being present automatically implies ``tld='.com'``.
+    ``get_temporary_token(**login_kwargs)``. A token being present
+    automatically implies ``tld='.com'``.
 
     """
     if not isinstance(variable, bytes):
