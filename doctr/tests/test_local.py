@@ -39,12 +39,12 @@ def test_check_repo_exists_org_com(repo, service):
         repo == 'org' and service == 'travis-ci.com' or
         repo == 'com' and service == 'travis-ci.org'):
         with raises(RuntimeError):
-            check_repo_exists(deploy_repo, service)
+            check_repo_exists(deploy_repo, service, headers=HEADERS)
     elif repo == 'org':
-        assert check_repo_exists(deploy_repo, service) == {'private': False,
+        assert check_repo_exists(deploy_repo, service, headers=HEADERS) == {'private': False,
                                                            'service': 'travis-ci.org'}
     else:
-        assert check_repo_exists(deploy_repo, service) == {'private': False,
+        assert check_repo_exists(deploy_repo, service, headers=HEADERS) == {'private': False,
                                                            'service': 'travis-ci.com'}
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
