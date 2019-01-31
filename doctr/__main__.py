@@ -36,7 +36,8 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError)
+GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError,
+    get_travis_token)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
@@ -419,13 +420,20 @@ def configure(args, parser):
                     build_repo = default_repo
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
+
             is_private = check_repo_exists(build_repo, service='github',
-                                           **login_kwargs)['private']
+                                               **login_kwargs)['private']
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
+            headers = {}
+            travis_token = None
+            if is_private:
+                travis_token = get_travis_token(**login_kwargs)
+                headers['Authorization'] = "token {}".format(travis_token)
+
             service = args.travis_tld if args.travis_tld else 'travis'
-            c = check_repo_exists(build_repo, service=service, ask=True)
+            c = check_repo_exists(build_repo, service=service, ask=True, headers=headers)
             tld = c['service'][-4:]
             is_private = c['private'] or is_private
             if is_private and not args.authenticate:
@@ -460,7 +468,7 @@ def configure(args, parser):
     if args.token:
         token = generate_GitHub_token(**login_kwargs)['token']
         encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-            build_repo=build_repo, tld=tld, is_private=is_private, **login_kwargs)
+                                              build_repo=build_repo, tld=tld, token=token, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -475,7 +483,7 @@ def configure(args, parser):
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
         encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
-            build_repo=build_repo, tld=tld, is_private=is_private, **login_kwargs)
+                                              build_repo=build_repo, tld=tld, token=travis_token, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
@@ -498,7 +506,7 @@ def configure(args, parser):
                 {ssh_key}
                {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
             """.format(ssh_key=public_ssh_key, deploy_keys_url=deploy_keys_url, N=N,
-                BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+                       BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
 
         print(dedent("""\

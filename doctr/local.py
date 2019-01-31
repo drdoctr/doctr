@@ -25,7 +25,8 @@ from .common import red, blue, green, input
 Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
 Travis_APIv3 = {"Travis-API-Version": "3"}
 
-def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_private=False, **login_kwargs):
+def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
+    token=None, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
 
@@ -40,9 +41,9 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_pr
     ``public_key`` should be a pem format public key, obtained from Travis if
     not provided.
 
-    ``is_private`` should be True if the repo is private. This requires
-    creating a temporary authentication on GitHub, which is deleted
-    automatically. ``is_private=True`` automatically implies ``tld='.com'``.
+    If the repo is private, token should be as returned by
+    get_temporary_token(**login_kwargs). This function does not delete the
+    automatically. A token being present automatically implies ``tld='.com'``.
 
     """
     if not isinstance(variable, bytes):
@@ -58,40 +59,22 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_pr
         }
         headersv2 = {**_headers, **Travis_APIv2}
         headersv3 = {**_headers, **Travis_APIv3}
-        token_id = None
-        try:
-            if is_private:
-                print(green("I need to generate a temporary token with GitHub to authenticate with Travis. You may get a warning email from GitHub about this."))
-                print(green("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually."))
-                # /auth/github doesn't seem to exist in the Travis API v3.
-                tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
-                                                 note="temporary token for doctr to auth against travis (delete me)",
-                                                 **login_kwargs)
-                data = {'github_token': tok_dict['token']}
-                token_id = tok_dict['id']
-                res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
-                res.raise_for_status()
-                headersv3['Authorization'] = 'token {}'.format(res.json()['access_token'])
-                res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
-                    safe='')), headers=headersv3)
-                if res.json().get('file') == 'not found':
-                    print(headersv3)
-                    raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
-                public_key = res.json()['public_key']
-            else:
-                res = requests.get('https://api.travis-ci{tld}/repos/{build_repo}/key'.format(build_repo=build_repo,
-                                                                                              tld=tld),
-                                   headers=headersv2)
-                public_key = res.json()['key']
+        if token:
+            headersv3['Authorization'] = 'token {}'.format(token)
+            res = requests.get('https://api.travis-ci.com/repo/{build_repo}/key_pair/generated'.format(build_repo=urllib.parse.quote(build_repo,
+                safe='')), headers=headersv3)
+            if res.json().get('file') == 'not found':
+                raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
+            public_key = res.json()['public_key']
+        else:
+            res = requests.get('https://api.travis-ci{tld}/repos/{build_repo}/key'.format(build_repo=build_repo,
+                                                                                          tld=tld),
+                               headers=headersv2)
+            public_key = res.json()['key']
 
-            if res.status_code == requests.codes.not_found:
-                raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
+        if res.status_code == requests.codes.not_found:
+            raise RuntimeError('Could not find requested repo on Travis.  Is Travis enabled?')
             res.raise_for_status()
-
-        finally:
-            # Remove temporary GH token
-            if is_private and token_id:
-                delete_GitHub_token(token_id, **login_kwargs)
 
     public_key = public_key.replace("RSA PUBLIC KEY", "PUBLIC KEY").encode('utf-8')
     key = serialization.load_pem_public_key(public_key, backend=default_backend())
@@ -241,6 +224,47 @@ def GitHub_post(data, url, *, auth, headers):
     return r.json()
 
 
+def get_travis_token(*, GitHub_token=None, **login_kwargs):
+    """
+    Generate a temporary token for authenticating with Travis
+
+    The GitHub token can be passed in to the ``GitHub_token`` keyword
+    argument. If no token is passed in, a GitHub token is generated
+    temporarily, and then immediately deleted.
+
+    This is needed to activate a private repo
+
+    Returns the secret token. It should be added to the headers like
+
+        headers['Authorization'] = "token {}".format(token)
+
+    """
+    _headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'MyClient/1.0.0',
+    }
+    headersv2 = {**_headers, **Travis_APIv2}
+    token_id = None
+    try:
+        print(green("I need to generate a temporary token with GitHub to authenticate with Travis. You may get a warning email from GitHub about this."))
+        print(green("It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually."))
+
+        if not GitHub_token:
+            # /auth/github doesn't seem to exist in the Travis API v3.
+            tok_dict = generate_GitHub_token(scopes=["read:org", "user:email", "repo"],
+                                             note="temporary token for doctr to auth against travis (delete me)",
+                                             **login_kwargs)
+            GitHub_token = tok_dict['token']
+            token_id = tok_dict['id']
+
+        data = {'github_token': GitHub_token}
+        res = requests.post('https://api.travis-ci.com/auth/github', data=json.dumps(data), headers=headersv2)
+        return res.json()['access_token']
+    finally:
+        if token_id:
+            delete_GitHub_token(token_id, **login_kwargs)
+
+
 def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Travis", scopes=None, **login_kwargs):
     """
     Generate a GitHub token for pushing from Travis
@@ -359,7 +383,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
     def _try(url):
         r = requests.get(url, auth=auth, headers=headers)
 
-        if r.status_code == requests.codes.not_found:
+        if r.status_code in [requests.codes.not_found, requests.codes.forbidden]:
             return False
         if service == 'github':
             GitHub_raise_for_status(r)
