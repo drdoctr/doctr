@@ -78,8 +78,9 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None, is_pr
                     raise RuntimeError("Could not find the Travis public key for %s" % build_repo)
                 public_key = res.json()['public_key']
             else:
-                res = requests.get('https://api.travis-ci{tld}/repos/{build_repo}/key'.format(build_repo=build_repo),
-                                   headers=headersv2, tld=tld)
+                res = requests.get('https://api.travis-ci{tld}/repos/{build_repo}/key'.format(build_repo=build_repo,
+                                                                                              tld=tld),
+                                   headers=headersv2)
                 public_key = res.json()['key']
 
             if res.status_code == requests.codes.not_found:
