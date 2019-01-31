@@ -31,8 +31,8 @@ def test_github_repo_exists():
     assert check_repo_exists('drdoctr/doctr.wiki', headers=HEADERS) == {'private': False, 'service': 'github'}
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
-@pytest.mark.parametrize('repo', ['com', 'org', 'both', 'neither'])
 @pytest.mark.parametrize('service', ['travis', 'travis-ci.org', 'travis-ci.com'])
+@pytest.mark.parametrize('repo', ['com', 'org', 'both', 'neither'])
 def test_check_repo_exists_org_com(repo, service):
     deploy_repo = 'drdoctr/testing-travis-ci-' + repo
     if (repo == 'neither' or
