@@ -367,7 +367,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     r = _try(REPO_URL.format(user=urllib.parse.quote(user),
         repo=urllib.parse.quote(repo)))
-    r_active = r and r.json().get('active', False)
+    r_active = r and (service == 'github' or r.json().get('active', False))
 
     if service == 'travis':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
