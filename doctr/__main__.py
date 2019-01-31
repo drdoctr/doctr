@@ -410,6 +410,7 @@ def configure(args, parser):
     else:
         login_kwargs = {'auth': None, 'headers': None}
 
+    GitHub_token = None
     get_build_repo = False
     default_repo = guess_github_repo()
     while not get_build_repo:
@@ -429,7 +430,9 @@ def configure(args, parser):
             headers = {}
             travis_token = None
             if is_private:
-                travis_token = get_travis_token(**login_kwargs)
+                if args.token:
+                    GitHub_token = generate_GitHub_token(scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
+                travis_token = get_travis_token(GitHub_token=GitHub_token, **login_kwargs)
                 headers['Authorization'] = "token {}".format(travis_token)
 
             service = args.travis_tld if args.travis_tld else 'travis'
@@ -466,9 +469,10 @@ def configure(args, parser):
     header = green("\n================== You should now do the following ==================\n")
 
     if args.token:
-        token = generate_GitHub_token(**login_kwargs)['token']
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-                                              build_repo=build_repo, tld=tld, token=token, **login_kwargs)
+        if not GitHub_token:
+            GitHub_token = generate_GitHub_token(**login_kwargs)['token']
+        encrypted_variable = encrypt_variable("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
+                                              build_repo=build_repo, tld=tld, token=travis_token, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
