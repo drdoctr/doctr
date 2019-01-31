@@ -41,14 +41,11 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 
-from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESET
+from .common import (red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA,
+                     RESET, input)
 
 from . import __version__
 
-_input = input
-def input(prompt=None):
-    res = _input(prompt)
-    return res.strip()
 
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
