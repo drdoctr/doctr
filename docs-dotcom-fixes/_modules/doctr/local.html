@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.local &#8212; Doctr 1.7.4+80.gb38495a documentation</title>
+    <title>doctr.local &#8212; Doctr 1.7.4+81.g995bcb6 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -437,7 +437,7 @@
                 <span class="c1"># .com but not .org.</span>
                 <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.com&#39;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">r_active</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on </span><span class="si">{service}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
                                                                            <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
                                                                            <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">))</span>
