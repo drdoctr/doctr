@@ -544,7 +544,7 @@ def push_docs(deploy_branch='gh-pages', retries=5):
     """
 
     code = 1
-    while code and retries:
+    for i in range(retries):
         print("Pulling")
         code = run(['git', 'pull', '-s', 'recursive', '-X', 'ours',
             'doctr_remote', deploy_branch], exit=False)
@@ -554,7 +554,7 @@ def push_docs(deploy_branch='gh-pages', retries=5):
         if code:
             retries -= 1
             print("Push failed, retrying")
-            time.sleep(1)
+            time.sleep(2**i)
         else:
             return
     sys.exit("Giving up pushing after {retries} tries :(".format(retries=retries))
