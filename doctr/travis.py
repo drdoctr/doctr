@@ -17,7 +17,7 @@ import requests
 
 from cryptography.fernet import Fernet
 
-from .common import red, blue
+from .common import red, blue, yellow
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
 
 def decrypt_file(file, key):
@@ -253,7 +253,7 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
                 # Rate limits prevent this check from working every time. By default, we
                 # assume it isn't a fork so that things just work on non-fork builds.
                 if r.status_code == 403:
-                    print(red("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
+                    print(yellow("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
                 raise
 
             run(['git', 'remote', 'add', 'doctr_remote',
