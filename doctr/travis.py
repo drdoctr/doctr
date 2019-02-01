@@ -533,7 +533,7 @@ The doctr command that was run is
 
     return False
 
-def push_docs(deploy_branch='gh-pages', retries=3):
+def push_docs(deploy_branch='gh-pages', retries=5):
     """
     Push the changes to the branch named ``deploy_branch``.
 
