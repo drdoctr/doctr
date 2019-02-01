@@ -39,7 +39,7 @@ Major Changes
        fi
 
 
-- New ``-no-authenticate`` flag to ``doctr configure``. This disables
+- New ``--no-authenticate`` flag to ``doctr configure``. This disables
   authentication with GitHub. If GitHub authentication is required (i.e., the
   repository is private), then it will fail. This
   flag implies ``-no-upload-key``, which now no longer disables
