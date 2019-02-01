@@ -35,3 +35,9 @@ def bold_magenta(text):
 BOLD_BLACK = "\033[1;30m"
 BOLD_MAGENTA = "\033[1;35m"
 RESET = "\033[0m"
+
+# Remove whitespace on inputs
+_input = input
+def input(prompt=None):
+    res = _input(prompt)
+    return res.strip()
