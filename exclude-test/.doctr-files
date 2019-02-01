@@ -22,6 +22,7 @@ exclude-test/_static/down.png
 exclude-test/_static/file.png
 exclude-test/_static/jquery-3.2.1.js
 exclude-test/_static/jquery.js
+exclude-test/_static/language_data.js
 exclude-test/_static/minus.png
 exclude-test/_static/plus.png
 exclude-test/_static/pygments.css
