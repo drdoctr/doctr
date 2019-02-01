@@ -1,3 +1,7 @@
+=========================
+ Notes for testing doctr
+=========================
+
 GitHub Test Authentication
 --------------------------
 
