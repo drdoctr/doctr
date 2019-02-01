@@ -431,7 +431,8 @@ def configure(args, parser):
             travis_token = None
             if is_private:
                 if args.token:
-                    GitHub_token = generate_GitHub_token(scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
+                    GitHub_token = generate_GitHub_token(note="Doctr token for pushing to gh-pages from Travis (for {build_repo}).".format(build_repo=build_repo),
+                                                         scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
                 travis_token = get_travis_token(GitHub_token=GitHub_token, **login_kwargs)
                 headers['Authorization'] = "token {}".format(travis_token)
 
