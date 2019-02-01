@@ -30,7 +30,6 @@ def test_github_repo_exists():
     assert check_repo_exists('drdoctr/doctr', headers=HEADERS) == {'private': False, 'service': 'github'}
     assert check_repo_exists('drdoctr/doctr.wiki', headers=HEADERS) == {'private': False, 'service': 'github'}
 
-@pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 @pytest.mark.parametrize('service', ['travis', 'travis-ci.org', 'travis-ci.com'])
 @pytest.mark.parametrize('repo', ['com', 'org', 'both', 'neither'])
 def test_check_repo_exists_org_com(repo, service):
@@ -39,13 +38,13 @@ def test_check_repo_exists_org_com(repo, service):
         repo == 'org' and service == 'travis-ci.com' or
         repo == 'com' and service == 'travis-ci.org'):
         with raises(RuntimeError):
-            check_repo_exists(deploy_repo, service, headers=HEADERS)
+            check_repo_exists(deploy_repo, service)
     elif (repo == 'org' or
           repo == 'both' and service == 'travis-ci.org'):
-        assert check_repo_exists(deploy_repo, service, headers=HEADERS) == {'private': False,
+        assert check_repo_exists(deploy_repo, service) == {'private': False,
                                                            'service': 'travis-ci.org'}
     else:
-        assert check_repo_exists(deploy_repo, service, headers=HEADERS) == {'private': False,
+        assert check_repo_exists(deploy_repo, service) == {'private': False,
                                                            'service': 'travis-ci.com'}
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
