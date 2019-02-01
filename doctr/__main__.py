@@ -525,15 +525,18 @@ def configure(args, parser):
         options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
+
+    key_type = "deploy key"
     if args.token:
         options += ' --token'
+        key_type = "personal access token"
 
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
 
         env:
           global:
-            # Doctr deploy key for {deploy_repo}
+            # Doctr {key_type} for {deploy_repo}
             - secure: "{encrypted_variable}"
 
         script:
@@ -541,7 +544,7 @@ def configure(args, parser):
           - {BOLD_BLACK}<Command to build your docs>{RESET}
           - pip install doctr
           - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
-    """.format(options=options, N=N,
+    """.format(options=options, N=N, key_type=key_type,
         encrypted_variable=encrypted_variable.decode('utf-8'),
         deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
         BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
