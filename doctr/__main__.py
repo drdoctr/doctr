@@ -524,6 +524,8 @@ def configure(args, parser):
         options += ' --key-path {keypath}.enc'.format(keypath=keypath)
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
+    if args.token:
+        options += ' --token'
 
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
