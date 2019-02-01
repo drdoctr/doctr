@@ -2,6 +2,76 @@
  Doctr Changelog
 =================
 
+1.8.0 (2019-02-01)
+==================
+
+Major Changes
+-------------
+
+- Doctr now supports repos hosted on travis-ci.com (in addition to .org).
+  (:issue:`310`)
+
+  Some notes about travis-ci.com support:
+
+  * travis-ci.org and travis-ci.com have different public keys for the same
+    repo, so it is necessary for ``doctr configure`` to know which is being
+    used. If you want to move from travis-ci.org to travis-ci.com, you will
+    need to reconfigure.
+
+  * If only one of travis-ci.org or travis-ci.com is enabled, ``doctr
+    configure`` will automatically configure the repo for that one. If both
+    are enabled, it will ask which one to configure for. You can also use the
+    ``--travis-tld`` command line flag to ``doctr configure`` to specify which
+    one to use.
+
+  * Once configured, there is no difference in the ``.travis.yml`` file.
+
+  * If for whatever reason you want to run doctr on both, you can configure
+    each separately, renaming the encrypted files that they generate. Add both
+    secure environment variables to ``.travis.yml``, and do something like
+
+    .. code:: bash
+
+       if [[ $TRAVIS_BUILD_WEB_URL == *"travis-ci.com"* ]]; then
+           doctr deploy --built-docs <built-docs> . --key-path github_deploy_key-com.enc;
+       else
+           doctr deploy --built-docs <built-docs> . --key-path github_deploy_key-org.enc;
+       fi
+
+
+- New ``-no-authenticate`` flag to ``doctr configure``. This disables
+  authentication with GitHub. If GitHub authentication is required (i.e., the
+  repository is private), then it will fail. This
+  flag implies ``-no-upload-key``, which now no longer disables
+  authentication. (:issue:`310`)
+
+- Doctr does not attempt to push on Travis builds of forks. Note, this
+  requires using the GitHub API to check if the repo is a fork, which often
+  fails. If it does, the build will error anyway (which can be ignored). You
+  can use `Travis conditions <https://docs.travis-ci.com/user/conditions-v1>`_
+  if you need a build to not fail on a fork. (:issue:`332`)
+
+- Doctr is now better tested on private repositories. Private repositories now
+  work with both ``--token`` and a deploy key (a deploy key the default and is
+  recommended). Note that configuring Travis for a private repository will
+  generate a temporary personal access token on GitHub, and immediately delete
+  it. This is necessary to authenticate with Travis. You will receive an email
+  from GitHub about it. (:issue:`337`)
+
+
+Minor Changes
+-------------
+
+- Fix the ``--branch-whitelist`` flag with no arguments. (:issue:`330`,
+  :issue:`334`)
+
+- Print the doctr version at the beginning of deploy. (:issue:`333`)
+
+- Fix ``doctr deploy --built-docs file`` when the deploy directory doesn't
+  exist. (:issue:`332)`
+
+- Improved error message when doctr is not configured properly. (:issue:`338`)
+
 1.7.4 (2018-08-19)
 ==================
 
