@@ -557,7 +557,7 @@ def push_docs(deploy_branch='gh-pages', retries=5):
             time.sleep(1)
         else:
             return
-    sys.exit("Giving up...")
+    sys.exit("Giving up pushing after {retries} tries :(".format(retries=retries))
 
 def last_commit_by_doctr():
     """Check whether the author of `HEAD` is `doctr` to avoid starting an
