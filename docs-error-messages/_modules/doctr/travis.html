@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>doctr.travis &#8212; Doctr 1.7.4+79.g8c16e77 documentation</title>
+    <title>doctr.travis &#8212; Doctr 1.7.4+82.g1772f53 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -52,7 +52,7 @@
 
 <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="k">import</span> <span class="n">Fernet</span>
 
-<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">red</span><span class="p">,</span> <span class="n">blue</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">red</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">yellow</span>
 <span class="n">DOCTR_WORKING_BRANCH</span> <span class="o">=</span> <span class="s1">&#39;__doctr_working_branch&#39;</span>
 
 <div class="viewcode-block" id="decrypt_file"><a class="viewcode-back" href="../../api.html#doctr.travis.decrypt_file">[docs]</a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -288,7 +288,7 @@
                 <span class="c1"># Rate limits prevent this check from working every time. By default, we</span>
                 <span class="c1"># assume it isn&#39;t a fork so that things just work on non-fork builds.</span>
                 <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;Warning: GitHub&#39;s API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the &#39;DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set&#39; error that follows. If it is not, you should re-run &#39;doctr configure&#39;. Note that doctr cannot deploy from fork builds due to limitations in Travis.&quot;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">yellow</span><span class="p">(</span><span class="s2">&quot;Warning: GitHub&#39;s API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the &#39;DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set&#39; error that follows. If it is not, you should re-run &#39;doctr configure&#39;. Note that doctr cannot deploy from fork builds due to limitations in Travis.&quot;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
                 <span class="k">raise</span>
 
             <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
