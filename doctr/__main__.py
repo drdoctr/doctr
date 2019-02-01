@@ -211,8 +211,8 @@ options available.
     configure_parser.add_argument('--travis-tld', default=None,
         help="""Travis tld to use. Should be either '.com' or '.org'. The default is to
         check which the repo is activated on and ask if it is activated on
-    both""", choices=['c', 'com', '.com', 'travis-ci.com', 'o', 'org', '.org',
-    'travis-ci.org'])
+        both.""", choices=['c', 'com', '.com', 'travis-ci.com', 'o', 'org', '.org',
+                           'travis-ci.org'])
 
     return parser
 
