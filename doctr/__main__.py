@@ -36,14 +36,17 @@ from textwrap import dedent
 
 from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-    GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError)
+GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError,
+    get_travis_token)
 from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 
-from .common import red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA, RESET
+from .common import (red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA,
+                     RESET, input)
 
 from . import __version__
+
 
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
@@ -200,13 +203,16 @@ options available.
         configure from asking for your GitHub credentials, use
         --no-authenticate.""")
     configure_parser.add_argument("--no-authenticate", action="store_false",
-        default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. Note:
-        it is not possible to configure travis-ci.com with this option, only
-        .org (see https://github.com/travis-ci/travis-ci/issues/9954). This
+        default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. This
         option is also not compatible with private repositories.""")
     configure_parser.add_argument('--key-path', default=None,
         help="""Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+
         deploy respository name. The .enc extension is added to the file automatically.""")
+    configure_parser.add_argument('--travis-tld', default=None,
+        help="""Travis tld to use. Should be either '.com' or '.org'. The default is to
+        check which the repo is activated on and ask if it is activated on
+        both.""", choices=['c', 'com', '.com', 'travis-ci.com', 'o', 'org', '.org',
+                           'travis-ci.org'])
 
     return parser
 
@@ -380,6 +386,12 @@ def configure(args, parser):
     if not args.authenticate:
         args.upload_key = False
 
+    if args.travis_tld:
+        if args.travis_tld in ['c', 'com', '.com', 'travis-ci.com']:
+            args.travis_tld = 'travis-ci.com'
+        else:
+            args.travis_tld = 'travis-ci.org'
+
     print(green(dedent("""\
     Welcome to Doctr.
 
@@ -398,6 +410,7 @@ def configure(args, parser):
     else:
         login_kwargs = {'auth': None, 'headers': None}
 
+    GitHub_token = None
     get_build_repo = False
     default_repo = guess_github_repo()
     while not get_build_repo:
@@ -408,14 +421,27 @@ def configure(args, parser):
                     build_repo = default_repo
             else:
                 build_repo = input("What repo do you want to build the docs for (org/reponame, like 'drdoctr/doctr')? ")
+
             is_private = check_repo_exists(build_repo, service='github',
-    **login_kwargs)
+                                               **login_kwargs)['private']
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
-            is_private = check_repo_exists(build_repo, service='travis', ask=True) or is_private
+            headers = {}
+            travis_token = None
+            if is_private:
+                if args.token:
+                    GitHub_token = generate_GitHub_token(note="Doctr token for pushing to gh-pages from Travis (for {build_repo}).".format(build_repo=build_repo),
+                                                         scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
+                travis_token = get_travis_token(GitHub_token=GitHub_token, **login_kwargs)
+                headers['Authorization'] = "token {}".format(travis_token)
+
+            service = args.travis_tld if args.travis_tld else 'travis'
+            c = check_repo_exists(build_repo, service=service, ask=True, headers=headers)
+            tld = c['service'][-4:]
+            is_private = c['private'] or is_private
             if is_private and not args.authenticate:
-                sys.exit(red("--no-authenticate is not supported for travis-ci.com. See https://github.com/travis-ci/travis-ci/issues/9954."))
+                sys.exit(red("--no-authenticate is not supported for private repos."))
 
             get_build_repo = True
         except GitHubError:
@@ -444,9 +470,10 @@ def configure(args, parser):
     header = green("\n================== You should now do the following ==================\n")
 
     if args.token:
-        token = generate_GitHub_token(**login_kwargs)['token']
-        encrypted_variable = encrypt_variable("GH_TOKEN={token}".format(token=token).encode('utf-8'),
-            build_repo=build_repo, is_private=is_private, **login_kwargs)
+        if not GitHub_token:
+            GitHub_token = generate_GitHub_token(**login_kwargs)['token']
+        encrypted_variable = encrypt_variable("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
+                                              build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -461,7 +488,7 @@ def configure(args, parser):
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
         encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
-            build_repo=build_repo, is_private=is_private, **login_kwargs)
+                                              build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
@@ -484,7 +511,7 @@ def configure(args, parser):
                 {ssh_key}
                {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
             """.format(ssh_key=public_ssh_key, deploy_keys_url=deploy_keys_url, N=N,
-                BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+                       BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
 
         print(dedent("""\
@@ -499,12 +526,17 @@ def configure(args, parser):
     if deploy_repo != build_repo:
         options += ' --deploy-repo {deploy_repo}'.format(deploy_repo=deploy_repo)
 
+    key_type = "deploy key"
+    if args.token:
+        options += ' --token'
+        key_type = "personal access token"
+
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
 
         env:
           global:
-            # Doctr deploy key for {deploy_repo}
+            # Doctr {key_type} for {deploy_repo}
             - secure: "{encrypted_variable}"
 
         script:
@@ -512,7 +544,7 @@ def configure(args, parser):
           - {BOLD_BLACK}<Command to build your docs>{RESET}
           - pip install doctr
           - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
-    """.format(options=options, N=N,
+    """.format(options=options, N=N, key_type=key_type,
         encrypted_variable=encrypted_variable.decode('utf-8'),
         deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
         BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
