@@ -17,7 +17,7 @@ import requests
 
 from cryptography.fernet import Fernet
 
-from .common import red, blue
+from .common import red, blue, yellow
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
 
 def decrypt_file(file, key):
@@ -60,7 +60,7 @@ def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCT
     """
     key = os.environ.get(env_name, os.environ.get("DOCTR_DEPLOY_ENCRYPTION_KEY", None))
     if not key:
-        raise RuntimeError("{env_name} or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set"
+        raise RuntimeError("{env_name} or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set. Make sure you followed the instructions from 'doctr configure' properly. You may need to re-run 'doctr configure' to fix this error."
             .format(env_name=env_name))
 
     # Legacy keyfile name
@@ -221,10 +221,6 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     REPO_URL = 'https://api.github.com/repos/{slug}'
     r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
     fork = r.json().get('fork', False)
-    # Rate limits prevent this check from working every time. By default, we
-    # assume it isn't a fork so that things just work on non-fork builds.
-    if r.status_code == 403:
-        print(red("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a fork. If it is, doctr will fail with an error like 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set'. This error can be safely ignored. If this is not a fork build, you can ignore this warning."), file=sys.stderr)
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
@@ -251,7 +247,15 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
         else:
             keypath, key_ext = full_key_path.rsplit('.', 1)
             key_ext = '.' + key_ext
-            setup_deploy_key(keypath=keypath, key_ext=key_ext, env_name=env_name)
+            try:
+                setup_deploy_key(keypath=keypath, key_ext=key_ext, env_name=env_name)
+            except RuntimeError:
+                # Rate limits prevent this check from working every time. By default, we
+                # assume it isn't a fork so that things just work on non-fork builds.
+                if r.status_code == 403:
+                    print(yellow("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
+                raise
+
             run(['git', 'remote', 'add', 'doctr_remote',
                 'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
     else:

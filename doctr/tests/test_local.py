@@ -27,8 +27,25 @@ def test_github_bad_repo():
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_repo_exists():
-    assert not check_repo_exists('drdoctr/doctr', headers=HEADERS)
-    assert not check_repo_exists('drdoctr/doctr.wiki', headers=HEADERS)
+    assert check_repo_exists('drdoctr/doctr', headers=HEADERS) == {'private': False, 'service': 'github'}
+    assert check_repo_exists('drdoctr/doctr.wiki', headers=HEADERS) == {'private': False, 'service': 'github'}
+
+@pytest.mark.parametrize('service', ['travis', 'travis-ci.org', 'travis-ci.com'])
+@pytest.mark.parametrize('repo', ['com', 'org', 'both', 'neither'])
+def test_check_repo_exists_org_com(repo, service):
+    deploy_repo = 'drdoctr/testing-travis-ci-' + repo
+    if (repo == 'neither' or
+        repo == 'org' and service == 'travis-ci.com' or
+        repo == 'com' and service == 'travis-ci.org'):
+        with raises(RuntimeError):
+            check_repo_exists(deploy_repo, service)
+    elif (repo == 'org' or
+          repo == 'both' and service == 'travis-ci.org'):
+        assert check_repo_exists(deploy_repo, service) == {'private': False,
+                                                           'service': 'travis-ci.org'}
+    else:
+        assert check_repo_exists(deploy_repo, service) == {'private': False,
+                                                           'service': 'travis-ci.com'}
 
 @pytest.mark.skipif(not TEST_TOKEN, reason="No API token present")
 def test_github_invalid_repo():
@@ -47,13 +64,6 @@ def test_travis_bad_repo():
     with raises(RuntimeError):
         # Travis is case-sensitive
         check_repo_exists('drdoctr/DoCtR', service='travis')
-
-# This test may need to be adjusted as travis-ci.org gets merged into
-# travis-ci.com. Currently drdoctr/doctr is enabled on both.
-def test_travis_repo_exists():
-    assert not check_repo_exists('drdoctr/doctr', service='travis-ci.org')
-    assert check_repo_exists('drdoctr/doctr', service='travis-ci.com')
-    assert check_repo_exists('drdoctr/doctr', service='travis')
 
 def test_GIT_URL():
     for url in [
