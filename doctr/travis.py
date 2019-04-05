@@ -120,7 +120,7 @@ def get_token():
     """
     token = os.environ.get("GH_TOKEN", None)
     if not token:
-        token = "GH_TOKEN environment variable not set"
+        raise RuntimeError("GH_TOKEN environment variable not set. Make sure you followed the instructions from 'doctr configure' properly. You may need to re-run 'doctr configure' to fix this error.")
     token = token.encode('utf-8')
     return token
 
@@ -226,7 +226,6 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
         branch_whitelist=branch_whitelist,
         TRAVIS_BRANCH=TRAVIS_BRANCH,
         TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
-        fork=fork,
         TRAVIS_TAG=TRAVIS_TAG,
         build_tags=build_tags)
 
@@ -240,7 +239,18 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     print("Adding doctr remote")
     if canpush:
         if auth_type == 'token':
-            token = get_token()
+            try:
+                token = get_token()
+            except RuntimeError:
+                if fork:
+                    print("This appears to be a fork repo without the Doctr secure environment variable. Not pushing.", file=sys.stderr)
+                    canpush = False
+                else:
+                    # Rate limits prevent this check from working every time. By default, we
+                    # assume it isn't a fork so that things just work on non-fork builds.
+                    if r.status_code == 403:
+                        print(yellow("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'GH_TOKEN environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
+                    raise
             run(['git', 'remote', 'add', 'doctr_remote',
                 'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
                     deploy_repo=deploy_repo)])
@@ -250,11 +260,15 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
             try:
                 setup_deploy_key(keypath=keypath, key_ext=key_ext, env_name=env_name)
             except RuntimeError:
-                # Rate limits prevent this check from working every time. By default, we
-                # assume it isn't a fork so that things just work on non-fork builds.
-                if r.status_code == 403:
-                    print(yellow("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
-                raise
+                if fork:
+                    print("This appears to be a fork repo without the Doctr secure environment variable. Not pushing.", file=sys.stderr)
+                    canpush = False
+                else:
+                    # Rate limits prevent this check from working every time. By default, we
+                    # assume it isn't a fork so that things just work on non-fork builds.
+                    if r.status_code == 403:
+                        print(yellow("Warning: GitHub's API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the 'DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set' error that follows. If it is not, you should re-run 'doctr configure'. Note that doctr cannot deploy from fork builds due to limitations in Travis."), file=sys.stderr)
+                    raise
 
             run(['git', 'remote', 'add', 'doctr_remote',
                 'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
@@ -569,7 +583,7 @@ def last_commit_by_doctr():
     return False
 
 def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
-    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, fork):
+    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags):
     """Check if Travis is running on ``master`` (or a whitelisted branch) to
     determine if we can/should push the docs to the deploy repo
     """
@@ -588,10 +602,6 @@ def determine_push_rights(*, branch_whitelist, TRAVIS_BRANCH,
 
     if TRAVIS_PULL_REQUEST != "false":
         print("The website and docs are not pushed to gh-pages on pull requests", file=sys.stderr)
-        canpush = False
-
-    if fork:
-        print("The website and docs are not pushed to gh-pages on fork builds.", file=sys.stderr)
         canpush = False
 
     if last_commit_by_doctr():
