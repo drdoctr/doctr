@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr Command Line Help &#8212; Doctr 1.7.4+76.gfd41c09 documentation</title>
+    <meta charset="utf-8" />
+    <title>Doctr Command Line Help &#8212; Doctr 1.8.0+5.g7b4fc1f documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Recipes" href="recipes.html" />
@@ -74,6 +73,7 @@ options available.</p>
 <h3>doctr configure<a class="headerlink" href="#doctr-configure" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr configure [-h] [--force] [--token] [--no-upload-key]</span>
 <span class="go">                       [--no-authenticate] [--key-path KEY_PATH]</span>
+<span class="go">                       [--travis-tld {c,com,.com,travis-ci.com,o,org,.org,travis-ci.org}]</span>
 </pre></div>
 </div>
 <dl class="option">
@@ -109,9 +109,7 @@ options available.</p>
 <dl class="option">
 <dt id="cmdoption-doctr-configure-no-authenticate">
 <code class="descname">--no-authenticate</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-doctr-configure-no-authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Don’t authenticate with GitHub. This option implies –no-upload-key. Note:   
-        it is not possible to configure travis-ci.com with this option, only   
-        .org (see <a class="reference external" href="https://github.com/travis-ci/travis-ci/issues/9954">https://github.com/travis-ci/travis-ci/issues/9954</a>). This   
+<dd><p>Don’t authenticate with GitHub. This option implies –no-upload-key. This   
         option is also not compatible with private repositories.</p>
 </dd></dl>
 
@@ -120,6 +118,14 @@ options available.</p>
 <code class="descname">--key-path</code><code class="descclassname"> &lt;key_path&gt;</code><a class="headerlink" href="#cmdoption-doctr-configure-key-path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path to save the encrypted GitHub deploy key. The default is github_deploy_key_+   
         deploy respository name. The .enc extension is added to the file automatically.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-doctr-configure-travis-tld">
+<code class="descname">--travis-tld</code><code class="descclassname"> {c,com,.com,travis-ci.com,o,org,.org,travis-ci.org}</code><a class="headerlink" href="#cmdoption-doctr-configure-travis-tld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Travis tld to use. Should be either ‘.com’ or ‘.org’. The default is to   
+        check which the repo is activated on and ask if it is activated on   
+        both.</p>
 </dd></dl>
 
 </div>
@@ -311,26 +317,26 @@ their command line siblings except doubledashes <code class="docutils literal no
 dropped.</p>
 <p>Use a <code class="docutils literal notranslate"><span class="pre">doctr</span></code> section in your <code class="docutils literal notranslate"><span class="pre">travis.yml</span></code> file to store your doctr
 configuration:</p>
-<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">language</span><span class="p">:</span> <span class="n">python</span>
-<span class="o">-</span> <span class="n">script</span><span class="p">:</span>
-    <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
-    <span class="o">-</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span>
-    <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
-    <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
-    <span class="o">-</span> <span class="n">cd</span> <span class="o">..</span>
-    <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span>
-<span class="o">-</span> <span class="n">doctr</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">key</span><span class="o">-</span><span class="n">path</span> <span class="p">:</span> <span class="s1">&#39;path/to/key/from/repo/root/path.key&#39;</span>
-    <span class="o">-</span> <span class="n">deploy</span><span class="o">-</span><span class="n">repo</span> <span class="p">:</span> <span class="s1">&#39;myorg/myrepo&#39;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="p p-Indicator">-</span> <span class="nt">script</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set -e</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">py.test</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd docs</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">make html</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd ..</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doctr deploy .</span>
+<span class="p p-Indicator">-</span> <span class="nt">doctr</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">key-path </span><span class="p">:</span> <span class="s">&#39;path/to/key/from/repo/root/path.key&#39;</span>
+    <span class="p p-Indicator">-</span> <span class="nt">deploy-repo </span><span class="p">:</span> <span class="s">&#39;myorg/myrepo&#39;</span>
 </pre></div>
 </div>
 <p>The following options are available from the configuration file and not from
 the command line:</p>
-<dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">branches</span></code>:</dt>
-<dd>A list of regular expression that matches branches on which <code class="docutils literal notranslate"><span class="pre">doctr</span></code> should
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">branches</span></code>:</dt><dd><p>A list of regular expression that matches branches on which <code class="docutils literal notranslate"><span class="pre">doctr</span></code> should
 still deploy the documentation. For example <code class="docutils literal notranslate"><span class="pre">.*\.x</span></code> will deploy all
-branches like <code class="docutils literal notranslate"><span class="pre">3.x</span></code>, <code class="docutils literal notranslate"><span class="pre">4.x</span></code> …</dd>
+branches like <code class="docutils literal notranslate"><span class="pre">3.x</span></code>, <code class="docutils literal notranslate"><span class="pre">4.x</span></code> …</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -354,7 +360,7 @@ branches like <code class="docutils literal notranslate"><span class="pre">3.x</
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Doctr Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tests.html">GitHub Test Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Notes for testing doctr</a></li>
 </ul>
 <h3>Need help?</h3>
 
@@ -368,8 +374,6 @@ branches like <code class="docutils literal notranslate"><span class="pre">3.x</
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -382,7 +386,7 @@ branches like <code class="docutils literal notranslate"><span class="pre">3.x</
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
