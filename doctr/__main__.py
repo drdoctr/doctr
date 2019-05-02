@@ -500,7 +500,7 @@ def configure(args, parser):
             The deploy key has been added for {deploy_repo}.
 
             You can go to {deploy_keys_url} to revoke the deploy key.\
-            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url, keypath=keypath)))
+            """.format(deploy_repo=deploy_key_repo, deploy_keys_url=deploy_keys_url)))
             print(header)
         else:
             print(header)
