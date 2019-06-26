@@ -9,7 +9,8 @@ The doctr command is two commands in one. To use, first run::
 
 on your local machine. This will prompt for your GitHub credentials and the
 name of the repo you want to deploy docs for. This will generate a secure key,
-which you should insert into your .travis.yml.
+which you should insert into your .travis.yml (or set as a secure environment
+variable in your TravisCI repository settings if using the --dkenv option).
 
 Then, on Travis, for the build where you build your docs, add::
 
@@ -134,6 +135,10 @@ options available.
     if we do not appear to be on Travis.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
         help="""Directory to deploy the html documentation to on gh-pages.""")
+    deploy_parser_add_argument('--dkenv', type=str, metavar="ENVVAR",
+        help="""Push to GitHub using a deployment key stored in the named
+        environment variable via your TravisCI repository settings.
+        Use this if you used 'doctr configure --dkenv ENVVAR'.""")
     deploy_parser_add_argument('--token', action='store_true', default=False,
         help="""Push to GitHub using a personal access token. Use this if you
         used 'doctr configure --token'.""")
@@ -193,6 +198,11 @@ options available.
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
     if we appear to be on Travis.""")
+    configure_parser.add_argument('--dkenv', type=str, metavar="ENVVAR",
+        help="""Generate a deployment key to push to GitHub. The public key
+        will be added to your GitHub repository settings. The private key
+        should be added to you TravisCI repository settings as a protected
+        environment variable.""")
     configure_parser.add_argument('--token', action="store_true", default=False,
         help="""Generate a personal access token to push to GitHub. The default is to use a
         deploy key. WARNING: This will grant read/write access to all the
