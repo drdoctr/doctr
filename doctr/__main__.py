@@ -399,6 +399,10 @@ def configure(args, parser):
     if args.token and args.dkenv:
         parser.error("The --token and --dkenv settings are incompatible.")
 
+    if len(args.dkenv.split()) != 1:
+        # Not going to repeat this sanity test in the deploy command:
+        parser.error("The --dkenv setting should be one word only, e.g. DOC_KEY.")
+
     if not args.authenticate:
         args.upload_key = False
 
@@ -531,6 +535,7 @@ def configure(args, parser):
                and add the following as a new key:{RESET}
 
                 {ssh_key}
+
                {BOLD_MAGENTA}Be sure to allow write access for the key.{RESET}
             """.format(ssh_key=public_ssh_key, deploy_keys_url=deploy_keys_url, N=N,
                        BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
@@ -554,15 +559,13 @@ def configure(args, parser):
         key_type = "personal access token"
 
     if args.dkenv:
+        options += ' --dkenv ' + args.dkenv
         print(dedent("""\
         {N}. {BOLD_MAGENTA}Add the following private deployment key to your TravisCI
-        repository settings as environment variable {env_name}:{RESET}
-
-        {private_ssh_key}
-
-        WARNING: Do not otherwise share this private key!
+           repository settings as environment variable {env_name}:{RESET}
         """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET,
                    env_name=args.dkenv, private_ssh_key=private_ssh_key)))
+        print(private_ssh_key)
 
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
