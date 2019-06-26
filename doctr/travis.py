@@ -165,7 +165,10 @@ def get_current_repo():
         'remote.origin.url']).decode('utf-8')
 
     # Travis uses the https clone url
-    _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
+    try:
+        _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
+    except ValueError:
+        raise RuntimeError("Could not parse remote URL: %s" % remote_url)
     return (org + '/' + git_repo)
 
 def get_travis_branch():
@@ -189,11 +192,21 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     """
     Setup the remote to push to GitHub (to be run on Travis).
 
-    ``auth_type`` should be either ``'deploy_key'`` or ``'token'``.
+    ``auth_type`` should be ``'deploy_key'`` (encrpted deplyoment key
+    on disk), ``'dkenv'`` (deployment key in environment variable), or
+    ``'token'``.
+
+    For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
+    assuming the private deploement key is in the ``full_key_path`` file
+    and can be decrypted with the ``env_name`` environment variable.
+
+    For ``auth_type='dkenv'``, this sets up the remote with ssh access
+    assuming the private deployment key is in the ``env_name`` environment
+    variable.
 
     For ``auth_type='token'``, this sets up the remote with the token and
-    checks out the gh-pages branch. The token to push to GitHub is assumed to be in the ``GH_TOKEN`` environment
-    variable.
+    checks out the gh-pages branch. The token to push to GitHub is assumed
+    to be in the ``GH_TOKEN`` environment variable.
 
     For ``auth_type='deploy_key'``, this sets up the remote with ssh access.
     """
@@ -220,7 +233,15 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
     TRAVIS_REPO_SLUG = os.environ["TRAVIS_REPO_SLUG"]
     REPO_URL = 'https://api.github.com/repos/{slug}'
     r = requests.get(REPO_URL.format(slug=TRAVIS_REPO_SLUG))
-    fork = r.json().get('fork', False)
+
+    if auth_type == 'dkenv':
+        # Here we don't care if we are on a fork or not - one of the reasons
+        # for putting the key in a TravisCI secure environment variable is
+        # to allow things like setting up test source and deployment repos
+        # under a personal fork.
+        fork = False
+    else:
+        fork = r.json().get('fork', False)
 
     canpush = determine_push_rights(
         branch_whitelist=branch_whitelist,
@@ -244,6 +265,10 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
             run(['git', 'remote', 'add', 'doctr_remote',
                 'https://{token}@github.com/{deploy_repo}.git'.format(token=token.decode('utf-8'),
                     deploy_repo=deploy_repo)])
+        elif auth_type == 'dkenv':
+            # TODO - setup the key
+            run(['git', 'remote', 'add', 'doctr_remote',
+                'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
         else:
             keypath, key_ext = full_key_path.rsplit('.', 1)
             key_ext = '.' + key_ext

@@ -285,6 +285,9 @@ def deploy(args, parser):
 
     config = get_config()
 
+    if args.token and args.dkenv:
+        parser.error("The --token and --dkenv settings are incompatible.")
+
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
 
@@ -320,10 +323,10 @@ def deploy(args, parser):
 
         canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
-                                     full_key_path=keypath,
+                                     full_key_path=None if args.dkenv else keypath,
                                      branch_whitelist=branch_whitelist,
                                      build_tags=args.build_tags,
-                                     env_name=env_name)
+                                     env_name=args.dkenv if args.dkenv else env_name)
 
         if args.sync:
             built_docs = args.built_docs or find_sphinx_build_dir()
@@ -392,6 +395,9 @@ def configure(args, parser):
     if not args.force and on_travis():
         parser.error(red("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway."))
+
+    if args.token and args.dkenv:
+        parser.error("The --token and --dkenv settings are incompatible.")
 
     if not args.authenticate:
         args.upload_key = False
@@ -494,11 +500,17 @@ def configure(args, parser):
         deploy_key_repo, env_name, keypath = get_deploy_key_repo(deploy_repo, args.key_path)
 
         private_ssh_key, public_ssh_key = generate_ssh_key()
-        key = encrypt_to_file(private_ssh_key, keypath + '.enc')
-        del private_ssh_key # Prevent accidental use below
+        if args.dkenv:
+            key = None  # don't need it on disk
+            encrypted_variable = None  # not applicable
+            private_ssh_key = private_ssh_key.decode('ASCII')  # Will print this later!
+        else:
+            key = encrypt_to_file(private_ssh_key, keypath + '.enc')
+            encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
+                                                  build_repo=build_repo, tld=tld,
+                                                  travis_token=travis_token, **login_kwargs)
+            private_ssh_key = None # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
-        encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
-                                              build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
@@ -523,12 +535,12 @@ def configure(args, parser):
             """.format(ssh_key=public_ssh_key, deploy_keys_url=deploy_keys_url, N=N,
                        BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
+        if not args.dkenv:
+            print(dedent("""\
+            {N}. {BOLD_MAGENTA}Add the file {keypath}.enc to be staged for commit:{RESET}
 
-        print(dedent("""\
-        {N}. {BOLD_MAGENTA}Add the file {keypath}.enc to be staged for commit:{RESET}
-
-            git add {keypath}.enc
-        """.format(keypath=keypath, N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+                git add {keypath}.enc
+            """.format(keypath=keypath, N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
     options = '--built-docs ' + bold_black('<path/to/built/html/>')
     if args.key_path:
@@ -541,23 +553,38 @@ def configure(args, parser):
         options += ' --token'
         key_type = "personal access token"
 
+    if args.dkenv:
+        print(dedent("""\
+        {N}. {BOLD_MAGENTA}Add the following private deployment key to your TravisCI
+        repository settings as environment variable {env_name}:{RESET}
+
+        {private_ssh_key}
+
+        WARNING: Do not otherwise share this private key!
+        """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET,
+                   env_name=args.dkenv, private_ssh_key=private_ssh_key)))
+
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
+    """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
 
-        env:
-          global:
-            # Doctr {key_type} for {deploy_repo}
-            - secure: "{encrypted_variable}"
+    if not args.dkenv:
+        print(dedent("""\
+            env:
+              global:
+                # Doctr {key_type} for {deploy_repo}
+                - secure: "{encrypted_variable}"
+        """.format(key_type=key_type,
+                   encrypted_variable=encrypted_variable.decode('utf-8'))))
 
+    print(dedent("""\
         script:
           - set -e
           - {BOLD_BLACK}<Command to build your docs>{RESET}
           - pip install doctr
           - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
-    """.format(options=options, N=N, key_type=key_type,
-        encrypted_variable=encrypted_variable.decode('utf-8'),
-        deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
-        BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
+    """.format(options=options, deploy_repo=deploy_repo,
+               BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
     print(dedent("""\
     Replace the text in {BOLD_BLACK}<angle brackets>{RESET} with the relevant
