@@ -165,11 +165,13 @@ def get_current_repo():
         'remote.origin.url']).decode('utf-8')
 
     # Travis uses the https clone url
-    try:
-        _, org, git_repo = remote_url.rsplit('.git', 1)[0].rsplit('/', 2)
-    except ValueError:
-        raise RuntimeError("Could not parse remote URL: %s" % remote_url)
-    return (org + '/' + git_repo)
+    # e.g. https://github.com/<owner>/<repo>.git
+    # If run outside Travis using --force, might have:
+    # e.g. git@github.com:<owner>/<repo>.git
+    if remote_url.endswith(".git"):
+        remote_url = remote_url[:-4]
+    _, owner, repo = remote_url.replace(":", "/").rsplit("/", 2)
+    return owner + '/' + repo
 
 def get_travis_branch():
     """Get the name of the branch that the PR is from.
