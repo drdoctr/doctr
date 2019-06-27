@@ -20,6 +20,14 @@ from cryptography.fernet import Fernet
 from .common import red, blue, yellow
 DOCTR_WORKING_BRANCH = '__doctr_working_branch'
 
+def write_private_key(filename, private_key_bytes):
+    """
+    Helper function to record (decrpted) private key to as file for ssh.
+    """
+    with open(filename, 'wb') as f:
+        f.write(filename)
+    os.chmod(filename, 0o600)
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.
@@ -41,10 +49,7 @@ def decrypt_file(file, key):
     with open(file, 'rb') as f:
         decrypted_file = fer.decrypt(f.read())
 
-    with open(file[:-4], 'wb') as f:
-        f.write(decrypted_file)
-
-    os.chmod(file[:-4], 0o600)
+    write_private_key(file[:-4], decrypted_file)
 
 def setup_deploy_key(keypath='github_deploy_key', key_ext='.enc', env_name='DOCTR_DEPLOY_ENCRYPTION_KEY'):
     """
