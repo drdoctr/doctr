@@ -28,6 +28,12 @@ def write_private_key(filename, private_key_bytes):
         f.write(filename)
     os.chmod(filename, 0o600)
 
+def write_key_from_env_var(filename, env_var):
+    """
+    Write private key from  environment variable named in --dkenv to disk.
+    """
+    write_private_key(filename, os.environ[env_var])
+
 def decrypt_file(file, key):
     """
     Decrypts the file ``file``.
@@ -230,8 +236,8 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
                 stacklevel=2)
         branch_whitelist.add('master')
 
-    if auth_type not in ['deploy_key', 'token']:
-        raise ValueError("auth_type must be 'deploy_key' or 'token'")
+    if auth_type not in ['deploy_key', 'dkenv', 'token']:
+        raise ValueError("auth_type must be 'deploy_key', 'dkenv', or 'token'")
 
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "")
     TRAVIS_PULL_REQUEST = os.environ.get("TRAVIS_PULL_REQUEST", "")
@@ -258,6 +264,14 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
         TRAVIS_TAG=TRAVIS_TAG,
         build_tags=build_tags)
 
+    if auth_type == 'dkenv':
+        if args.dkenv not in os.environ:
+            print("WARNING: Environment variable {dkenv} not set".format(dpenv=args.dkenv))
+            canpush = False
+        elif not os.environ[args.dkenv]:
+            print("WARNING: Environment variable {dkenv} empty".format(dpenv=args.dkenv))
+            canpush = False
+
     print("Setting git attributes")
     set_git_user_email()
 
@@ -274,6 +288,7 @@ def setup_GitHub_push(deploy_repo, *, auth_type='deploy_key',
                     deploy_repo=deploy_repo)])
         elif auth_type == 'dkenv':
             # TODO - setup the key
+            write_key_from_env_var(full_key_path.rsplit('.', 1)[0], args.dkenv)
             run(['git', 'remote', 'add', 'doctr_remote',
                 'git@github.com:{deploy_repo}.git'.format(deploy_repo=deploy_repo)])
         else:
