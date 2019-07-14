@@ -506,14 +506,16 @@ def configure(args, parser):
         private_ssh_key, public_ssh_key = generate_ssh_key()
         if args.dkenv:
             key = None  # don't need it on disk
-            encrypted_variable = None  # not applicable
-            private_ssh_key = private_ssh_key.decode('ASCII')  # Will print this later!
+            encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" +
+                                                  private_ssh_key.replace(b'\n', br'\n').replace(b' ', br'\ '),
+                                                  build_repo=build_repo, tld=tld,
+                                                  travis_token=travis_token, **login_kwargs)
         else:
             key = encrypt_to_file(private_ssh_key, keypath + '.enc')
             encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
                                                   build_repo=build_repo, tld=tld,
                                                   travis_token=travis_token, **login_kwargs)
-            private_ssh_key = None # Prevent accidental use below
+        private_ssh_key = None # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
@@ -565,7 +567,6 @@ def configure(args, parser):
            repository settings as environment variable {env_name}:{RESET}
         """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET,
                    env_name=args.dkenv, private_ssh_key=private_ssh_key)))
-        print(private_ssh_key)
 
     print(dedent("""\
     {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
