@@ -486,6 +486,8 @@ def commit_docs(*, added, removed):
     Returns True if changes were committed and False if no changes were
     committed.
     """
+    from os.path import exists
+
     TRAVIS_BUILD_NUMBER = os.environ.get("TRAVIS_BUILD_NUMBER", "<unknown>")
     TRAVIS_BRANCH = os.environ.get("TRAVIS_BRANCH", "<unknown>")
     TRAVIS_COMMIT = os.environ.get("TRAVIS_COMMIT", "<unknown>")
@@ -496,11 +498,25 @@ def commit_docs(*, added, removed):
 
     DOCTR_COMMAND = ' '.join(map(shlex.quote, sys.argv))
 
+    # It may be that a custom command removed some of the synced
+    # files, so we should double check whether files still exist
+    added_confirmed = []
+    for file in added:
+        if exists(file):
+            added_confirmed.append(file)
+        else:
+            print("Warning: File %s doesn't exist and won't be added." % file, file=sys.stderr)
+    removed_confirmed = []
+    for file in removed:
+        if exists(file):
+            print("Warning: File %s exists and won't be removed." % file, file=sys.stderr)
+        else:
+            removed_confirmed.append(file)
 
-    if added:
-        run(['git', 'add', *added])
-    if removed:
-        run(['git', 'rm', *removed])
+    if added_confirmed:
+        run(['git', 'add', *added_confirmed])
+    if removed_confirmed:
+        run(['git', 'rm', *removed_confirmed])
 
     commit_message = """\
 Update docs after building Travis build {TRAVIS_BUILD_NUMBER} of
