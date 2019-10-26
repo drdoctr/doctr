@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Doctr &#8212; Doctr 1.8.0+6.g0f19ff7 documentation</title>
+    <meta charset="utf-8" />
+    <title>Doctr &#8212; Doctr 1.8.0+8.g747a881 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -47,11 +45,11 @@ or website that uses a <a class="reference external" href="https://www.staticgen
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Install Doctr with pip</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
 </pre></div>
 </div>
 <p>or conda</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
 </pre></div>
 </div>
 <p><strong>Note that Doctr requires Python 3.5 or newer.</strong></p>
@@ -63,7 +61,7 @@ or website that uses a <a class="reference external" href="https://www.staticgen
 <p>First use Doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.</p>
 <p>Run</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
 </pre></div>
 </div>
 <p>and enter your data. You will need your GitHub username and password, and the
@@ -80,25 +78,25 @@ need to edit your <code class="docutils literal notranslate"><span class="pre">.
 that lets travis communicate with your GitHub repository, as well as the
 code to run (in <code class="docutils literal notranslate"><span class="pre">script:</span></code>) in order to build the docs and deploy Doctr.</p>
 <p>Your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> file should look something like this:</p>
-<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Doctr requires python &gt;=3.5</span>
-<span class="n">language</span><span class="p">:</span> <span class="n">python</span>
-<span class="n">python</span><span class="p">:</span>
-  <span class="o">-</span> <span class="mf">3.6</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Doctr requires python &gt;=3.5</span>
+<span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="nt">python</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3.6</span>
 
 <span class="c1"># This gives Doctr the key we&#39;ve generated</span>
-<span class="n">sudo</span><span class="p">:</span> <span class="n">false</span>
-<span class="n">env</span><span class="p">:</span>
-  <span class="k">global</span><span class="p">:</span>
-    <span class="n">secure</span><span class="p">:</span> <span class="s2">&quot;&lt;your secure key from Doctr here&gt;&quot;</span>
+<span class="nt">sudo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">env</span><span class="p">:</span>
+  <span class="nt">global</span><span class="p">:</span>
+    <span class="nt">secure</span><span class="p">:</span> <span class="s">&quot;&lt;your</span><span class="nv"> </span><span class="s">secure</span><span class="nv"> </span><span class="s">key</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">Doctr</span><span class="nv"> </span><span class="s">here&gt;&quot;</span>
 
 <span class="c1"># This is the script to build the docs on travis, then deploy</span>
-<span class="n">script</span><span class="p">:</span>
-  <span class="o">-</span> <span class="nb">set</span> <span class="o">-</span><span class="n">e</span>
-  <span class="o">-</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
-  <span class="o">-</span> <span class="n">cd</span> <span class="n">docs</span>
-  <span class="o">-</span> <span class="n">make</span> <span class="n">html</span>
-  <span class="o">-</span> <span class="n">cd</span> <span class="o">..</span>
-  <span class="o">-</span> <span class="n">doctr</span> <span class="n">deploy</span> <span class="o">.</span> <span class="o">--</span><span class="n">built</span><span class="o">-</span><span class="n">docs</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">built</span><span class="o">/</span><span class="n">html</span><span class="o">/</span>
+<span class="nt">script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set -e</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install doctr</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd docs</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">make html</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd ..</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doctr deploy . --built-docs path/to/built/html/</span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the travis config file</a> used by Doctr itself for example.</p>
@@ -106,10 +104,10 @@ code to run (in <code class="docutils literal notranslate"><span class="pre">scr
 to <code class="docutils literal notranslate"><span class="pre">deploy</span></code>. E.g., <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">docs/</span></code>.</p>
 <p>If you don’t already have a gh_pages branch Doctr will make one for you.</p>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
+<p class="admonition-title">Warning</p>
 <p>Be sure to add <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal notranslate"><span class="pre">script</span></code>, to prevent <code class="docutils literal notranslate"><span class="pre">doctr</span></code> from running
 when the docs build fails.</p>
-<p class="last">Put <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> in the <code class="docutils literal notranslate"><span class="pre">script</span></code> section of your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. If
+<p>Put <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> in the <code class="docutils literal notranslate"><span class="pre">script</span></code> section of your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. If
 you use <code class="docutils literal notranslate"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
 the build to fail.</p>
 </div>
@@ -133,7 +131,7 @@ docs automatically (otherwise use <code class="docutils literal notranslate"><sp
 <div class="section" id="faq">
 <h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first"><strong>Why did you build this?</strong></p>
+<li><p><strong>Why did you build this?</strong></p>
 <p>Deploying to GitHub pages from Travis is not amazingly difficult, but it’s
 difficult enough that we wanted to write the code to do it once. We found
 that Travis docs uploading scripts are cargo culted and done in a way that
@@ -151,19 +149,19 @@ read/write access only to a single repository. Doctr creates a GitHub deploy
 key by default (although the option to use a token exists if you know what
 you are doing).</p>
 </li>
-<li><p class="first"><strong>Why not Read the Docs?</strong></p>
+<li><p><strong>Why not Read the Docs?</strong></p>
 <p>Read the Docs is great, but it has some limitations:</p>
 <ul class="simple">
-<li>You are limited in what you can install in Read the Docs. Travis lets you
-run arbitrary code, which may be necessary to build your documentation.</li>
-<li>Read the Docs deploys to readthedocs.io. Doctr deploys to GitHub pages.
+<li><p>You are limited in what you can install in Read the Docs. Travis lets you
+run arbitrary code, which may be necessary to build your documentation.</p></li>
+<li><p>Read the Docs deploys to readthedocs.io. Doctr deploys to GitHub pages.
 This is often more convenient, as your docs can easily sit alongside other
-website materials for your project on GitHub pages.</li>
+website materials for your project on GitHub pages.</p></li>
 </ul>
 <p>In general, you should already be building your docs on Travis anyway (to
 test that they build), so it seems natural to deploy them from there.</p>
 </li>
-<li><p class="first"><strong>Why does Doctr require Python 3.5 or newer?</strong></p>
+<li><p><strong>Why does Doctr require Python 3.5 or newer?</strong></p>
 <p>There are several language features of Python that we wanted to make use of
 that are not available in earlier versions of Python, such as <a class="reference external" href="https://www.python.org/dev/peps/pep-3102/">keyword-only
 arguments</a>,
@@ -173,7 +171,7 @@ features help keep the Doctr code cleaner and more maintainable.</p>
 <p>If you cannot build your documentation in Python 3, you will need to
 install Python 3.6 in Travis to run Doctr.</p>
 </li>
-<li><p class="first"><strong>Is this secure?</strong></p>
+<li><p><strong>Is this secure?</strong></p>
 <p>Doctr creates an encrypted SSH deploy key, which allows any Travis build on
 your repo to push to the deploy repo. The deploy key is encrypted using
 <a class="reference external" href="https://cryptography.io/en/latest/fernet/">Fernet encryption from the Python cryptography module</a>. The Fernet key is then
@@ -195,15 +193,15 @@ deploy key settings for the repository in GitHub at
 tokens can be revoked at <a class="reference external" href="https://github.com/settings/tokens">https://github.com/settings/tokens</a>. If you revoke a key, you will need
 to rerun <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> to generate a new one to continue using Doctr.</p>
 </li>
-<li><p class="first"><strong>Can Doctr do X?</strong></p>
+<li><p><strong>Can Doctr do X?</strong></p>
 <p>See the <a class="reference internal" href="recipes.html#recipes"><span class="std std-ref">Recipes</span></a> page for many common use case recipes for Doctr.
 Doctr supports virtually anything that involves pushing from Travis CI to
 GitHub automatically.</p>
 </li>
-<li><p class="first"><strong>I would use this, but it’s missing a feature that I want.</strong></p>
+<li><p><strong>I would use this, but it’s missing a feature that I want.</strong></p>
 <p>Doctr is still very new. We welcome all <a class="reference external" href="https://github.com/drdoctr/doctr/issues">feature requests</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/pulls">pull requests</a>.</p>
 </li>
-<li><p class="first"><strong>Why is it called Doctr?</strong></p>
+<li><p><strong>Why is it called Doctr?</strong></p>
 <p>Because it deploys <strong>doc</strong>umentation from <strong>Tr</strong>avis. And it makes you
 feel good.</p>
 </li>
@@ -212,14 +210,14 @@ feel good.</p>
 <div class="section" id="projects-using-doctr">
 <h2>Projects using Doctr<a class="headerlink" href="#projects-using-doctr" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="http://www.sympy.org/en/index.html">SymPy</a></li>
-<li><a class="reference external" href="http://conda.pydata.org/docs/">conda</a></li>
-<li><a class="reference external" href="https://drdoctr.github.io/doctr/">doctr</a></li>
-<li><a class="reference external" href="https://barbagroup.github.io/pygbe/docs/">PyGBe</a></li>
-<li><a class="reference external" href="http://xon.sh">xonsh</a></li>
-<li><a class="reference external" href="https://github.com/regro/cf-scripts">regro-cf-autotick-bot</a></li>
-<li><a class="reference external" href="http://xpdacq.github.io/">XPD stack</a></li>
-<li><a class="reference external" href="https://www.spyder-ide.org/">Spyder IDE</a></li>
+<li><p><a class="reference external" href="http://www.sympy.org/en/index.html">SymPy</a></p></li>
+<li><p><a class="reference external" href="http://conda.pydata.org/docs/">conda</a></p></li>
+<li><p><a class="reference external" href="https://drdoctr.github.io/doctr/">doctr</a></p></li>
+<li><p><a class="reference external" href="https://barbagroup.github.io/pygbe/docs/">PyGBe</a></p></li>
+<li><p><a class="reference external" href="http://xon.sh">xonsh</a></p></li>
+<li><p><a class="reference external" href="https://github.com/regro/cf-scripts">regro-cf-autotick-bot</a></p></li>
+<li><p><a class="reference external" href="http://xpdacq.github.io/">XPD stack</a></p></li>
+<li><p><a class="reference external" href="https://www.spyder-ide.org/">Spyder IDE</a></p></li>
 </ul>
 <p>Are you using Doctr?  Please add your project to the list!</p>
 <p>Contents:</p>
@@ -289,9 +287,9 @@ feel good.</p>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
@@ -336,13 +334,11 @@ feel good.</p>
   tracker</a>. Issues that are just questions are fine.
 </p>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -355,7 +351,7 @@ feel good.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
