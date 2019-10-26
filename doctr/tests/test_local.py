@@ -1,4 +1,5 @@
 import os
+import binascii
 
 from ..local import check_repo_exists, GIT_URL, guess_github_repo
 from ..__main__ import on_travis
@@ -57,13 +58,13 @@ def test_github_invalid_repo():
 
 def test_travis_bad_user():
     with raises(RuntimeError):
-        # Travis is case-sensitive
-        check_repo_exists('dRdoctr/doctr', service='travis')
+        rand_hex = binascii.hexlify(os.urandom(32)).decode('utf-8')
+        check_repo_exists('drdoctr{}/doctr'.format(rand_hex), service='travis')
 
 def test_travis_bad_repo():
     with raises(RuntimeError):
-        # Travis is case-sensitive
-        check_repo_exists('drdoctr/DoCtR', service='travis')
+        rand_hex = binascii.hexlify(os.urandom(32)).decode('utf-8')
+        check_repo_exists('drdoctr/doctr{}'.format(rand_hex), service='travis')
 
 def test_GIT_URL():
     for url in [
