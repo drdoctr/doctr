@@ -1,0 +1,691 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>doctr.travis &#8212; Doctr 1.8.0+7.gb974c72 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for doctr.travis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The code that should be run on Travis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="k">import</span> <span class="n">Fernet</span>
+
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">red</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">yellow</span>
+<span class="n">DOCTR_WORKING_BRANCH</span> <span class="o">=</span> <span class="s1">&#39;__doctr_working_branch&#39;</span>
+
+<div class="viewcode-block" id="decrypt_file"><a class="viewcode-back" href="../../api.html#doctr.travis.decrypt_file">[docs]</a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decrypts the file ``file``.</span>
+
+<span class="sd">    The encrypted file is assumed to end with the ``.enc`` extension. The</span>
+<span class="sd">    decrypted file is saved to the same location without the ``.enc``</span>
+<span class="sd">    extension.</span>
+
+<span class="sd">    The permissions on the decrypted file are automatically set to 0o600.</span>
+
+<span class="sd">    See also :func:`doctr.local.encrypt_file`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.enc&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not end with .enc&quot;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+
+    <span class="n">fer</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">decrypted_file</span> <span class="o">=</span> <span class="n">fer</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">decrypted_file</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">file</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="mo">0o600</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setup_deploy_key"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_deploy_key">[docs]</a><span class="k">def</span> <span class="nf">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="s1">&#39;github_deploy_key&#39;</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="s1">&#39;.enc&#39;</span><span class="p">,</span> <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decrypts the deploy key and configures it with ssh</span>
+
+<span class="sd">    The key is assumed to be encrypted as keypath + key_ext, and the</span>
+<span class="sd">    encryption key is assumed to be set in the environment variable</span>
+<span class="sd">    ``env_name``. If ``env_name`` is not set, it falls back to</span>
+<span class="sd">    ``DOCTR_DEPLOY_ENCRYPTION_KEY`` for backwards compatibility.</span>
+
+<span class="sd">    If keypath + key_ext does not exist, it falls back to</span>
+<span class="sd">    ``github_deploy_key.enc`` for backwards compatibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DOCTR_DEPLOY_ENCRYPTION_KEY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{env_name}</span><span class="s2"> or DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set. Make sure you followed the instructions from &#39;doctr configure&#39; properly. You may need to re-run &#39;doctr configure&#39; to fix this error.&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="o">=</span><span class="n">env_name</span><span class="p">))</span>
+
+    <span class="c1"># Legacy keyfile name</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="n">key_ext</span><span class="p">)</span> <span class="ow">and</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;github_deploy_key&#39;</span> <span class="o">+</span> <span class="n">key_ext</span><span class="p">)):</span>
+        <span class="n">keypath</span> <span class="o">=</span> <span class="s1">&#39;github_deploy_key&#39;</span>
+    <span class="n">key_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">keypath</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">decrypt_file</span><span class="p">(</span><span class="n">keypath</span> <span class="o">+</span> <span class="n">key_ext</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="n">key_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.ssh/&quot;</span> <span class="o">+</span> <span class="n">key_filename</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.ssh&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_path</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.ssh/config&quot;</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Host github.com&quot;</span>
+                <span class="s1">&#39;  IdentityFile &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
+                <span class="s2">&quot;  LogLevel ERROR</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">key_path</span><span class="p">)</span>
+
+    <span class="c1"># start ssh-agent and add key to it</span>
+    <span class="c1"># info from SSH agent has to be put into the environment</span>
+    <span class="n">agent_info</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;ssh-agent&#39;</span><span class="p">,</span> <span class="s1">&#39;-s&#39;</span><span class="p">])</span>
+    <span class="n">agent_info</span> <span class="o">=</span> <span class="n">agent_info</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">agent_info</span> <span class="o">=</span> <span class="n">agent_info</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">AUTH_SOCK</span> <span class="o">=</span> <span class="n">agent_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">AGENT_PID</span> <span class="o">=</span> <span class="n">agent_info</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">putenv</span><span class="p">(</span><span class="s1">&#39;SSH_AUTH_SOCK&#39;</span><span class="p">,</span> <span class="n">AUTH_SOCK</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">putenv</span><span class="p">(</span><span class="s1">&#39;SSH_AGENT_PID&#39;</span><span class="p">,</span> <span class="n">AGENT_PID</span><span class="p">)</span>
+
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;ssh-add&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.ssh/&#39;</span> <span class="o">+</span> <span class="n">key_filename</span><span class="p">)])</span></div>
+
+<span class="k">def</span> <span class="nf">run_command_hiding_token</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">token</span><span class="p">:</span>
+        <span class="n">stdout</span> <span class="o">=</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">stdout</span> <span class="o">=</span> <span class="n">stderr</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="n">shell</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">token</span><span class="p">:</span>
+        <span class="c1"># XXX: Do this in a way that is streaming</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;~&quot;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;~&quot;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">out</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+
+<div class="viewcode-block" id="get_token"><a class="viewcode-back" href="../../api.html#doctr.travis.get_token">[docs]</a><span class="k">def</span> <span class="nf">get_token</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the encrypted GitHub token in Travis.</span>
+
+<span class="sd">    Make sure the contents this variable do not leak. The ``run()`` function</span>
+<span class="sd">    will remove this from the output, so always use it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GH_TOKEN&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;GH_TOKEN environment variable not set&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">token</span></div>
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../api.html#doctr.travis.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run the command ``args``.</span>
+
+<span class="sd">    Automatically hides the secret GitHub token from the output.</span>
+
+<span class="sd">    If shell=False (recommended for most commands), args should be a list of</span>
+<span class="sd">    strings. If shell=True, args should be a string of the command to run.</span>
+
+<span class="sd">    If exit=True, it exits on nonzero returncode. Otherwise it returns the</span>
+<span class="sd">    returncode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;GH_TOKEN&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">shell</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="s1">&#39;~&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">blue</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">returncode</span> <span class="o">=</span> <span class="n">run_command_hiding_token</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="n">shell</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">exit</span> <span class="ow">and</span> <span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">returncode</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">returncode</span></div>
+
+<div class="viewcode-block" id="get_current_repo"><a class="viewcode-back" href="../../api.html#doctr.travis.get_current_repo">[docs]</a><span class="k">def</span> <span class="nf">get_current_repo</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the GitHub repo name for the current directory.</span>
+
+<span class="sd">    Assumes that the repo is in the ``origin`` remote.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">remote_url</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--get&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;remote.origin.url&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Travis uses the https clone url</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">org</span><span class="p">,</span> <span class="n">git_repo</span> <span class="o">=</span> <span class="n">remote_url</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.git&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">org</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">git_repo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_travis_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.get_travis_branch">[docs]</a><span class="k">def</span> <span class="nf">get_travis_branch</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the name of the branch that the PR is from.</span>
+
+<span class="sd">    Note that this is not simply ``$TRAVIS_BRANCH``. the ``push`` build will</span>
+<span class="sd">    use the correct branch (the branch that the PR is from) but the ``pr``</span>
+<span class="sd">    build will use the _target_ of the PR (usually master). So instead, we ask</span>
+<span class="sd">    for ``$TRAVIS_PULL_REQUEST_BRANCH`` if it&#39;s a PR build, and</span>
+<span class="sd">    ``$TRAVIS_BRANCH`` if it&#39;s a push build.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setup_GitHub_push"><a class="viewcode-back" href="../../api.html#doctr.travis.setup_GitHub_push">[docs]</a><span class="k">def</span> <span class="nf">setup_GitHub_push</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth_type</span><span class="o">=</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span>
+    <span class="n">full_key_path</span><span class="o">=</span><span class="s1">&#39;github_deploy_key.enc&#39;</span><span class="p">,</span> <span class="n">require_master</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">branch_whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span>
+    <span class="n">env_name</span><span class="o">=</span><span class="s1">&#39;DOCTR_DEPLOY_ENCRYPTION_KEY&#39;</span><span class="p">,</span> <span class="n">build_tags</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Setup the remote to push to GitHub (to be run on Travis).</span>
+
+<span class="sd">    ``auth_type`` should be either ``&#39;deploy_key&#39;`` or ``&#39;token&#39;``.</span>
+
+<span class="sd">    For ``auth_type=&#39;token&#39;``, this sets up the remote with the token and</span>
+<span class="sd">    checks out the gh-pages branch. The token to push to GitHub is assumed to be in the ``GH_TOKEN`` environment</span>
+<span class="sd">    variable.</span>
+
+<span class="sd">    For ``auth_type=&#39;deploy_key&#39;``, this sets up the remote with ssh access.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set to the name of the tag for tag builds</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">branch_whitelist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">branch_whitelist</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;master&#39;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">require_master</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`setup_GitHub_push`&#39;s `require_master` argument in favor of `branch_whitelist=[&#39;master&#39;]`&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">branch_whitelist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;master&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">auth_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;deploy_key&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;auth_type must be &#39;deploy_key&#39; or &#39;token&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_PULL_REQUEST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_PULL_REQUEST&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if the repo is a fork</span>
+    <span class="n">TRAVIS_REPO_SLUG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TRAVIS_REPO_SLUG&quot;</span><span class="p">]</span>
+    <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/repos/</span><span class="si">{slug}</span><span class="s1">&#39;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">REPO_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="n">TRAVIS_REPO_SLUG</span><span class="p">))</span>
+    <span class="n">fork</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fork&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">canpush</span> <span class="o">=</span> <span class="n">determine_push_rights</span><span class="p">(</span>
+        <span class="n">branch_whitelist</span><span class="o">=</span><span class="n">branch_whitelist</span><span class="p">,</span>
+        <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+        <span class="n">TRAVIS_PULL_REQUEST</span><span class="o">=</span><span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span>
+        <span class="n">fork</span><span class="o">=</span><span class="n">fork</span><span class="p">,</span>
+        <span class="n">TRAVIS_TAG</span><span class="o">=</span><span class="n">TRAVIS_TAG</span><span class="p">,</span>
+        <span class="n">build_tags</span><span class="o">=</span><span class="n">build_tags</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting git attributes&quot;</span><span class="p">)</span>
+    <span class="n">set_git_user_email</span><span class="p">()</span>
+
+    <span class="n">remotes</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;doctr_remote&#39;</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;doctr_remote already exists, removing&quot;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding doctr remote&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">canpush</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s1">&#39;token&#39;</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;https://</span><span class="si">{token}</span><span class="s1">@github.com/</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+                    <span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span> <span class="o">=</span> <span class="n">full_key_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">key_ext</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key_ext</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">setup_deploy_key</span><span class="p">(</span><span class="n">keypath</span><span class="o">=</span><span class="n">keypath</span><span class="p">,</span> <span class="n">key_ext</span><span class="o">=</span><span class="n">key_ext</span><span class="p">,</span> <span class="n">env_name</span><span class="o">=</span><span class="n">env_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="c1"># Rate limits prevent this check from working every time. By default, we</span>
+                <span class="c1"># assume it isn&#39;t a fork so that things just work on non-fork builds.</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">yellow</span><span class="p">(</span><span class="s2">&quot;Warning: GitHub&#39;s API rate limits prevented doctr from detecting if this build is a forked repo. If it is, you may ignore the &#39;DOCTR_DEPLOY_ENCRYPTION_KEY environment variable is not set&#39; error that follows. If it is not, you should re-run &#39;doctr configure&#39;. Note that doctr cannot deploy from fork builds due to limitations in Travis.&quot;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;git@github.com:</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;setting a read-only GitHub doctr_remote&#39;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;remote&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;https://github.com/</span><span class="si">{deploy_repo}</span><span class="s1">.git&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)])</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fetching doctr remote&quot;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">canpush</span></div>
+
+<div class="viewcode-block" id="set_git_user_email"><a class="viewcode-back" href="../../api.html#doctr.travis.set_git_user_email">[docs]</a><span class="k">def</span> <span class="nf">set_git_user_email</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set global user and email for git user if not already present on system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;git config user.name&#39;</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span> <span class="ow">or</span> <span class="n">username</span> <span class="o">==</span> <span class="s2">&quot;Travis CI User&quot;</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.name&#39;</span><span class="p">,</span> <span class="s2">&quot;Doctr (Travis CI)&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not setting git user name, as it&#39;s already set to </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;git config user.email&#39;</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span> <span class="ow">or</span> <span class="n">email</span> <span class="o">==</span> <span class="s2">&quot;travis@example.org&quot;</span><span class="p">:</span>
+        <span class="c1"># We need a dummy email or git will fail. We use this one as per</span>
+        <span class="c1"># https://help.github.com/articles/keeping-your-email-address-private/.</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="s1">&#39;user.email&#39;</span><span class="p">,</span> <span class="s1">&#39;drdoctr@users.noreply.github.com&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not setting git user email, as it&#39;s already set to </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">email</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="checkout_deploy_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.checkout_deploy_branch">[docs]</a><span class="k">def</span> <span class="nf">checkout_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">canpush</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checkout the deploy branch, creating it if it doesn&#39;t exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create an empty branch with .nojekyll if it doesn&#39;t already exist</span>
+    <span class="n">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="n">canpush</span><span class="p">)</span>
+    <span class="n">remote_branch</span> <span class="o">=</span> <span class="s2">&quot;doctr_remote/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking out doctr working branch tracking&quot;</span><span class="p">,</span> <span class="n">remote_branch</span><span class="p">)</span>
+    <span class="n">clear_working_branch</span><span class="p">()</span>
+    <span class="c1"># If gh-pages doesn&#39;t exist the above create_deploy_branch() will create</span>
+    <span class="c1"># it we can push, but if we can&#39;t, it won&#39;t and the --track would fail.</span>
+    <span class="k">if</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rev-parse&#39;</span><span class="p">,</span> <span class="s1">&#39;--verify&#39;</span><span class="p">,</span> <span class="n">remote_branch</span><span class="p">],</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--track&#39;</span><span class="p">,</span> <span class="n">remote_branch</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">]</span> <span class="o">+</span> <span class="n">extra_args</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">canpush</span></div>
+
+<span class="k">def</span> <span class="nf">clear_working_branch</span><span class="p">():</span>
+    <span class="n">local_branch_names</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">DOCTR_WORKING_BRANCH</span> <span class="ow">in</span> <span class="n">local_branch_names</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
+
+<div class="viewcode-block" id="deploy_branch_exists"><a class="viewcode-back" href="../../api.html#doctr.travis.deploy_branch_exists">[docs]</a><span class="k">def</span> <span class="nf">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if there is a remote branch with name specified in ``deploy_branch``.</span>
+
+<span class="sd">    Note that default ``deploy_branch`` is ``gh-pages`` for regular repos and</span>
+<span class="sd">    ``master`` for ``github.io`` repos.</span>
+
+<span class="sd">    This isn&#39;t completely robust. If there are multiple remotes and you have a</span>
+<span class="sd">    ``deploy_branch`` branch on the non-default remote, this won&#39;t see it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">remote_name</span> <span class="o">=</span> <span class="s1">&#39;doctr_remote&#39;</span>
+    <span class="n">branch_names</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_name</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)</span> <span class="ow">in</span> <span class="n">branch_names</span></div>
+
+<div class="viewcode-block" id="create_deploy_branch"><a class="viewcode-back" href="../../api.html#doctr.travis.create_deploy_branch">[docs]</a><span class="k">def</span> <span class="nf">create_deploy_branch</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">,</span> <span class="n">push</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If there is no remote branch with name specified in ``deploy_branch``,</span>
+<span class="sd">    create one.</span>
+
+<span class="sd">    Note that default ``deploy_branch`` is ``gh-pages`` for regular</span>
+<span class="sd">    repos and ``master`` for ``github.io`` repos.</span>
+
+<span class="sd">    Return True if ``deploy_branch`` was created, False if not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">deploy_branch_exists</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> branch on doctr_remote&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+        <span class="n">clear_working_branch</span><span class="p">()</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;--orphan&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
+        <span class="c1"># delete everything in the new ref.  this is non-destructive to existing</span>
+        <span class="c1"># refs/branches, etc...</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-rf&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding .nojekyll file to working branch&quot;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;touch&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;.nojekyll&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;Create new </span><span class="si">{}</span><span class="s1"> branch with .nojekyll&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">push</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing working branch to remote </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_branch</span><span class="p">))</span>
+            <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOCTR_WORKING_BRANCH</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)])</span>
+        <span class="c1"># return to master branch and clear the working branch</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;checkout&#39;</span><span class="p">,</span> <span class="s1">&#39;master&#39;</span><span class="p">])</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="n">DOCTR_WORKING_BRANCH</span><span class="p">])</span>
+        <span class="c1"># fetch the remote so that doctr_remote/{deploy_branch} is resolved</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="find_sphinx_build_dir"><a class="viewcode-back" href="../../api.html#doctr.travis.find_sphinx_build_dir">[docs]</a><span class="k">def</span> <span class="nf">find_sphinx_build_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find build subfolder within sphinx docs directory.</span>
+
+<span class="sd">    This is called by :func:`commit_docs` if keyword arg ``built_docs`` is not</span>
+<span class="sd">    specified on the command line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">build</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*build/html&#39;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">build</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not find Sphinx build directory automatically&quot;</span><span class="p">)</span>
+    <span class="n">build_folder</span> <span class="o">=</span> <span class="n">build</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">build_folder</span></div>
+
+<span class="c1"># Here is the logic to get the Travis job number, to only run commit_docs in</span>
+<span class="c1"># the right build.</span>
+<span class="c1">#</span>
+<span class="c1"># TRAVIS_JOB_NUMBER = os.environ.get(&quot;TRAVIS_JOB_NUMBER&quot;, &#39;&#39;)</span>
+<span class="c1"># ACTUAL_TRAVIS_JOB_NUMBER = TRAVIS_JOB_NUMBER.split(&#39;.&#39;)[1]</span>
+
+<div class="viewcode-block" id="copy_to_tmp"><a class="viewcode-back" href="../../api.html#doctr.travis.copy_to_tmp">[docs]</a><span class="k">def</span> <span class="nf">copy_to_tmp</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copies ``source`` to a temporary directory, and returns the copied</span>
+<span class="sd">    location.</span>
+
+<span class="sd">    If source is a file, the copied location is also a file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+    <span class="c1"># Use pathlib because os.path.basename is different depending on whether</span>
+    <span class="c1"># the path ends in a /</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;temp&#39;</span>
+    <span class="n">new_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">dirname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_dir</span></div>
+
+<div class="viewcode-block" id="is_subdir"><a class="viewcode-back" href="../../api.html#doctr.travis.is_subdir">[docs]</a><span class="k">def</span> <span class="nf">is_subdir</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return true if a is a subdirectory of b</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span> <span class="o">==</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="sync_from_log"><a class="viewcode-back" href="../../api.html#doctr.travis.sync_from_log">[docs]</a><span class="k">def</span> <span class="nf">sync_from_log</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">()):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sync the files in ``src`` to ``dst``.</span>
+
+<span class="sd">    The files that are synced are logged to ``log_file``. If ``log_file``</span>
+<span class="sd">    exists, the files in ``log_file`` are removed first.</span>
+
+<span class="sd">    Returns ``(added, removed)``, where added is a list of all files synced from</span>
+<span class="sd">    ``src`` (even if it already existed in ``dst``), and ``removed`` is every</span>
+<span class="sd">    file from ``log_file`` that was removed from ``dst`` because it wasn&#39;t in</span>
+<span class="sd">    ``src``. ``added`` also includes the log file.</span>
+
+<span class="sd">    ``exclude`` may be a list of paths from ``src`` that should be ignored.</span>
+<span class="sd">    Such paths are neither added nor removed, even if they are in the logfile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">exists</span><span class="p">,</span> <span class="n">isdir</span>
+
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
+
+    <span class="n">added</span><span class="p">,</span> <span class="n">removed</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">log_file</span><span class="p">):</span>
+        <span class="c1"># Assume this is the first run</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> doesn&#39;t exist. Not removing any files.&quot;</span> <span class="o">%</span> <span class="n">log_file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">new_f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">new_f</span> <span class="o">=</span> <span class="n">new_f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_subdir</span><span class="p">(</span><span class="n">new_f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">exists</span><span class="p">(</span><span class="n">new_f</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
+                <span class="n">removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: File </span><span class="si">%s</span><span class="s2"> doesn&#39;t exist.&quot;</span> <span class="o">%</span> <span class="n">new_f</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">src</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span>
+            <span class="n">src</span> <span class="o">+=</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">src</span><span class="p">]</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">src</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># sorted makes this easier to test</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_subdir</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">new_f</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">):])</span>
+
+        <span class="k">if</span> <span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">new_f</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_f</span><span class="p">)</span>
+            <span class="n">added</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_f</span> <span class="ow">in</span> <span class="n">removed</span><span class="p">:</span>
+                <span class="n">removed</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_f</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">added</span><span class="p">))</span>
+
+    <span class="n">added</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">added</span><span class="p">,</span> <span class="n">removed</span></div>
+
+<div class="viewcode-block" id="commit_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.commit_docs">[docs]</a><span class="k">def</span> <span class="nf">commit_docs</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commit the docs to the current branch</span>
+
+<span class="sd">    Assumes that :func:`setup_GitHub_push`, which sets up the ``doctr_remote``</span>
+<span class="sd">    remote, has been run.</span>
+
+<span class="sd">    Returns True if changes were committed and False if no changes were</span>
+<span class="sd">    committed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TRAVIS_BUILD_NUMBER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BUILD_NUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_BRANCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BRANCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_COMMIT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_COMMIT&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_REPO_SLUG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_REPO_SLUG&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_JOB_WEB_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_JOB_WEB_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span><span class="p">)</span>
+    <span class="n">TRAVIS_TAG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TRAVIS_TAG&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="s2">&quot;tag&quot;</span> <span class="k">if</span> <span class="n">TRAVIS_TAG</span> <span class="k">else</span> <span class="s2">&quot;branch&quot;</span>
+
+    <span class="n">DOCTR_COMMAND</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+
+
+    <span class="k">if</span> <span class="n">added</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">added</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">removed</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">removed</span><span class="p">])</span>
+
+    <span class="n">commit_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">Update docs after building Travis build </span><span class="si">{TRAVIS_BUILD_NUMBER}</span><span class="s2"> of</span>
+<span class="si">{TRAVIS_REPO_SLUG}</span><span class="s2"></span>
+
+<span class="s2">The docs were built from the </span><span class="si">{branch}</span><span class="s2"> &#39;</span><span class="si">{TRAVIS_BRANCH}</span><span class="s2">&#39; against the commit</span>
+<span class="si">{TRAVIS_COMMIT}</span><span class="s2">.</span>
+
+<span class="s2">The Travis build that generated this commit is at</span>
+<span class="si">{TRAVIS_JOB_WEB_URL}</span><span class="s2">.</span>
+
+<span class="s2">The doctr command that was run is</span>
+
+<span class="s2">    </span><span class="si">{DOCTR_COMMAND}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">branch</span><span class="o">=</span><span class="n">branch</span><span class="p">,</span>
+    <span class="n">TRAVIS_BUILD_NUMBER</span><span class="o">=</span><span class="n">TRAVIS_BUILD_NUMBER</span><span class="p">,</span>
+    <span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+    <span class="n">TRAVIS_COMMIT</span><span class="o">=</span><span class="n">TRAVIS_COMMIT</span><span class="p">,</span>
+    <span class="n">TRAVIS_REPO_SLUG</span><span class="o">=</span><span class="n">TRAVIS_REPO_SLUG</span><span class="p">,</span>
+    <span class="n">TRAVIS_JOB_WEB_URL</span><span class="o">=</span><span class="n">TRAVIS_JOB_WEB_URL</span><span class="p">,</span>
+    <span class="n">DOCTR_COMMAND</span><span class="o">=</span><span class="n">DOCTR_COMMAND</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Only commit if there were changes</span>
+    <span class="k">if</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;diff-index&#39;</span><span class="p">,</span> <span class="s1">&#39;--exit-code&#39;</span><span class="p">,</span> <span class="s1">&#39;--cached&#39;</span><span class="p">,</span> <span class="s1">&#39;--quiet&#39;</span><span class="p">,</span> <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">],</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Committing&quot;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="s1">&#39;-am&#39;</span><span class="p">,</span> <span class="n">commit_message</span><span class="p">])</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="push_docs"><a class="viewcode-back" href="../../api.html#doctr.travis.push_docs">[docs]</a><span class="k">def</span> <span class="nf">push_docs</span><span class="p">(</span><span class="n">deploy_branch</span><span class="o">=</span><span class="s1">&#39;gh-pages&#39;</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Push the changes to the branch named ``deploy_branch``.</span>
+
+<span class="sd">    Assumes that :func:`setup_GitHub_push` has been run and returned True, and</span>
+<span class="sd">    that :func:`commit_docs` has been run. Does not push anything if no changes</span>
+<span class="sd">    were made.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">code</span> <span class="ow">and</span> <span class="n">retries</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pulling&quot;</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;pull&#39;</span><span class="p">,</span> <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;recursive&#39;</span><span class="p">,</span> <span class="s1">&#39;-X&#39;</span><span class="p">,</span> <span class="s1">&#39;ours&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">],</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pushing commit&quot;</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;push&#39;</span><span class="p">,</span> <span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;doctr_remote&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DOCTR_WORKING_BRANCH</span><span class="p">,</span> <span class="n">deploy_branch</span><span class="p">)],</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+            <span class="n">retries</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Push failed, retrying&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Giving up...&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="last_commit_by_doctr"><a class="viewcode-back" href="../../api.html#doctr.travis.last_commit_by_doctr">[docs]</a><span class="k">def</span> <span class="nf">last_commit_by_doctr</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Check whether the author of `HEAD` is `doctr` to avoid starting an</span>
+<span class="sd">    infinite loop&quot;&quot;&quot;</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--format=</span><span class="si">%a</span><span class="s2">e&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">email</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;drdoctr@users.noreply.github.com&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="determine_push_rights"><a class="viewcode-back" href="../../api.html#doctr.travis.determine_push_rights">[docs]</a><span class="k">def</span> <span class="nf">determine_push_rights</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">branch_whitelist</span><span class="p">,</span> <span class="n">TRAVIS_BRANCH</span><span class="p">,</span>
+    <span class="n">TRAVIS_PULL_REQUEST</span><span class="p">,</span> <span class="n">TRAVIS_TAG</span><span class="p">,</span> <span class="n">build_tags</span><span class="p">,</span> <span class="n">fork</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if Travis is running on ``master`` (or a whitelisted branch) to</span>
+<span class="sd">    determine if we can/should push the docs to the deploy repo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canpush</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">TRAVIS_TAG</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">build_tags</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are not pushed on tag builds. To push on future tag builds, use --build-tags&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">build_tags</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">branch_whitelist</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The docs are only pushed to gh-pages from master. To allow pushing from &quot;</span>
+        <span class="s2">&quot;a non-master branch, use the --no-require-master flag&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is the </span><span class="si">{TRAVIS_BRANCH}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TRAVIS_BRANCH</span><span class="o">=</span><span class="n">TRAVIS_BRANCH</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">TRAVIS_PULL_REQUEST</span> <span class="o">!=</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The website and docs are not pushed to gh-pages on pull requests&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">fork</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The website and docs are not pushed to gh-pages on fork builds.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">last_commit_by_doctr</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;The last commit on this branch was pushed by doctr. Not pushing to &quot;</span>
+        <span class="s2">&quot;avoid an infinite build-loop.&quot;</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">canpush</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">canpush</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">Notes for testing doctr</a></li>
+</ul>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Aaron Meurer and Gil Forsyth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/drdoctr/doctr" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

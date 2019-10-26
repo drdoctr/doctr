@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>doctr.local &#8212; Doctr 1.8.0+7.gb974c72 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for doctr.local</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The code that should be run locally</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">getpass</span> <span class="k">import</span> <span class="n">getpass</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.auth</span> <span class="k">import</span> <span class="n">HTTPBasicAuth</span>
+
+<span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="k">import</span> <span class="n">Fernet</span>
+
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="k">import</span> <span class="n">padding</span><span class="p">,</span> <span class="n">rsa</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.backends</span> <span class="k">import</span> <span class="n">default_backend</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives</span> <span class="k">import</span> <span class="n">serialization</span>
+
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">red</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="nb">input</span>
+
+<span class="n">Travis_APIv2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/vnd.travis-ci.2.1+json&#39;</span><span class="p">}</span>
+<span class="n">Travis_APIv3</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Travis-API-Version&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="encrypt_variable"><a class="viewcode-back" href="../../api.html#doctr.local.encrypt_variable">[docs]</a><span class="k">def</span> <span class="nf">encrypt_variable</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">build_repo</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tld</span><span class="o">=</span><span class="s1">&#39;.org&#39;</span><span class="p">,</span> <span class="n">public_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">travis_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypt an environment variable for ``build_repo`` for Travis</span>
+
+<span class="sd">    ``variable`` should be a bytes object, of the form ``b&#39;ENV=value&#39;``.</span>
+
+<span class="sd">    ``build_repo`` is the repo that ``doctr deploy`` will be run from. It</span>
+<span class="sd">    should be like &#39;drdoctr/doctr&#39;.</span>
+
+<span class="sd">    ``tld`` should be ``&#39;.org&#39;`` for travis-ci.org and ``&#39;.com&#39;`` for</span>
+<span class="sd">    travis-ci.com.</span>
+
+<span class="sd">    ``public_key`` should be a pem format public key, obtained from Travis if</span>
+<span class="sd">    not provided.</span>
+
+<span class="sd">    If the repo is private, travis_token should be as returned by</span>
+<span class="sd">    ``get_temporary_token(**login_kwargs)``. A token being present</span>
+<span class="sd">    automatically implies ``tld=&#39;.com&#39;``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;variable should be bytes&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="sa">b</span><span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">variable</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;variable should be of the form &#39;VARIABLE=value&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">public_key</span><span class="p">:</span>
+        <span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;MyClient/1.0.0&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">headersv2</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">Travis_APIv2</span><span class="p">}</span>
+        <span class="n">headersv3</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">Travis_APIv3</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">travis_token</span><span class="p">:</span>
+            <span class="n">headersv3</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;token </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">travis_token</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.travis-ci.com/repo/</span><span class="si">{build_repo}</span><span class="s1">/key_pair/generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_repo</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">build_repo</span><span class="p">,</span>
+                <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headersv3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;not found&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not find the Travis public key for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">build_repo</span><span class="p">)</span>
+            <span class="n">public_key</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;public_key&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.travis-ci</span><span class="si">{tld}</span><span class="s1">/repos/</span><span class="si">{build_repo}</span><span class="s1">/key&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_repo</span><span class="o">=</span><span class="n">build_repo</span><span class="p">,</span>
+                                                                                          <span class="n">tld</span><span class="o">=</span><span class="n">tld</span><span class="p">),</span>
+                               <span class="n">headers</span><span class="o">=</span><span class="n">headersv2</span><span class="p">)</span>
+            <span class="n">public_key</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find requested repo on Travis.  Is Travis enabled?&#39;</span><span class="p">)</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+    <span class="n">public_key</span> <span class="o">=</span> <span class="n">public_key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;RSA PUBLIC KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;PUBLIC KEY&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">serialization</span><span class="o">.</span><span class="n">load_pem_public_key</span><span class="p">(</span><span class="n">public_key</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">default_backend</span><span class="p">())</span>
+
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">padding</span><span class="o">.</span><span class="n">PKCS1v15</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">pad</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="encrypt_to_file"><a class="viewcode-back" href="../../api.html#doctr.local.encrypt_to_file">[docs]</a><span class="k">def</span> <span class="nf">encrypt_to_file</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypts ``contents`` and writes it to ``filename``.</span>
+
+<span class="sd">    ``contents`` should be a bytes string. ``filename`` should end with</span>
+<span class="sd">    ``.enc``.</span>
+
+<span class="sd">    Returns the secret key used for the encryption.</span>
+
+<span class="sd">    Decrypt the file with :func:`doctr.travis.decrypt_file`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.enc&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not end with .enc&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+    <span class="n">fer</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="n">encrypted_file</span> <span class="o">=</span> <span class="n">fer</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_file</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="AuthenticationFailed"><a class="viewcode-back" href="../../api.html#doctr.local.AuthenticationFailed">[docs]</a><span class="k">class</span> <span class="nc">AuthenticationFailed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GitHub_login"><a class="viewcode-back" href="../../api.html#doctr.local.GitHub_login">[docs]</a><span class="k">def</span> <span class="nf">GitHub_login</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">OTP</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Login to GitHub.</span>
+
+<span class="sd">    If no username, password, or OTP (2-factor authentication code) are</span>
+<span class="sd">    provided, they will be requested from the command line.</span>
+
+<span class="sd">    Returns a dict of kwargs that can be passed to functions that require</span>
+<span class="sd">    authenticated connections to GitHub.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;What is your GitHub username? &quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">password</span><span class="p">:</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Enter the GitHub password for </span><span class="si">{username}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">))</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">OTP</span><span class="p">:</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-GitHub-OTP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OTP</span>
+
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/&#39;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+        <span class="n">two_factor</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-GitHub-OTP&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">two_factor</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">OTP</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;Invalid authentication code&quot;</span><span class="p">))</span>
+            <span class="c1"># For SMS, we have to make a fake request (that will fail without</span>
+            <span class="c1"># the OTP) to get GitHub to send it. See https://github.com/drdoctr/doctr/pull/203</span>
+            <span class="n">auth_header</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64encode</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">password</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">login_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;auth&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;headers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Basic </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">auth_header</span><span class="p">)}}</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">generate_GitHub_token</span><span class="p">(</span><span class="o">**</span><span class="n">login_kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">GitHubError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A two-factor authentication code is required:&quot;</span><span class="p">,</span> <span class="n">two_factor</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">OTP</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Authentication code: &quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GitHub_login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">OTP</span><span class="o">=</span><span class="n">OTP</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="n">AuthenticationFailed</span><span class="p">(</span><span class="s2">&quot;invalid username or password&quot;</span><span class="p">)</span>
+
+    <span class="n">GitHub_raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;auth&#39;</span><span class="p">:</span> <span class="n">auth</span><span class="p">,</span> <span class="s1">&#39;headers&#39;</span><span class="p">:</span> <span class="n">headers</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="GitHubError"><a class="viewcode-back" href="../../api.html#doctr.local.GitHubError">[docs]</a><span class="k">class</span> <span class="nc">GitHubError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GitHub_raise_for_status"><a class="viewcode-back" href="../../api.html#doctr.local.GitHub_raise_for_status">[docs]</a><span class="k">def</span> <span class="nf">GitHub_raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call instead of r.raise_for_status() for GitHub requests</span>
+
+<span class="sd">    Checks for common GitHub response issues and prints messages for them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This will happen if the doctr session has been running too long and the</span>
+    <span class="c1"># OTP code gathered from GitHub_login has expired.</span>
+
+    <span class="c1"># TODO: Refactor the code to re-request the OTP without exiting.</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-GitHub-OTP&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">GitHubError</span><span class="p">(</span><span class="s2">&quot;The two-factor authentication code has expired. Please run doctr configure again.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-RateLimit-Remaining&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-RateLimit-Reset&#39;</span><span class="p">])</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-RateLimit-Limit&#39;</span><span class="p">])</span>
+        <span class="n">reset_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">reset</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+        <span class="n">relative_reset_datetime</span> <span class="o">=</span> <span class="n">reset_datetime</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+        <span class="c1"># Based on datetime.timedelta.__str__</span>
+        <span class="n">mm</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">relative_reset_datetime</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">hh</span><span class="p">,</span> <span class="n">mm</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">plural</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> minute</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hh</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> hour</span><span class="si">%s</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">hh</span><span class="p">)</span> <span class="o">+</span> <span class="n">s</span>
+        <span class="k">if</span> <span class="n">relative_reset_datetime</span><span class="o">.</span><span class="n">days</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> day</span><span class="si">%s</span><span class="s2">, &quot;</span> <span class="o">%</span> <span class="n">plural</span><span class="p">(</span><span class="n">relative_reset_datetime</span><span class="o">.</span><span class="n">days</span><span class="p">))</span> <span class="o">+</span> <span class="n">s</span>
+        <span class="n">authenticated</span> <span class="o">=</span> <span class="n">limit</span> <span class="o">&gt;=</span> <span class="mi">100</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">Your GitHub API rate limit has been hit. GitHub allows </span><span class="si">{limit}</span><span class="s2"> </span><span class="si">{un}</span><span class="s2">authenticated</span>
+<span class="s2">requests per hour. See </span><span class="si">{documentation_url}</span><span class="s2"></span>
+<span class="s2">for more information.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">un</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">authenticated</span> <span class="k">else</span> <span class="s2">&quot;un&quot;</span><span class="p">,</span> <span class="n">documentation_url</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;documentation_url&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">authenticated</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Note that GitHub&#39;s API limits are shared across all oauth applications. A</span>
+<span class="s2">common cause of hitting the rate limit is the Travis &quot;sync account&quot; button.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You can get a higher API limit by authenticating. Try running doctr configure</span>
+<span class="s2">again without the --no-upload-key flag.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Your rate limits will reset in </span><span class="si">{s}</span><span class="s2">.</span><span class="se">\</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">GitHubError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GitHub_post"><a class="viewcode-back" href="../../api.html#doctr.local.GitHub_post">[docs]</a><span class="k">def</span> <span class="nf">GitHub_post</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    POST the data ``data`` to GitHub.</span>
+
+<span class="sd">    Returns the json response from the server, or raises on error status.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">GitHub_raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_travis_token"><a class="viewcode-back" href="../../api.html#doctr.local.get_travis_token">[docs]</a><span class="k">def</span> <span class="nf">get_travis_token</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">GitHub_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a temporary token for authenticating with Travis</span>
+
+<span class="sd">    The GitHub token can be passed in to the ``GitHub_token`` keyword</span>
+<span class="sd">    argument. If no token is passed in, a GitHub token is generated</span>
+<span class="sd">    temporarily, and then immediately deleted.</span>
+
+<span class="sd">    This is needed to activate a private repo</span>
+
+<span class="sd">    Returns the secret token. It should be added to the headers like</span>
+
+<span class="sd">        headers[&#39;Authorization&#39;] = &quot;token {}&quot;.format(token)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;MyClient/1.0.0&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">headersv2</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">_headers</span><span class="p">,</span> <span class="o">**</span><span class="n">Travis_APIv2</span><span class="p">}</span>
+    <span class="n">token_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">GitHub_token</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">green</span><span class="p">(</span><span class="s2">&quot;I need to generate a temporary token with GitHub to authenticate with Travis. You may get a warning email from GitHub about this.&quot;</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">green</span><span class="p">(</span><span class="s2">&quot;It will be deleted immediately. If you still see it after this at https://github.com/settings/tokens after please delete it manually.&quot;</span><span class="p">))</span>
+            <span class="c1"># /auth/github doesn&#39;t seem to exist in the Travis API v3.</span>
+            <span class="n">tok_dict</span> <span class="o">=</span> <span class="n">generate_GitHub_token</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read:org&quot;</span><span class="p">,</span> <span class="s2">&quot;user:email&quot;</span><span class="p">,</span> <span class="s2">&quot;repo&quot;</span><span class="p">],</span>
+                                             <span class="n">note</span><span class="o">=</span><span class="s2">&quot;temporary token for doctr to auth against travis (delete me)&quot;</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="n">login_kwargs</span><span class="p">)</span>
+            <span class="n">GitHub_token</span> <span class="o">=</span> <span class="n">tok_dict</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span>
+            <span class="n">token_id</span> <span class="o">=</span> <span class="n">tok_dict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;github_token&#39;</span><span class="p">:</span> <span class="n">GitHub_token</span><span class="p">}</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://api.travis-ci.com/auth/github&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headersv2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;access_token&#39;</span><span class="p">]</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">token_id</span><span class="p">:</span>
+            <span class="n">delete_GitHub_token</span><span class="p">(</span><span class="n">token_id</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="generate_GitHub_token"><a class="viewcode-back" href="../../api.html#doctr.local.generate_GitHub_token">[docs]</a><span class="k">def</span> <span class="nf">generate_GitHub_token</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="s2">&quot;Doctr token for pushing to gh-pages from Travis&quot;</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a GitHub token for pushing from Travis</span>
+
+<span class="sd">    The scope requested is public_repo.</span>
+
+<span class="sd">    If no password or OTP are provided, they will be requested from the</span>
+<span class="sd">    command line.</span>
+
+<span class="sd">    The token created here can be revoked at</span>
+<span class="sd">    https://github.com/settings/tokens.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scopes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scopes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;public_repo&#39;</span><span class="p">]</span>
+    <span class="n">AUTH_URL</span> <span class="o">=</span> <span class="s2">&quot;https://api.github.com/authorizations&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;scopes&quot;</span><span class="p">:</span> <span class="n">scopes</span><span class="p">,</span>
+        <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+        <span class="s2">&quot;note_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/drdoctr/doctr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fingerprint&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">GitHub_post</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">AUTH_URL</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="delete_GitHub_token"><a class="viewcode-back" href="../../api.html#doctr.local.delete_GitHub_token">[docs]</a><span class="k">def</span> <span class="nf">delete_GitHub_token</span><span class="p">(</span><span class="n">token_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a temporary GitHub token&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/authorizations/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token_id</span><span class="p">),</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">GitHub_raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="upload_GitHub_deploy_key"><a class="viewcode-back" href="../../api.html#doctr.local.upload_GitHub_deploy_key">[docs]</a><span class="k">def</span> <span class="nf">upload_GitHub_deploy_key</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">ssh_key</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Doctr deploy key for pushing to gh-pages from Travis&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uploads a GitHub deploy key to ``deploy_repo``.</span>
+
+<span class="sd">    If ``read_only=True``, the deploy_key will not be able to write to the</span>
+<span class="sd">    repo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DEPLOY_KEY_URL</span> <span class="o">=</span> <span class="s2">&quot;https://api.github.com/repos/</span><span class="si">{deploy_repo}</span><span class="s2">/keys&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">ssh_key</span><span class="p">,</span>
+        <span class="s2">&quot;read_only&quot;</span><span class="p">:</span> <span class="n">read_only</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">GitHub_post</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">DEPLOY_KEY_URL</span><span class="p">,</span> <span class="o">**</span><span class="n">login_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="generate_ssh_key"><a class="viewcode-back" href="../../api.html#doctr.local.generate_ssh_key">[docs]</a><span class="k">def</span> <span class="nf">generate_ssh_key</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates an SSH deploy public and private key.</span>
+
+<span class="sd">    Returns (private key, public key), a tuple of byte strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">rsa</span><span class="o">.</span><span class="n">generate_private_key</span><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">default_backend</span><span class="p">(),</span>
+        <span class="n">public_exponent</span><span class="o">=</span><span class="mi">65537</span><span class="p">,</span>
+        <span class="n">key_size</span><span class="o">=</span><span class="mi">4096</span>
+        <span class="p">)</span>
+    <span class="n">private_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">private_bytes</span><span class="p">(</span>
+        <span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+        <span class="n">serialization</span><span class="o">.</span><span class="n">PrivateFormat</span><span class="o">.</span><span class="n">PKCS8</span><span class="p">,</span>
+        <span class="n">serialization</span><span class="o">.</span><span class="n">NoEncryption</span><span class="p">())</span>
+    <span class="n">public_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">public_key</span><span class="p">()</span><span class="o">.</span><span class="n">public_bytes</span><span class="p">(</span>
+        <span class="n">serialization</span><span class="o">.</span><span class="n">Encoding</span><span class="o">.</span><span class="n">OpenSSH</span><span class="p">,</span>
+        <span class="n">serialization</span><span class="o">.</span><span class="n">PublicFormat</span><span class="o">.</span><span class="n">OpenSSH</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">private_key</span><span class="p">,</span> <span class="n">public_key</span></div>
+
+<div class="viewcode-block" id="check_repo_exists"><a class="viewcode-back" href="../../api.html#doctr.local.check_repo_exists">[docs]</a><span class="k">def</span> <span class="nf">check_repo_exists</span><span class="p">(</span><span class="n">deploy_repo</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s1">&#39;github&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks that the repository exists on GitHub.</span>
+
+<span class="sd">    This should be done before attempting generate a key to deploy to that</span>
+<span class="sd">    repo.</span>
+
+<span class="sd">    Raises ``RuntimeError`` if the repo is not valid.</span>
+
+<span class="sd">    Returns a dictionary with the following keys:</span>
+
+<span class="sd">    - &#39;private&#39;: Indicates whether or not the repo requires authorization to</span>
+<span class="sd">      access. Private repos require authorization.</span>
+<span class="sd">    - &#39;service&#39;: For service=&#39;travis&#39;, is &#39;travis-ci.com&#39; or &#39;travis-ci.org&#39;,</span>
+<span class="sd">      depending on which should be used. Otherwise it is just equal to ``service``.</span>
+
+<span class="sd">    For service=&#39;travis&#39;, if ask=True, it will ask at the command line if both</span>
+<span class="sd">    travis-ci.org and travis-ci.com exist. If ask=False, service=&#39;travis&#39; will</span>
+<span class="sd">    check travis-ci.com first and only check travis-ci.org if it doesn&#39;t</span>
+<span class="sd">    exist. ask=True does nothing for service=&#39;github&#39;,</span>
+<span class="sd">    service=&#39;travis-ci.com&#39;, service=&#39;travis-ci.org&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">deploy_repo</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{deploy_repo}</span><span class="s1">&quot; should be in the form username/repo&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deploy_repo</span><span class="o">=</span><span class="n">deploy_repo</span><span class="p">))</span>
+
+    <span class="n">user</span><span class="p">,</span> <span class="n">repo</span> <span class="o">=</span> <span class="n">deploy_repo</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/repos/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&#39;</span>
+    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span> <span class="ow">or</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis-ci.com&#39;</span><span class="p">:</span>
+        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.com/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">Travis_APIv3</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis-ci.org&#39;</span><span class="p">:</span>
+        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">Travis_APIv3</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Invalid service specified for repo check (should be one of {&quot;github&quot;, &quot;travis&quot;, &quot;travis-ci.com&quot;, &quot;travis-ci.org&quot;}&#39;</span><span class="p">)</span>
+
+    <span class="n">wiki</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.wiki&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">wiki</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">repo</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_try</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">forbidden</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
+            <span class="n">GitHub_raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_try</span><span class="p">(</span><span class="n">REPO_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
+        <span class="n">repo</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">repo</span><span class="p">)))</span>
+    <span class="n">r_active</span> <span class="o">=</span> <span class="n">r</span> <span class="ow">and</span> <span class="p">(</span><span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">service</span> <span class="o">==</span> <span class="s1">&#39;travis&#39;</span><span class="p">:</span>
+        <span class="n">REPO_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.travis-ci.org/repo/</span><span class="si">{user}%2F{repo}</span><span class="s1">&#39;</span>
+        <span class="n">r_org</span> <span class="o">=</span> <span class="n">_try</span><span class="p">(</span><span class="n">REPO_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
+            <span class="n">repo</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">repo</span><span class="p">)))</span>
+        <span class="n">r_org_active</span> <span class="o">=</span> <span class="n">r_org</span> <span class="ow">and</span> <span class="n">r_org</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">r_active</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">r_org_active</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on travis-ci.org or travis-ci.com&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">))</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">r_org</span>
+            <span class="n">r_active</span> <span class="o">=</span> <span class="n">r_org_active</span>
+            <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.org&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r_active</span> <span class="ow">and</span> <span class="n">r_org_active</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ask</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">green</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{user}</span><span class="s2">/</span><span class="si">{repo}</span><span class="s2"> appears to exist on both travis-ci.org and travis-ci.com.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">)))</span>
+                        <span class="n">preferred</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Which do you want to use? [</span><span class="si">{default}</span><span class="s2">/travis-ci.org] &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">blue</span><span class="p">(</span><span class="s2">&quot;travis-ci.com&quot;</span><span class="p">)))</span>
+                        <span class="n">preferred</span> <span class="o">=</span> <span class="n">preferred</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">preferred</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;org&#39;</span><span class="p">,</span> <span class="s1">&#39;.org&#39;</span><span class="p">,</span> <span class="s1">&#39;travis-ci.org&#39;</span><span class="p">]:</span>
+                            <span class="n">r</span> <span class="o">=</span> <span class="n">r_org</span>
+                            <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.org&#39;</span>
+                            <span class="k">break</span>
+                        <span class="k">elif</span> <span class="n">preferred</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;com&#39;</span><span class="p">,</span> <span class="s1">&#39;.com&#39;</span><span class="p">,</span> <span class="s1">&#39;travis-ci.com&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]:</span>
+                            <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.com&#39;</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&quot;Please type &#39;travis-ci.com&#39; or &#39;travis-ci.org&#39;.&quot;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.com&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># .com but not .org.</span>
+                <span class="n">service</span> <span class="o">=</span> <span class="s1">&#39;travis-ci.com&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">r_active</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">auth</span> <span class="k">else</span> <span class="s1">&#39;. If the repo is private, then you need to authenticate.&#39;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">&quot; not found on </span><span class="si">{service}{msg}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                                                                                <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span>
+                                                                                <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">,</span>
+                                                                                <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">))</span>
+
+    <span class="n">private</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">wiki</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">private</span><span class="p">:</span>
+        <span class="c1"># private wiki needs authentication, so skip check for existence</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;ls-remote&#39;</span><span class="p">,</span> <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;https://github.com/</span><span class="si">{user}</span><span class="s1">/</span><span class="si">{repo}</span><span class="s1">.wiki&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">)],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Wiki not found. Please create a wiki&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;private&#39;</span><span class="p">:</span> <span class="n">private</span><span class="p">,</span>
+        <span class="s1">&#39;service&#39;</span><span class="p">:</span> <span class="n">service</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<span class="n">GIT_URL</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:git@|https://|git://)github\.com[:/](.*?)(?:\.git)?&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="guess_github_repo"><a class="viewcode-back" href="../../api.html#doctr.local.guess_github_repo">[docs]</a><span class="k">def</span> <span class="nf">guess_github_repo</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Guesses the github repo for the current directory</span>
+
+<span class="sd">    Returns False if no guess can be made.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;ls-remote&#39;</span><span class="p">,</span> <span class="s1">&#39;--get-url&#39;</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">],</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">GIT_URL</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">Notes for testing doctr</a></li>
+</ul>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Aaron Meurer and Gil Forsyth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/drdoctr/doctr" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
