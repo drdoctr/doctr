@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Doctr &#8212; Doctr 1.8.0+7.gb974c72 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Doctr Command Line Help" href="commandline.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="doctr">
+<h1>Doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h1>
+<p>A tool for automatically deploying docs from Travis CI to GitHub pages.</p>
+<p>Doctr helps deploy things to GitHub pages from Travis CI by managing the
+otherwise complicated tasks of generating, encrypting, managing SSH deploy
+keys, and syncing files to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch. Doctr was originally
+designed for documentation, but it can be used to deploy any kind of website
+to GitHub pages that can be built on Travis CI. For example, you can use Doctr
+to deploy a <a class="reference external" href="http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/">blog</a>
+or website that uses a <a class="reference external" href="https://www.staticgen.com/">static site generator</a>.</p>
+<p>Contribute to Doctr development on <a class="reference external" href="https://github.com/drdoctr/doctr">GitHub</a>.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Install Doctr with pip</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
+</pre></div>
+</div>
+<p>or conda</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">doctr</span>
+</pre></div>
+</div>
+<p><strong>Note that Doctr requires Python 3.5 or newer.</strong></p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="run-doctr-configure">
+<h3>Run Doctr configure<a class="headerlink" href="#run-doctr-configure" title="Permalink to this headline">¶</a></h3>
+<p>First use Doctr to generate the necessary key files so that travis can push
+to your gh-pages (or other) branch.</p>
+<p>Run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">doctr</span> <span class="n">configure</span>
+</pre></div>
+</div>
+<p>and enter your data. You will need your GitHub username and password, and the
+repo organization / name for which you want to build the docs.</p>
+<p><strong>Note</strong>: That repo should already be set up with Travis. We recommend enabling
+<a class="reference external" href="https://help.github.com/articles/about-protected-branches/">branch protection</a>
+for the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch and other branches, as the deploy key
+used by Doctr has the ability to push to any branch in your repo.</p>
+</div>
+<div class="section" id="edit-your-travis-file">
+<h3>Edit your travis file<a class="headerlink" href="#edit-your-travis-file" title="Permalink to this headline">¶</a></h3>
+<p>Doctr will output a bunch of text as well as instructions for next steps. You
+need to edit your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> with this text. It contains the secure key
+that lets travis communicate with your GitHub repository, as well as the
+code to run (in <code class="docutils literal notranslate"><span class="pre">script:</span></code>) in order to build the docs and deploy Doctr.</p>
+<p>Your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> file should look something like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Doctr requires python &gt;=3.5</span>
+<span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="nt">python</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3.6</span>
+
+<span class="c1"># This gives Doctr the key we&#39;ve generated</span>
+<span class="nt">sudo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">env</span><span class="p">:</span>
+  <span class="nt">global</span><span class="p">:</span>
+    <span class="nt">secure</span><span class="p">:</span> <span class="s">&quot;&lt;your</span><span class="nv"> </span><span class="s">secure</span><span class="nv"> </span><span class="s">key</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">Doctr</span><span class="nv"> </span><span class="s">here&gt;&quot;</span>
+
+<span class="c1"># This is the script to build the docs on travis, then deploy</span>
+<span class="nt">script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set -e</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install doctr</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd docs</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">make html</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd ..</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doctr deploy . --built-docs path/to/built/html/</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/drdoctr/doctr/blob/master/.travis.yml">the travis config file</a> used by Doctr itself for example.</p>
+<p>You can deploy to a different folder by giving it a different path in the call
+to <code class="docutils literal notranslate"><span class="pre">deploy</span></code>. E.g., <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">docs/</span></code>.</p>
+<p>If you don’t already have a gh_pages branch Doctr will make one for you.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be sure to add <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">-e</span></code> in <code class="docutils literal notranslate"><span class="pre">script</span></code>, to prevent <code class="docutils literal notranslate"><span class="pre">doctr</span></code> from running
+when the docs build fails.</p>
+<p>Put <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span></code> in the <code class="docutils literal notranslate"><span class="pre">script</span></code> section of your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. If
+you use <code class="docutils literal notranslate"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
+the build to fail.</p>
+</div>
+</div>
+<div class="section" id="commit-your-new-files-and-build-your-site">
+<h3>Commit your new files and build your site<a class="headerlink" href="#commit-your-new-files-and-build-your-site" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will create a new file that contains your key. Commit this as
+well as the changes to <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. Once you push to GitHub, travis should
+now automatically build your documentation and deploy it.</p>
+</div>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p><strong>Doctr requires Python 3.5 or newer.</strong> Be sure to run it in a
+Python 3.5 or newer section of your build matrix. It should be in the same
+build in your build matrix as your docs build, as it reuses that.</p>
+<p><strong>Doctr does not require Sphinx.</strong> It will work with deploying anything to
+GitHub pages. However, if you do use Sphinx, Doctr will find your Sphinx
+docs automatically (otherwise use <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
+</div>
+<div class="section" id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p><strong>Why did you build this?</strong></p>
+<p>Deploying to GitHub pages from Travis is not amazingly difficult, but it’s
+difficult enough that we wanted to write the code to do it once. We found
+that Travis docs uploading scripts are cargo culted and done in a way that
+is difficult to reproduce, especially the do-once steps of setting up keys.
+The <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> command handles key generation automatically, and
+tells you everything you need to do to set Doctr up. It is also completely
+self-contained (it does not depend on the <code class="docutils literal notranslate"><span class="pre">travis</span></code> Ruby gem).  The <code class="docutils literal notranslate"><span class="pre">doctr</span>
+<span class="pre">deploy</span></code> command handles key decryption (for deploy keys) and hiding tokens
+from the command output (for personal access tokens).</p>
+<p>Furthermore, most Travis deploy guides that we’ve found recommend setting up
+a GitHub personal access token to push to GitHub pages. GitHub personal
+access tokens grant read/write access to all public GitHub repositories for
+a given user. A more secure way is to use a GitHub deploy key, which grants
+read/write access only to a single repository. Doctr creates a GitHub deploy
+key by default (although the option to use a token exists if you know what
+you are doing).</p>
+</li>
+<li><p><strong>Why not Read the Docs?</strong></p>
+<p>Read the Docs is great, but it has some limitations:</p>
+<ul class="simple">
+<li><p>You are limited in what you can install in Read the Docs. Travis lets you
+run arbitrary code, which may be necessary to build your documentation.</p></li>
+<li><p>Read the Docs deploys to readthedocs.io. Doctr deploys to GitHub pages.
+This is often more convenient, as your docs can easily sit alongside other
+website materials for your project on GitHub pages.</p></li>
+</ul>
+<p>In general, you should already be building your docs on Travis anyway (to
+test that they build), so it seems natural to deploy them from there.</p>
+</li>
+<li><p><strong>Why does Doctr require Python 3.5 or newer?</strong></p>
+<p>There are several language features of Python that we wanted to make use of
+that are not available in earlier versions of Python, such as <a class="reference external" href="https://www.python.org/dev/peps/pep-3102/">keyword-only
+arguments</a>,
+<a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.run">subprocess.run</a>, and
+<a class="reference external" href="https://docs.python.org/3/library/glob.html">recursive globs</a>. These
+features help keep the Doctr code cleaner and more maintainable.</p>
+<p>If you cannot build your documentation in Python 3, you will need to
+install Python 3.6 in Travis to run Doctr.</p>
+</li>
+<li><p><strong>Is this secure?</strong></p>
+<p>Doctr creates an encrypted SSH deploy key, which allows any Travis build on
+your repo to push to the deploy repo. The deploy key is encrypted using
+<a class="reference external" href="https://cryptography.io/en/latest/fernet/">Fernet encryption from the Python cryptography module</a>. The Fernet key is then
+encrypted to a secure environment variable for Travis using the <a class="reference external" href="https://docs.travis-ci.com/user/encryption-keys/">Travis
+public key</a>.</p>
+<p>Travis does not make secure environment variables available to pull requests
+builds. Furthermore, Doctr itself does not push from any branch other than
+<code class="docutils literal notranslate"><span class="pre">master</span></code> by default, although this <a class="reference internal" href="recipes.html#any-branch"><span class="std std-ref">can be changed</span></a>.</p>
+<p>By default, Doctr uses deploy keys, but it can also use a GitHub
+personal access token, using the <code class="docutils literal notranslate"><span class="pre">--token</span></code> flag. However, this is not
+recommended, as a GitHub personal access token grants access to your entire
+account, whereas a deploy key only grants push access only to a single
+repository.</p>
+<p>Both Doctr and Travis CI itself take measures to prevent the private
+encryption key from leaking in the build logs.</p>
+<p>At any time, you can revoke the deploy key created by Doctr by going to the
+deploy key settings for the repository in GitHub at
+<code class="samp docutils literal notranslate"><span class="pre">https://github.com/</span><em><span class="pre">org</span></em><span class="pre">/</span><em><span class="pre">repo</span></em><span class="pre">/settings/keys</span></code>. Personal access
+tokens can be revoked at <a class="reference external" href="https://github.com/settings/tokens">https://github.com/settings/tokens</a>. If you revoke a key, you will need
+to rerun <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> to generate a new one to continue using Doctr.</p>
+</li>
+<li><p><strong>Can Doctr do X?</strong></p>
+<p>See the <a class="reference internal" href="recipes.html#recipes"><span class="std std-ref">Recipes</span></a> page for many common use case recipes for Doctr.
+Doctr supports virtually anything that involves pushing from Travis CI to
+GitHub automatically.</p>
+</li>
+<li><p><strong>I would use this, but it’s missing a feature that I want.</strong></p>
+<p>Doctr is still very new. We welcome all <a class="reference external" href="https://github.com/drdoctr/doctr/issues">feature requests</a> and <a class="reference external" href="https://github.com/drdoctr/doctr/pulls">pull requests</a>.</p>
+</li>
+<li><p><strong>Why is it called Doctr?</strong></p>
+<p>Because it deploys <strong>doc</strong>umentation from <strong>Tr</strong>avis. And it makes you
+feel good.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="projects-using-doctr">
+<h2>Projects using Doctr<a class="headerlink" href="#projects-using-doctr" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.sympy.org/en/index.html">SymPy</a></p></li>
+<li><p><a class="reference external" href="http://conda.pydata.org/docs/">conda</a></p></li>
+<li><p><a class="reference external" href="https://drdoctr.github.io/doctr/">doctr</a></p></li>
+<li><p><a class="reference external" href="https://barbagroup.github.io/pygbe/docs/">PyGBe</a></p></li>
+<li><p><a class="reference external" href="http://xon.sh">xonsh</a></p></li>
+<li><p><a class="reference external" href="https://github.com/regro/cf-scripts">regro-cf-autotick-bot</a></p></li>
+<li><p><a class="reference external" href="http://xpdacq.github.io/">XPD stack</a></p></li>
+<li><p><a class="reference external" href="https://www.spyder-ide.org/">Spyder IDE</a></p></li>
+</ul>
+<p>Are you using Doctr?  Please add your project to the list!</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commandline.html">Doctr Command Line Help</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commandline.html#doctr">doctr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commandline.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#deploy-docs-from-any-branch">Deploy docs from any branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#deploy-docs-from-a-non-master-branch">Deploy docs from a non-master branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#deploy-docs-from-git-tags">Deploy docs from git tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#deploy-to-a-separate-repo">Deploy to a separate repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">Setting up Doctr for a repo you don’t have admin access to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#post-processing-the-docs-on-gh-pages">Post-processing the docs on gh-pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#using-a-separate-command-to-deploy-to-gh-pages">Using a separate command to deploy to gh-pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#deploying-to-a-github-wiki">Deploying to a GitHub wiki</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html#using-doctr-with-github-io-pages">Using doctr with <code class="docutils literal notranslate"><span class="pre">*.github.io</span></code> pages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-doctr.local">Local</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-doctr.travis">Travis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Doctr Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">1.8.0 (2019-02-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">1.7.4 (2018-08-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">1.7.3 (2018-04-16)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id7">1.7.2 (2018-02-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id10">1.7.1 (2018-01-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id13">1.7.0 (2017-11-21)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id16">1.6.3 (2017-11-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id18">1.6.2 (2017-10-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id20">1.6.1 (2017-09-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id22">1.6.0 (2017-09-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id25">1.5.3 (2017-04-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id26">1.5.2 (2017-03-29)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id27">1.5.1 (2017-03-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id28">1.5.0 (2017-03-15)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id29">1.4.1 (2017-01-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id30">1.4.0 (2016-11-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id31">1.3.3 (2016-09-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id32">1.3.2 (2016-09-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id35">1.3.1 (2016-08-31)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id37">1.3 (2016-08-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id40">1.2 (2016-08-29)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id43">1.1.1 (2016-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id45">1.1 (2016-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id48">1.0 (2016-07-22)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Notes for testing doctr</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#github-test-authentication">GitHub Test Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#travis-ci-com-cs-travis-ci-org">travis-ci.com cs. travis-ci.org</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#private-repositories">Private Repositories</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="#">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Doctr</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#run-doctr-configure">Run Doctr configure</a></li>
+<li><a class="reference internal" href="#edit-your-travis-file">Edit your travis file</a></li>
+<li><a class="reference internal" href="#commit-your-new-files-and-build-your-site">Commit your new files and build your site</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#faq">FAQ</a></li>
+<li><a class="reference internal" href="#projects-using-doctr">Projects using Doctr</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Doctr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commandline.html">Doctr Command Line Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Doctr Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Notes for testing doctr</a></li>
+</ul>
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in our <a href="https://github.com/drdoctr/doctr/issues">issue
+  tracker</a>. Issues that are just questions are fine.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Aaron Meurer and Gil Forsyth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/drdoctr/doctr" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
