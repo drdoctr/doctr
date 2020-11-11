@@ -25,7 +25,7 @@ from .common import red, blue, green, input
 Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
 Travis_APIv3 = {"Travis-API-Version": "3"}
 
-def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
+def encrypt_variable_travis(variable, build_repo, *, tld='.org', public_key=None,
     travis_token=None, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis

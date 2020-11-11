@@ -34,7 +34,7 @@ from pathlib import Path
 
 from textwrap import dedent
 
-from .local import (generate_GitHub_token, encrypt_variable, encrypt_to_file,
+from .local import (generate_GitHub_token, encrypt_variable_travis, encrypt_to_file,
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
 GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError,
     get_travis_token)
@@ -472,7 +472,7 @@ def configure(args, parser):
     if args.token:
         if not GitHub_token:
             GitHub_token = generate_GitHub_token(**login_kwargs)['token']
-        encrypted_variable = encrypt_variable("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
+        encrypted_variable = encrypt_variable_travis("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
                                               build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
@@ -487,7 +487,7 @@ def configure(args, parser):
         key = encrypt_to_file(private_ssh_key, keypath + '.enc')
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
-        encrypted_variable = encrypt_variable(env_name.encode('utf-8') + b"=" + key,
+        encrypted_variable = encrypt_variable_travis(env_name.encode('utf-8') + b"=" + key,
                                               build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
 
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
