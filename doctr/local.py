@@ -11,6 +11,7 @@ from getpass import getpass
 import urllib
 import datetime
 
+from nacl import encoding, public
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -82,6 +83,48 @@ def encrypt_variable_travis(variable, build_repo, *, tld='.org', public_key=None
     pad = padding.PKCS1v15()
 
     return base64.b64encode(key.encrypt(variable, pad))
+
+def encrypt_variable_github_actions(variable, build_repo, *, public_key=None,
+    **login_kwargs):
+    """
+    Encrypt an environment variable for ``build_repo`` for Travis
+
+    ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
+
+    ``build_repo`` is the repo that ``doctr deploy`` will be run from. It
+    should be like 'drdoctr/doctr'.
+
+    ``public_key`` should be the GitHub actions public key, obtained from
+    GitHub if not provided.
+
+    This is based on
+    https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-or-update-an-organization-secret
+
+    """
+    if not isinstance(variable, bytes):
+        raise TypeError("variable should be bytes")
+
+    if not b"=" in variable:
+        raise ValueError("variable should be of the form 'VARIABLE=value'")
+
+    if not public_key:
+        # See
+        # https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#get-an-organization-public-key
+
+        headers = {
+            'accept': 'application/vnd.github.v3+json',
+            'org': build_repo,
+        }
+        if 'headers' in login_kwargs:
+            headers.update(login_kwargs.pop('headers'))
+        url = 'https://api.github.com/repos/{build_repo}/actions/secrets/public-key'.format(build_repo=urllib.parse.quote(build_repo, safe='/'))
+        res = GitHub_get(url, headers=headers, **login_kwargs)
+        public_key = res['key']
+
+    public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
+    sealed_box = public.SealedBox(public_key)
+    encrypted = sealed_box.encrypt(variable)
+    return base64.b64encode(encrypted).decode("utf-8")
 
 def encrypt_to_file(contents, filename):
     """
