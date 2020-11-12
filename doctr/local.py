@@ -389,14 +389,18 @@ def generate_ssh_key():
     return private_key, public_key
 
 def check_repo_exists(deploy_repo, service='github', *, auth=None,
-    headers=None, ask=False):
+    headers=None, ask=False, raise_=True):
     """
     Checks that the repository exists on GitHub.
 
     This should be done before attempting generate a key to deploy to that
     repo.
 
-    Raises ``RuntimeError`` if the repo is not valid.
+    'service' should be one of 'github', 'travis', 'travis-ci.org',
+    'travis-ci.com', or 'github actions'.
+
+    If the repo is not valid and raise_ is True, raises ``RuntimeError``,
+    otherwise returns False.
 
     Returns a dictionary with the following keys:
 
@@ -425,8 +429,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
     elif service == 'travis-ci.org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers = {**headers, **Travis_APIv3}
+    elif service == 'github actions':
+        REPO_URL = 'https://api.github.com/repos/{owner}/{repo}/actions/permissions'
     else:
-        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org"}')
+        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org", "github actions"}')
 
     wiki = False
     if repo.endswith('.wiki') and service == 'github':
@@ -446,7 +452,12 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     r = _try(REPO_URL.format(user=urllib.parse.quote(user),
         repo=urllib.parse.quote(repo)))
-    r_active = r and (service == 'github' or r.json().get('active', False))
+    if not r:
+        r_active = False
+    elif 'travis' in service:
+        r_active = r.json().get('active', False)
+    elif service == 'github actions':
+        r_active = r.json().get('enabled', False)
 
     if service == 'travis':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
@@ -455,6 +466,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         r_org_active = r_org and r_org.json().get('active', False)
         if not r_active:
             if not r_org_active:
+                if not raise_:
+                    return False
                 raise RuntimeError('"{user}/{repo}" not found on travis-ci.org or travis-ci.com'.format(user=user, repo=repo))
             r = r_org
             r_active = r_org_active
@@ -483,11 +496,14 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     if not r_active:
         msg = '' if auth else '. If the repo is private, then you need to authenticate.'
+        if not raise_:
+            return False
         raise RuntimeError('"{user}/{repo}" not found on {service}{msg}'.format(user=user,
                                                                                 repo=repo,
                                                                                 service=service,
                                                                                 msg=msg))
 
+    # TODO: Handle private repos for GitHub actions
     private = r.json().get('private', False)
 
     if wiki and not private:
@@ -495,6 +511,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         p = subprocess.run(['git', 'ls-remote', '-h', 'https://github.com/{user}/{repo}.wiki'.format(
             user=user, repo=repo)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         if p.stderr or p.returncode:
+            if not raise_:
+                return False
             raise RuntimeError('Wiki not found. Please create a wiki')
 
     return {

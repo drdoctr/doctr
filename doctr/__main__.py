@@ -34,11 +34,13 @@ from pathlib import Path
 
 from textwrap import dedent
 
-from .local import (generate_GitHub_token, encrypt_variable_travis, encrypt_to_file,
-    upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
-GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError,
-    get_travis_token)
+from .local import (generate_GitHub_token, encrypt_variable_travis,
+                    encrypt_variable_github_actions, encrypt_to_file,
+                    upload_GitHub_deploy_key, generate_ssh_key,
+                    check_repo_exists, GitHub_login, guess_github_repo,
+                    AuthenticationFailed, GitHubError, get_travis_token)
 from .travis import Travis
+from .github_actions import GitHubActions
 from .ci import sync_from_log, copy_to_tmp, find_sphinx_build_dir, run
 
 from .common import (red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA,
@@ -126,11 +128,11 @@ options available.
 
     subcommand = parser.add_subparsers(title='subcommand', dest='subcommand')
 
-    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from Travis.""")
+    deploy_parser = subcommand.add_parser('deploy', help="""Deploy the docs to GitHub from CI.""")
     deploy_parser.set_defaults(func=deploy)
     deploy_parser_add_argument = make_parser_with_config_adder(deploy_parser, config)
     deploy_parser_add_argument('--force', action='store_true', help="""Run the deploy command even
-    if we do not appear to be on Travis.""")
+    if we do not appear to be on CI.""")
     deploy_parser_add_argument('deploy_directory', type=str, nargs='?',
         help="""Directory to deploy the html documentation to on gh-pages.""")
     deploy_parser_add_argument('--token', action='store_true', default=False,
@@ -173,10 +175,9 @@ options available.
         default=True, help="Run all the steps except the last push step. "
         "Useful for debugging")
     deploy_parser_add_argument('--build-tags', action='store_true',
-        default=False, help="""Deploy on tag builds. On a tag build,
-        $TRAVIS_TAG is set to the name of the tag. The default is to not
-        deploy on tag builds. Note that this will still build on a branch,
-        unless --branch-whitelist (with no arguments) is passed.""")
+        default=False, help="""Deploy on tag builds. The default is to not deploy on tag builds. Note that
+        this will still build on a branch, unless --branch-whitelist (with no
+        arguments) is passed.""")
     deploy_parser_add_argument('--gh-pages-docs', default=None,
         help="""!!DEPRECATED!! Directory to deploy the html documentation to on gh-pages.
         The default is %(default)r. The deploy directory should be passed as
@@ -184,14 +185,16 @@ options available.
         compatibility.""")
     deploy_parser_add_argument('--exclude', nargs='+', default=(), help="""Files and
         directories from --built-docs that are not copied.""")
-
+    deploy_parser.add_help('--ci', default=None, help="""The CI system that
+    doctr is being run on. Should be one of ['travis', 'github-actions']. The
+    default is to detect automatically.""")
     if config:
         print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
 
-    configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on Travis).")
+    configure_parser = subcommand.add_parser('configure', help="Configure doctr. This command should be run locally (not on CI).")
     configure_parser.set_defaults(func=configure)
     configure_parser.add_argument('--force', action='store_true', help="""Run the configure command even
-    if we appear to be on Travis.""")
+    if we appear to be on CI.""")
     configure_parser.add_argument('--token', action="store_true", default=False,
         help="""Generate a personal access token to push to GitHub. The default is to use a
         deploy key. WARNING: This will grant read/write access to all the
@@ -212,24 +215,31 @@ options available.
         check which the repo is activated on and ask if it is activated on
         both.""", choices=['c', 'com', '.com', 'travis-ci.com', 'o', 'org', '.org',
                            'travis-ci.org'])
+    configure_parser.add_argument('--ci-service', default=None, help="""The CI service to configure doctr for. Must be one of ['travis',
+    'github-actions']. The default is to infer automatically based on which is
+    enabled, and ask if more than one is.""")
 
     return parser
 
-def get_config():
+def get_config(ci_type):
     """
     This load some configuration from the ``.travis.yml``, if file is present,
     ``doctr`` key if present.
     """
-    p = Path('.travis.yml')
-    if not p.exists():
-        return {}
-    with p.open() as f:
-        travis_config = yaml.safe_load(f.read())
+    if ci_type == 'travis':
+        p = Path('.travis.yml')
+        if not p.exists():
+            return {}
+        with p.open() as f:
+            travis_config = yaml.safe_load(f.read())
 
-    config = travis_config.get('doctr', {})
+        config = travis_config.get('doctr', {})
 
-    if not isinstance(config, dict):
-        raise ValueError('config is not a dict: {}'.format(config))
+        if not isinstance(config, dict):
+            raise ValueError('config is not a dict: {}'.format(config))
+    else:
+        # GitHub Actions level config is not yet supported
+        config = {}
     return config
 
 def get_deploy_key_repo(deploy_repo, keypath, key_ext=''):
@@ -265,14 +275,27 @@ def process_args(parser):
 def on_travis():
     return os.environ.get("TRAVIS_JOB_NUMBER", '')
 
+def on_github_actions():
+    return os.environ.get("GITHUB_ACTIONS", "") == "true"
+
 def deploy(args, parser):
     print("Running doctr deploy, version", __version__)
 
-    if not args.force and not on_travis():
-        parser.error("doctr does not appear to be running on Travis. Use "
-                     "doctr deploy <target-dir> --force to run anyway.")
+    if not args.force and not (on_travis() or on_github_actions()):
+        parser.error("doctr does not appear to be running on CI. Use "
+                     "doctr deploy <target-dir> --force --ci <ci-type> to run anyway.")
 
-    config = get_config()
+    if args.ci:
+        if args.ci not in ['travis', 'github-actions']:
+            parser.error("--ci must be one of ['travis', 'github-actions']")
+        ci_type = args.ci
+    elif on_travis():
+        ci_type = 'travis'
+    elif on_github_actions():
+        ci_type = 'github-actions'
+    else:
+        parser.error("Could not detect the CI type (Travis or GitHub Actions). Make sure doctr deploy is being run on CI. You can set the CI type manually using the --ci flag.")
+    config = get_config(ci_type)
 
     if args.tmp_dir:
         parser.error("The --tmp-dir flag has been removed (doctr no longer uses a temporary directory when deploying).")
@@ -288,7 +311,11 @@ def deploy(args, parser):
 
     deploy_dir = args.gh_pages_docs or args.deploy_directory
 
-    CI = Travis()
+    if ci_type == 'travis':
+        CI = Travis()
+    elif ci_type == 'github-actions':
+        CI = GitHubActions()
+
     build_repo = CI.get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
@@ -383,6 +410,10 @@ def configure(args, parser):
         parser.error(red("doctr appears to be running on Travis. Use "
             "doctr configure --force to run anyway."))
 
+    if not args.force and on_github_actions():
+        parser.error(red("doctr appears to be running on GitHub Actions. Use "
+            "doctr configure --force to run anyway."))
+
     if not args.authenticate:
         args.upload_key = False
 
@@ -396,7 +427,7 @@ def configure(args, parser):
     Welcome to Doctr.
 
     We need to ask you a few questions to get you on your way to automatically
-    deploying from Travis CI to GitHub pages.
+    deploying from CI to GitHub pages.
     """)))
 
     login_kwargs = {}
@@ -427,21 +458,50 @@ def configure(args, parser):
             if is_private and not args.authenticate:
                 sys.exit(red("--no-authenticate is not supported for private repositories."))
 
-            headers = {}
-            travis_token = None
-            if is_private:
-                if args.token:
-                    GitHub_token = generate_GitHub_token(note="Doctr token for pushing to gh-pages from Travis (for {build_repo}).".format(build_repo=build_repo),
-                                                         scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
-                travis_token = get_travis_token(GitHub_token=GitHub_token, **login_kwargs)
-                headers['Authorization'] = "token {}".format(travis_token)
 
-            service = args.travis_tld if args.travis_tld else 'travis'
-            c = check_repo_exists(build_repo, service=service, ask=True, headers=headers)
-            tld = c['service'][-4:]
-            is_private = c['private'] or is_private
-            if is_private and not args.authenticate:
-                sys.exit(red("--no-authenticate is not supported for private repos."))
+            if args.ci_service:
+                service = args.ci_service
+            else:
+                headers = {}
+                travis_token = None
+                if is_private:
+                    if args.token:
+                        GitHub_token = generate_GitHub_token(note="Doctr token for pushing to gh-pages from Travis (for {build_repo}).".format(build_repo=build_repo),
+                                                             scopes=["read:org", "user:email", "repo"], **login_kwargs)['token']
+                    travis_token = get_travis_token(GitHub_token=GitHub_token, **login_kwargs)
+                    headers['Authorization'] = "token {}".format(travis_token)
+
+                travis_service = args.travis_tld if args.travis_tld else 'travis'
+                c = check_repo_exists(build_repo, service=travis_service,
+                                      ask=True, headers=headers, raise_=False)
+                if not c:
+                    travis = False
+                else:
+                    tld = c['service'][-4:]
+                    is_private = c['private'] or is_private
+                    if is_private and not args.authenticate:
+                        sys.exit(red("--no-authenticate is not supported for private repos."))
+                    travis = travis_service
+
+                github_actions = check_repo_exists(build_repo, service='github actions')
+
+                if travis and github_actions:
+                    while True:
+                        print(green("{build_repo} appears to exist on both Travis CI and GitHub Actions.".format(build_repo=build_repo)))
+                        preferred = input("Which do you want to use? [{default}/GitHub Actions] ".format(default=blue("Travis CI")))
+                        preferred = preferred.lower().strip()
+                        if preferred in ['t', 'travis', 'travis ci']:
+                            service = travis
+                            break
+                        elif preferred in ['g', 'github', 'github actions']:
+                            service = github_actions['service']
+                            break
+                        else:
+                            print(red("Please type 'Travis CI' or 'GitHub Actions'."))
+                elif not (travis or github_actions):
+                    raise RuntimeError("{build_repo} does not appear to have Travis CI or GitHub Actions enabled. Enable the one you want to use doctr with and run 'doctr configure' again.".format(build_repo=build_repo))
+                else:
+                    service = travis or github_actions['service']
 
             get_build_repo = True
         except GitHubError:
@@ -472,8 +532,12 @@ def configure(args, parser):
     if args.token:
         if not GitHub_token:
             GitHub_token = generate_GitHub_token(**login_kwargs)['token']
-        encrypted_variable = encrypt_variable_travis("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
-                                              build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
+        if 'travis' in service:
+            encrypted_variable = encrypt_variable_travis("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
+                                                     build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
+        else:
+            encrypted_variable = encrypt_variable_github_actions("GH_TOKEN={GitHub_token}".format(GitHub_token=GitHub_token).encode('utf-8'),
+                                                     build_repo=build_repo,  **login_kwargs)
         print(dedent("""
         A personal access token for doctr has been created.
 
@@ -487,9 +551,12 @@ def configure(args, parser):
         key = encrypt_to_file(private_ssh_key, keypath + '.enc')
         del private_ssh_key # Prevent accidental use below
         public_ssh_key = public_ssh_key.decode('ASCII')
-        encrypted_variable = encrypt_variable_travis(env_name.encode('utf-8') + b"=" + key,
+        if 'travis' in service:
+            encrypted_variable = encrypt_variable_travis(env_name.encode('utf-8') + b"=" + key,
                                               build_repo=build_repo, tld=tld, travis_token=travis_token, **login_kwargs)
-
+        else:
+            encrypted_variable = encrypt_variable_github_actions(env_name.encode('utf-8') + b"=" + key,
+                                              build_repo=build_repo, **login_kwargs)
         deploy_keys_url = 'https://github.com/{deploy_repo}/settings/keys'.format(deploy_repo=deploy_key_repo)
 
         if args.upload_key:
@@ -531,23 +598,33 @@ def configure(args, parser):
         options += ' --token'
         key_type = "personal access token"
 
-    print(dedent("""\
-    {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
+    if 'travis' in service:
+        print(dedent("""\
+        {N}. {BOLD_MAGENTA}Add these lines to your `.travis.yml` file:{RESET}
 
-        env:
-          global:
-            # Doctr {key_type} for {deploy_repo}
-            - secure: "{encrypted_variable}"
+            env:
+              global:
+                # Doctr {key_type} for {deploy_repo}
+                - secure: "{encrypted_variable}"
 
-        script:
-          - set -e
-          - {BOLD_BLACK}<Command to build your docs>{RESET}
-          - pip install doctr
-          - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
-    """.format(options=options, N=N, key_type=key_type,
-        encrypted_variable=encrypted_variable.decode('utf-8'),
-        deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
-        BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
+            script:
+              - set -e
+              - {BOLD_BLACK}<Command to build your docs>{RESET}
+              - pip install doctr
+              - doctr deploy {options} {BOLD_BLACK}<target-directory>{RESET}
+        """.format(options=options, N=N, key_type=key_type,
+            encrypted_variable=encrypted_variable.decode('utf-8'),
+            deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
+            BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
+    else:
+        print(dedent("""\
+        {N}. {BOLD_MAGENTA}Add these lines to your github actions yaml file:{RESET}
+
+        TODO: Write this part.
+        """.format(options=options, N=N, key_type=key_type,
+            encrypted_variable=encrypted_variable.decode('utf-8'),
+            deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
+            BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
 
     print(dedent("""\
     Replace the text in {BOLD_BLACK}<angle brackets>{RESET} with the relevant
