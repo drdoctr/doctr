@@ -38,9 +38,8 @@ from .local import (generate_GitHub_token, encrypt_variable_travis, encrypt_to_f
     upload_GitHub_deploy_key, generate_ssh_key, check_repo_exists,
 GitHub_login, guess_github_repo, AuthenticationFailed, GitHubError,
     get_travis_token)
-from .travis import (setup_GitHub_push, commit_docs, push_docs,
-    get_current_repo, sync_from_log, find_sphinx_build_dir, run,
-    get_travis_branch, copy_to_tmp, checkout_deploy_branch)
+from .travis import Travis
+from .ci import sync_from_log, copy_to_tmp, find_sphinx_build_dir, run
 
 from .common import (red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA,
                      RESET, input)
@@ -289,7 +288,8 @@ def deploy(args, parser):
 
     deploy_dir = args.gh_pages_docs or args.deploy_directory
 
-    build_repo = get_current_repo()
+    CI = Travis()
+    build_repo = CI.get_current_repo()
     deploy_repo = args.deploy_repo or build_repo
 
     if args.deploy_branch_name:
@@ -301,14 +301,14 @@ def deploy(args, parser):
 
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8').strip()
     try:
-        branch_whitelist = set() if args.require_master else set(get_travis_branch())
+        branch_whitelist = set() if args.require_master else set(CI.branch())
         branch_whitelist.update(set(config.get('branches', set())))
         if args.branch_whitelist is not None:
             branch_whitelist.update(set(args.branch_whitelist))
         elif not branch_whitelist:
             branch_whitelist = {'master'}
 
-        canpush = setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
+        canpush = CI.setup_GitHub_push(deploy_repo, deploy_branch=deploy_branch,
                                      auth_type='token' if args.token else 'deploy_key',
                                      full_key_path=keypath,
                                      branch_whitelist=branch_whitelist,
@@ -325,7 +325,7 @@ def deploy(args, parser):
         # Reset in case there are modified files that are tracked in the
         # deploy branch.
         run(['git', 'stash', '--all'])
-        checkout_deploy_branch(deploy_branch, canpush=canpush)
+        CI.checkout_deploy_branch(deploy_branch, canpush=canpush)
 
         if args.sync:
             log_file = os.path.join(deploy_dir, '.doctr-files')
@@ -340,10 +340,10 @@ def deploy(args, parser):
         if args.command:
             run(args.command, shell=True)
 
-        changes = commit_docs(added=added, removed=removed)
+        changes = CI.commit_docs(added=added, removed=removed)
         if changes:
             if canpush and args.push:
-                push_docs(deploy_branch)
+                CI.push_docs(deploy_branch)
             else:
                 print("Don't have permission to push. Not trying.")
         else:
