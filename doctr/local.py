@@ -11,6 +11,7 @@ from getpass import getpass
 import urllib
 import datetime
 
+from nacl import encoding, public
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -25,7 +26,7 @@ from .common import red, blue, green, input
 Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
 Travis_APIv3 = {"Travis-API-Version": "3"}
 
-def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
+def encrypt_variable_travis(variable, build_repo, *, tld='.org', public_key=None,
     travis_token=None, **login_kwargs):
     """
     Encrypt an environment variable for ``build_repo`` for Travis
@@ -82,6 +83,48 @@ def encrypt_variable(variable, build_repo, *, tld='.org', public_key=None,
     pad = padding.PKCS1v15()
 
     return base64.b64encode(key.encrypt(variable, pad))
+
+def encrypt_variable_github_actions(variable, build_repo, *, public_key=None,
+    **login_kwargs):
+    """
+    Encrypt an environment variable for ``build_repo`` for Travis
+
+    ``variable`` should be a bytes object, of the form ``b'ENV=value'``.
+
+    ``build_repo`` is the repo that ``doctr deploy`` will be run from. It
+    should be like 'drdoctr/doctr'.
+
+    ``public_key`` should be the GitHub actions public key, obtained from
+    GitHub if not provided.
+
+    This is based on
+    https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-or-update-an-organization-secret
+
+    """
+    if not isinstance(variable, bytes):
+        raise TypeError("variable should be bytes")
+
+    if not b"=" in variable:
+        raise ValueError("variable should be of the form 'VARIABLE=value'")
+
+    if not public_key:
+        # See
+        # https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#get-an-organization-public-key
+
+        headers = {
+            'accept': 'application/vnd.github.v3+json',
+            'org': build_repo,
+        }
+        if 'headers' in login_kwargs:
+            headers.update(login_kwargs.pop('headers'))
+        url = 'https://api.github.com/repos/{build_repo}/actions/secrets/public-key'.format(build_repo=urllib.parse.quote(build_repo, safe='/'))
+        res = GitHub_get(url, headers=headers, **login_kwargs)
+        public_key = res['key']
+
+    public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
+    sealed_box = public.SealedBox(public_key)
+    encrypted = sealed_box.encrypt(variable)
+    return base64.b64encode(encrypted).decode("utf-8")
 
 def encrypt_to_file(contents, filename):
     """
@@ -224,6 +267,17 @@ def GitHub_post(data, url, *, auth, headers):
     return r.json()
 
 
+def GitHub_get(url, *, auth=None, headers):
+    """
+    GET the URL on GitHub.
+
+    Returns the json response from the server, or raises on error status.
+
+    """
+    r = requests.get(url, auth=auth, headers=headers)
+    GitHub_raise_for_status(r)
+    return r.json()
+
 def get_travis_token(*, GitHub_token=None, **login_kwargs):
     """
     Generate a temporary token for authenticating with Travis
@@ -335,14 +389,18 @@ def generate_ssh_key():
     return private_key, public_key
 
 def check_repo_exists(deploy_repo, service='github', *, auth=None,
-    headers=None, ask=False):
+    headers=None, ask=False, raise_=True):
     """
     Checks that the repository exists on GitHub.
 
     This should be done before attempting generate a key to deploy to that
     repo.
 
-    Raises ``RuntimeError`` if the repo is not valid.
+    'service' should be one of 'github', 'travis', 'travis-ci.org',
+    'travis-ci.com', or 'github actions'.
+
+    If the repo is not valid and ``raise_`` is True, raises ``RuntimeError``,
+    otherwise returns False.
 
     Returns a dictionary with the following keys:
 
@@ -371,8 +429,10 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
     elif service == 'travis-ci.org':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
         headers = {**headers, **Travis_APIv3}
+    elif service == 'github actions':
+        REPO_URL = 'https://api.github.com/repos/{owner}/{repo}/actions/permissions'
     else:
-        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org"}')
+        raise RuntimeError('Invalid service specified for repo check (should be one of {"github", "travis", "travis-ci.com", "travis-ci.org", "github actions"}')
 
     wiki = False
     if repo.endswith('.wiki') and service == 'github':
@@ -392,7 +452,12 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     r = _try(REPO_URL.format(user=urllib.parse.quote(user),
         repo=urllib.parse.quote(repo)))
-    r_active = r and (service == 'github' or r.json().get('active', False))
+    if not r:
+        r_active = False
+    elif 'travis' in service:
+        r_active = r.json().get('active', False)
+    elif service == 'github actions':
+        r_active = r.json().get('enabled', False)
 
     if service == 'travis':
         REPO_URL = 'https://api.travis-ci.org/repo/{user}%2F{repo}'
@@ -401,6 +466,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         r_org_active = r_org and r_org.json().get('active', False)
         if not r_active:
             if not r_org_active:
+                if not raise_:
+                    return False
                 raise RuntimeError('"{user}/{repo}" not found on travis-ci.org or travis-ci.com'.format(user=user, repo=repo))
             r = r_org
             r_active = r_org_active
@@ -429,11 +496,14 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
 
     if not r_active:
         msg = '' if auth else '. If the repo is private, then you need to authenticate.'
+        if not raise_:
+            return False
         raise RuntimeError('"{user}/{repo}" not found on {service}{msg}'.format(user=user,
                                                                                 repo=repo,
                                                                                 service=service,
                                                                                 msg=msg))
 
+    # TODO: Handle private repos for GitHub actions
     private = r.json().get('private', False)
 
     if wiki and not private:
@@ -441,6 +511,8 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         p = subprocess.run(['git', 'ls-remote', '-h', 'https://github.com/{user}/{repo}.wiki'.format(
             user=user, repo=repo)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         if p.stderr or p.returncode:
+            if not raise_:
+                return False
             raise RuntimeError('Wiki not found. Please create a wiki')
 
     return {

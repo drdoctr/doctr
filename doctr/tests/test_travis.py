@@ -9,7 +9,8 @@ from os.path import join
 
 import pytest
 
-from ..travis import sync_from_log, determine_push_rights, copy_to_tmp
+from ..travis import Travis
+from ..ci import sync_from_log, copy_to_tmp
 
 @pytest.mark.parametrize("src", ["src"])
 @pytest.mark.parametrize("dst", ['.', 'dst'])
@@ -258,61 +259,62 @@ def test_sync_from_log_file_to_dir(dst):
             os.chdir(old_curdir)
 
 
-@pytest.mark.parametrize("""branch_whitelist, TRAVIS_BRANCH,
-                         TRAVIS_PULL_REQUEST, TRAVIS_TAG, fork, build_tags,
+@pytest.mark.parametrize("""branch_whitelist, branch,
+                         pull_request, tag, fork, build_tags,
                          canpush""",
                          [
 
-                             ('master', 'doctr', 'true', "", False, False, False),
-                             ('master', 'doctr', 'false', "", False, False, False),
-                             ('master', 'master', 'true', "", False, False, False),
-                             ('master', 'master', 'false', "", False, False, True),
-                             ('doctr', 'doctr', 'True', "", False, False, False),
-                             ('doctr', 'doctr', 'false', "", False, False, True),
-                             ('set()', 'doctr', 'false', "", False, False, False),
+                             ('master', 'doctr', True, "", False, False, False),
+                             ('master', 'doctr', False, "", False, False, False),
+                             ('master', 'master', True, "", False, False, False),
+                             ('master', 'master', False, "", False, False, True),
+                             ('doctr', 'doctr', True, "", False, False, False),
+                             ('doctr', 'doctr', False, "", False, False, True),
+                             ('set()', 'doctr', False, "", False, False, False),
 
-                             ('master', 'doctr', 'true', "tagname", False, False, False),
-                             ('master', 'doctr', 'false', "tagname", False, False, False),
-                             ('master', 'master', 'true', "tagname", False, False, False),
-                             ('master', 'master', 'false', "tagname", False, False, False),
-                             ('doctr', 'doctr', 'True', "tagname", False, False, False),
-                             ('doctr', 'doctr', 'false', "tagname", False, False, False),
-                             ('set()', 'doctr', 'false', "tagname", False, False, False),
+                             ('master', 'doctr', True, "tagname", False, False, False),
+                             ('master', 'doctr', False, "tagname", False, False, False),
+                             ('master', 'master', True, "tagname", False, False, False),
+                             ('master', 'master', False, "tagname", False, False, False),
+                             ('doctr', 'doctr', True, "tagname", False, False, False),
+                             ('doctr', 'doctr', False, "tagname", False, False, False),
+                             ('set()', 'doctr', False, "tagname", False, False, False),
 
-                             ('master', 'doctr', 'true', "", False, True, False),
-                             ('master', 'doctr', 'false', "", False, True, False),
-                             ('master', 'master', 'true', "", False, True, False),
-                             ('master', 'master', 'false', "", False, True, True),
-                             ('doctr', 'doctr', 'True', "", False, True, False),
-                             ('doctr', 'doctr', 'false', "", False, True, True),
-                             ('set()', 'doctr', 'false', "", False, True, False),
+                             ('master', 'doctr', True, "", False, True, False),
+                             ('master', 'doctr', False, "", False, True, False),
+                             ('master', 'master', True, "", False, True, False),
+                             ('master', 'master', False, "", False, True, True),
+                             ('doctr', 'doctr', True, "", False, True, False),
+                             ('doctr', 'doctr', False, "", False, True, True),
+                             ('set()', 'doctr', False, "", False, True, False),
 
-                             ('master', 'doctr', 'true', "tagname", False, True, True),
-                             ('master', 'doctr', 'false', "tagname", False, True, True),
-                             ('master', 'master', 'true', "tagname", False, True, True),
-                             ('master', 'master', 'false', "tagname", False, True, True),
-                             ('doctr', 'doctr', 'True', "tagname", False, True, True),
-                             ('doctr', 'doctr', 'false', "tagname", False, True, True),
-                             ('set()', 'doctr', 'false', "tagname", False, True, True),
+                             ('master', 'doctr', True, "tagname", False, True, True),
+                             ('master', 'doctr', False, "tagname", False, True, True),
+                             ('master', 'master', True, "tagname", False, True, True),
+                             ('master', 'master', False, "tagname", False, True, True),
+                             ('doctr', 'doctr', True, "tagname", False, True, True),
+                             ('doctr', 'doctr', False, "tagname", False, True, True),
+                             ('set()', 'doctr', False, "tagname", False, True, True),
 
-                             ('master', 'doctr', 'true', "", True, False, False),
-                             ('master', 'doctr', 'false', "", True, False, False),
-                             ('master', 'master', 'true', "", True, False, False),
-                             ('master', 'master', 'false', "", True, False, False),
-                             ('doctr', 'doctr', 'True', "", True, False, False),
-                             ('doctr', 'doctr', 'false', "", True, False, False),
-                             ('set()', 'doctr', 'false', "", True, False, False),
+                             ('master', 'doctr', True, "", True, False, False),
+                             ('master', 'doctr', False, "", True, False, False),
+                             ('master', 'master', True, "", True, False, False),
+                             ('master', 'master', False, "", True, False, False),
+                             ('doctr', 'doctr', True, "", True, False, False),
+                             ('doctr', 'doctr', False, "", True, False, False),
+                             ('set()', 'doctr', False, "", True, False, False),
 
                          ])
-def test_determine_push_rights(branch_whitelist, TRAVIS_BRANCH,
-    TRAVIS_PULL_REQUEST, TRAVIS_TAG, build_tags, fork, canpush, monkeypatch):
+def test_determine_push_rights(branch_whitelist, branch,
+    pull_request, tag, build_tags, fork, canpush, monkeypatch):
     branch_whitelist = {branch_whitelist}
 
-    assert determine_push_rights(
+    CI = Travis()
+    assert CI.determine_push_rights(
         branch_whitelist=branch_whitelist,
-        TRAVIS_BRANCH=TRAVIS_BRANCH,
-        TRAVIS_PULL_REQUEST=TRAVIS_PULL_REQUEST,
-        TRAVIS_TAG=TRAVIS_TAG,
+        branch=branch,
+        pull_request=pull_request,
+        tag=tag,
         fork=fork,
         build_tags=build_tags) == canpush
 
