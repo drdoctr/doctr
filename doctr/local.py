@@ -224,6 +224,17 @@ def GitHub_post(data, url, *, auth, headers):
     return r.json()
 
 
+def GitHub_get(url, *, auth=None, headers):
+    """
+    GET the URL on GitHub.
+
+    Returns the json response from the server, or raises on error status.
+
+    """
+    r = requests.get(url, auth=auth, headers=headers)
+    GitHub_raise_for_status(r)
+    return r.json()
+
 def get_travis_token(*, GitHub_token=None, **login_kwargs):
     """
     Generate a temporary token for authenticating with Travis
