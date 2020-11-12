@@ -399,7 +399,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
     'service' should be one of 'github', 'travis', 'travis-ci.org',
     'travis-ci.com', or 'github actions'.
 
-    If the repo is not valid and raise_ is True, raises ``RuntimeError``,
+    If the repo is not valid and ``raise_`` is True, raises ``RuntimeError``,
     otherwise returns False.
 
     Returns a dictionary with the following keys:

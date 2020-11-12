@@ -185,9 +185,9 @@ options available.
         compatibility.""")
     deploy_parser_add_argument('--exclude', nargs='+', default=(), help="""Files and
         directories from --built-docs that are not copied.""")
-    deploy_parser.add_help('--ci', default=None, help="""The CI system that
-    doctr is being run on. Should be one of ['travis', 'github-actions']. The
-    default is to detect automatically.""")
+    deploy_parser.add_argument('--ci', default=None, help="""The CI system
+        that doctr is being run on. Should be one of ['travis',
+        'github-actions']. The default is to detect automatically.""")
     if config:
         print('Warning, The following options in `.travis.yml` were not recognized:\n%s' % json.dumps(config, indent=2))
 
