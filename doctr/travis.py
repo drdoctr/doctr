@@ -4,11 +4,7 @@ The code that should be run on Travis
 
 import os
 import shlex
-import subprocess
 import sys
-import re
-
-import requests
 
 from .ci import CI
 

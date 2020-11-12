@@ -621,10 +621,9 @@ def configure(args, parser):
         {N}. {BOLD_MAGENTA}Add these lines to your github actions yaml file:{RESET}
 
         TODO: Write this part.
-        """.format(options=options, N=N, key_type=key_type,
-            encrypted_variable=encrypted_variable.decode('utf-8'),
-            deploy_repo=deploy_repo, BOLD_MAGENTA=BOLD_MAGENTA,
-            BOLD_BLACK=BOLD_BLACK, RESET=RESET)))
+        """.format(N=N,
+            BOLD_MAGENTA=BOLD_MAGENTA,
+            RESET=RESET)))
 
     print(dedent("""\
     Replace the text in {BOLD_BLACK}<angle brackets>{RESET} with the relevant

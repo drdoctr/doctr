@@ -259,9 +259,9 @@ class CI:
 
         Return True if ``deploy_branch`` was created, False if not.
         """
-        if not deploy_branch_exists(deploy_branch):
+        if not self.deploy_branch_exists(deploy_branch):
             print("Creating {} branch on doctr_remote".format(deploy_branch))
-            clear_working_branch()
+            self.clear_working_branch()
             run(['git', 'checkout', '--orphan', DOCTR_WORKING_BRANCH])
             # delete everything in the new ref.  this is non-destructive to existing
             # refs/branches, etc...
