@@ -7,12 +7,12 @@ import uuid
 import base64
 import subprocess
 import re
-from getpass import getpass
 import urllib
 import datetime
+import time
+import webbrowser
 
 import requests
-from requests.auth import HTTPBasicAuth
 
 from cryptography.fernet import Fernet
 
@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
-from .common import red, blue, green, input
+from .common import red, blue, green, bold, input
 
 Travis_APIv2 = {'Accept': 'application/vnd.travis-ci.2.1+json'}
 Travis_APIv3 = {"Travis-API-Version": "3"}
@@ -111,51 +111,81 @@ def encrypt_to_file(contents, filename):
 class AuthenticationFailed(Exception):
     pass
 
-def GitHub_login(*, username=None, password=None, OTP=None, headers=None):
+def GitHub_login(client_id, *, headers=None, scope='repo'):
     """
     Login to GitHub.
 
-    If no username, password, or OTP (2-factor authentication code) are
-    provided, they will be requested from the command line.
+    This uses the device authorization flow. client_id should be the client id
+    for your GitHub application. See
+    https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps#device-flow.
 
-    Returns a dict of kwargs that can be passed to functions that require
-    authenticated connections to GitHub.
+    'scope' should be the scope for the access token ('repo' by default). See https://docs.github.com/en/free-pro-team@latest/developers/apps/scopes-for-oauth-apps#available-scopes.
+
+    Returns an access token.
+
     """
-    if not username:
-        username = input("What is your GitHub username? ")
+    _headers = headers or {}
+    headers = {"accept":  "application/json", **_headers}
 
-    if not password:
-        password = getpass("Enter the GitHub password for {username}: ".format(username=username))
-
-    headers = headers or {}
-
-    if OTP:
-        headers['X-GitHub-OTP'] = OTP
-
-    auth = HTTPBasicAuth(username, password)
-
-    r = requests.get('https://api.github.com/', auth=auth, headers=headers)
-    if r.status_code == 401:
-        two_factor = r.headers.get('X-GitHub-OTP')
-        if two_factor:
-            if OTP:
-                print(red("Invalid authentication code"))
-            # For SMS, we have to make a fake request (that will fail without
-            # the OTP) to get GitHub to send it. See https://github.com/drdoctr/doctr/pull/203
-            auth_header = base64.urlsafe_b64encode(bytes(username + ':' + password, 'utf8')).decode()
-            login_kwargs = {'auth': None, 'headers': {'Authorization': 'Basic {}'.format(auth_header)}}
-            try:
-                generate_GitHub_token(**login_kwargs)
-            except (requests.exceptions.HTTPError, GitHubError):
-                pass
-            print("A two-factor authentication code is required:", two_factor.split(';')[1].strip())
-            OTP = input("Authentication code: ")
-            return GitHub_login(username=username, password=password, OTP=OTP, headers=headers)
-
-        raise AuthenticationFailed("invalid username or password")
-
+    r = requests.post("https://github.com/login/device/code",
+                      {"client_id": client_id, "scope": scope},
+                      headers=headers)
     GitHub_raise_for_status(r)
-    return {'auth': auth, 'headers': headers}
+    result = r.json()
+    device_code = result['device_code']
+    user_code = result['user_code']
+    verification_uri = result['verification_uri']
+    expires_in = result['expires_in']
+    interval = result['interval']
+    request_time = time.time()
+
+    print("Go to", verification_uri, "and enter this code:")
+    print()
+    print(bold(user_code))
+    print()
+    input("Press Enter to open a webbrowser to " + verification_uri)
+    webbrowser.open(verification_uri)
+    while True:
+        time.sleep(interval)
+        now = time.time()
+        if now - request_time > expires_in:
+            print("Did not receive a response in time. Please try again.")
+            return GitHub_login(client_id=client_id, headers=headers, scope=scope)
+        # Try once before opening in case the user already did it
+        r = requests.post("https://github.com/login/oauth/access_token",
+                          {"client_id": client_id,
+                           "device_code": device_code,
+                           "grant_type": "urn:ietf:params:oauth:grant-type:device_code"},
+                          headers=headers)
+        GitHub_raise_for_status(r)
+        result = r.json()
+        if "error" in result:
+            # https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps#error-codes-for-the-device-flow
+            error = result['error']
+            if error == "authorization_pending":
+                if 0:
+                    print("No response from GitHub yet: trying again")
+                continue
+            elif error == "slow_down":
+                # We are polling too fast somehow. This adds 5 seconds to the
+                # poll interval, which we increase by 6 just to be sure it
+                # doesn't happen again.
+                interval += 6
+                continue
+            elif error == "expired_token":
+                print("GitHub token expired. Trying again...")
+                return GitHub_login(client_id=client_id, headers=headers, scope=scope)
+            elif error == "access_denied":
+                raise AuthenticationFailed("User canceled authorization")
+            else:
+                # The remaining errors, "unsupported_grant_type",
+                # "incorrect_client_credentials", and "incorrect_device_code"
+                # mean the above request was incorrect somehow, which
+                # indicates a bug. Or GitHub added a new error type, in which
+                # case this code needs to be updated.
+                raise AuthenticationFailed("Unexpected error when authorizing with GitHub:", error)
+        else:
+            return result['access_token']
 
 
 class GitHubError(RuntimeError):
@@ -212,14 +242,14 @@ Your rate limits will reset in {s}.\
     r.raise_for_status()
 
 
-def GitHub_post(data, url, *, auth, headers):
+def GitHub_post(data, url, *, headers):
     """
     POST the data ``data`` to GitHub.
 
     Returns the json response from the server, or raises on error status.
 
     """
-    r = requests.post(url, auth=auth, headers=headers, data=json.dumps(data))
+    r = requests.post(url, headers=headers, data=json.dumps(data))
     GitHub_raise_for_status(r)
     return r.json()
 
@@ -288,9 +318,9 @@ def generate_GitHub_token(*, note="Doctr token for pushing to gh-pages from Trav
     return GitHub_post(data, AUTH_URL, **login_kwargs)
 
 
-def delete_GitHub_token(token_id, *, auth, headers):
+def delete_GitHub_token(token_id, *, headers):
     """Delete a temporary GitHub token"""
-    r = requests.delete('https://api.github.com/authorizations/{id}'.format(id=token_id), auth=auth, headers=headers)
+    r = requests.delete('https://api.github.com/authorizations/{id}'.format(id=token_id), headers=headers)
     GitHub_raise_for_status(r)
 
 
@@ -334,8 +364,8 @@ def generate_ssh_key():
 
     return private_key, public_key
 
-def check_repo_exists(deploy_repo, service='github', *, auth=None,
-    headers=None, ask=False):
+def check_repo_exists(deploy_repo, service='github', *, headers=None,
+                      ask=False):
     """
     Checks that the repository exists on GitHub.
 
@@ -380,7 +410,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
         repo = repo[:-5]
 
     def _try(url):
-        r = requests.get(url, auth=auth, headers=headers)
+        r = requests.get(url, headers=headers)
 
         if r.status_code in [requests.codes.not_found, requests.codes.forbidden]:
             return False
@@ -428,7 +458,7 @@ def check_repo_exists(deploy_repo, service='github', *, auth=None,
                 service = 'travis-ci.com'
 
     if not r_active:
-        msg = '' if auth else '. If the repo is private, then you need to authenticate.'
+        msg = '' if 'Authorization' in headers else '. If the repo is private, then you need to authenticate.'
         raise RuntimeError('"{user}/{repo}" not found on {service}{msg}'.format(user=user,
                                                                                 repo=repo,
                                                                                 service=service,
