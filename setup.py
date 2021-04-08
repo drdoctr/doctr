@@ -16,7 +16,7 @@ setup(
     url='https://github.com/drdoctr/doctr',
     packages=['doctr', 'doctr.tests'],
     description='Deploy docs from Travis to GitHub pages.',
-    long_description=open("README.rst").read(),
+    # long_description=open("README.rst").read(),
     entry_points={'console_scripts': [ 'doctr = doctr.__main__:main']},
     python_requires= '>=3.5',
     install_requires=[
