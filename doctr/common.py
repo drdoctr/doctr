@@ -30,6 +30,9 @@ def bold_black(text):
 def bold_magenta(text):
     return "\033[1;35m%s\033[0m" % text
 
+def bold(text):
+    return "\033[1m%s\033[0m" % text
+
 # Use these when coloring individual parts of a larger string, e.g.,
 # "{BOLD_MAGENTA}Bright text{RESET} normal text".format(BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)
 BOLD_BLACK = "\033[1;30m"

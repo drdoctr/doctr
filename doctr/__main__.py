@@ -42,11 +42,13 @@ from .travis import (setup_GitHub_push, commit_docs, push_docs,
     get_current_repo, sync_from_log, find_sphinx_build_dir, run,
     get_travis_branch, copy_to_tmp, checkout_deploy_branch)
 
-from .common import (red, green, blue, bold_black, BOLD_BLACK, BOLD_MAGENTA,
-                     RESET, input)
+from .common import (red, green, blue, bold_black, bold_magenta, BOLD_BLACK,
+                     BOLD_MAGENTA, RESET, input)
 
 from . import __version__
 
+# See https://github.com/organizations/drdoctr/settings/applications/1418010
+DOCTR_CLIENT_ID = "dcd97ff81716d4498a7d"
 
 def make_parser_with_config_adder(parser, config):
     """factory function for a smarter parser:
@@ -200,7 +202,7 @@ options available.
         unless you are using a separate GitHub user for deploying.""")
     configure_parser.add_argument("--no-upload-key", action="store_false", default=True,
         dest="upload_key", help="""Don't automatically upload the deploy key to GitHub. To prevent doctr
-        configure from asking for your GitHub credentials, use
+        configure from requiring you to login to GitHub, use
         --no-authenticate.""")
     configure_parser.add_argument("--no-authenticate", action="store_false",
         default=True, dest="authenticate", help="""Don't authenticate with GitHub. This option implies --no-upload-key. This
@@ -402,13 +404,14 @@ def configure(args, parser):
     login_kwargs = {}
 
     if args.authenticate:
-        while not login_kwargs:
-            try:
-                login_kwargs = GitHub_login()
-            except AuthenticationFailed as e:
-                print(red(e))
+        try:
+            print(bold_magenta("We must first authenticate with GitHub. This authorization is only needed for the initial configuration, and may be revoked after this command exits. The 'repo' scope is used so that I can upload the deploy key to the repo for you. You may also use 'doctr configure --no-authenticate' if you want to configure doctr without authenticating with GitHub (this will require pasting the deploy key into the GitHub form manually).\n"))
+            access_token = GitHub_login(client_id=DOCTR_CLIENT_ID)
+            login_kwargs = {'headers': {'Authorization': "token {}".format(access_token)}}
+        except AuthenticationFailed as e:
+            sys.exit(red(e))
     else:
-        login_kwargs = {'auth': None, 'headers': None}
+        login_kwargs = {'headers': None}
 
     GitHub_token = None
     get_build_repo = False
@@ -564,6 +567,13 @@ def configure(args, parser):
     {N}. {BOLD_MAGENTA}Commit and push these changes to your GitHub repository.{RESET}
        The docs should now build automatically on Travis.
     """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA, RESET=RESET)))
+
+    if args.authenticate:
+        app_url = "https://github.com/settings/connections/applications/" + DOCTR_CLIENT_ID
+        print(dedent("""\
+        {N}. {BOLD_MAGENTA}Finally, if you like, you may go to {app_url} and revoke access to the doctr application (it is not needed for doctr to work past this point).{RESET}
+        """.format(N=N, BOLD_MAGENTA=BOLD_MAGENTA,
+                                           app_url=app_url, RESET=RESET)))
 
     print("See the documentation at https://drdoctr.github.io/ for more information.")
 
