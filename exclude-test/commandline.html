@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Doctr Command Line Help &#8212; Doctr 1.8.0+13.g7e75711 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -32,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="doctr-command-line-help">
+  <section id="doctr-command-line-help">
 <h1>Doctr Command Line Help<a class="headerlink" href="#doctr-command-line-help" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="doctr">
+<section id="doctr">
 <h2>doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h2>
 <p>doctr</p>
 <p>A tool to automatically deploy docs to GitHub pages from Travis CI.</p>
@@ -69,7 +70,7 @@ run on the master branch, and won’t run on pull requests.</p>
 
 <p>Run –help on the subcommands like ‘doctr deploy –help’ to see the
 options available.</p>
-<div class="section" id="doctr-configure">
+<section id="doctr-configure">
 <h3>doctr configure<a class="headerlink" href="#doctr-configure" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr configure [-h] [--force] [--token] [--no-upload-key]</span>
 <span class="go">                       [--no-authenticate] [--key-path KEY_PATH]</span>
@@ -128,8 +129,8 @@ options available.</p>
         both.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="doctr-deploy">
+</section>
+<section id="doctr-deploy">
 <h3>doctr deploy<a class="headerlink" href="#doctr-deploy" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: doctr deploy [-h] [--force | --no-force] [--token | --no-token]</span>
 <span class="go">                    [--key-path KEY_PATH] [--built-docs BUILT_DOCS]</span>
@@ -305,9 +306,9 @@ options available.</p>
         directories from –built-docs that are not copied.</p>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="configuration">
+</section>
+</section>
+<section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>In addition to command line arguments you can configure <code class="docutils literal notranslate"><span class="pre">doctr</span></code> using the
 <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> files. Command line arguments take precedence over the value
@@ -338,8 +339,8 @@ still deploy the documentation. For example <code class="docutils literal notran
 branches like <code class="docutils literal notranslate"><span class="pre">3.x</span></code>, <code class="docutils literal notranslate"><span class="pre">4.x</span></code> …</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
