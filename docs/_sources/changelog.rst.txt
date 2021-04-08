@@ -2,6 +2,21 @@
  Doctr Changelog
 =================
 
+1.9.0 (2021-04-08)
+==================
+
+Major Changes
+-------------
+
+- Fixes ``doctr configure``. GitHub authentication now uses the device
+  authentication flow, as the username/password flow is no longer supported.
+  (:issue:`373`)
+
+Minor Changes
+-------------
+
+- Increase the number of retries for pushing from 3 to 5. (:issue:`340`)
+
 1.8.0 (2019-02-01)
 ==================
 
