@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recipes &#8212; Doctr 1.8.0+12.g48db077 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -33,10 +32,10 @@
 
           <div class="body" role="main">
             
-  <section id="recipes">
+  <div class="section" id="recipes">
 <span id="id1"></span><h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h1>
 <p>Here are some useful recipes for Doctr.</p>
-<section id="deploy-docs-from-any-branch">
+<div class="section" id="deploy-docs-from-any-branch">
 <span id="any-branch"></span><h2>Deploy docs from any branch<a class="headerlink" href="#deploy-docs-from-any-branch" title="Permalink to this headline">¶</a></h2>
 <p>By default, Doctr only deploys docs from the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch, but it can be
 useful to deploy docs from other branches, to test them out.</p>
@@ -58,8 +57,8 @@ For security purposes, it is not possible to deploy from branches on forks
 (Travis does not allow access to encrypted environment variables on pull
 requests from forks). If you want to deploy the docs for a branch from a pull
 request, you will need to push it up to the main repository.</p>
-</section>
-<section id="deploy-docs-from-a-non-master-branch">
+</div>
+<div class="section" id="deploy-docs-from-a-non-master-branch">
 <span id="non-master-branch"></span><h2>Deploy docs from a non-master branch<a class="headerlink" href="#deploy-docs-from-a-non-master-branch" title="Permalink to this headline">¶</a></h2>
 <p>If you want to deploy docs from only specific branches other than just
 <code class="docutils literal notranslate"><span class="pre">master</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">--branch-whitelist</span></code> flag. This is useful if
@@ -70,8 +69,8 @@ call.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doctr deploy --built-docs build/ . --branch-whitelist develop</span>
 </pre></div>
 </div>
-</section>
-<section id="deploy-docs-from-git-tags">
+</div>
+<div class="section" id="deploy-docs-from-git-tags">
 <span id="recipe-tags"></span><h2>Deploy docs from git tags<a class="headerlink" href="#deploy-docs-from-git-tags" title="Permalink to this headline">¶</a></h2>
 <p>Travis CI runs separate builds for git tags that are pushed to your repo. By
 default, doctr does not deploy on these builds, but it can be enabled with the
@@ -94,8 +93,8 @@ only tags to <code class="docutils literal notranslate"><span class="pre">latest
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">doctr deploy latest --built-docs build/ --build-tags --branch-whitelist</span>
 </pre></div>
 </div>
-</section>
-<section id="deploy-to-a-separate-repo">
+</div>
+<div class="section" id="deploy-to-a-separate-repo">
 <h2>Deploy to a separate repo<a class="headerlink" href="#deploy-to-a-separate-repo" title="Permalink to this headline">¶</a></h2>
 <p>By default, Doctr deploys to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch of the same repository it
 is run from, but you can deploy to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch of any repository.</p>
@@ -113,8 +112,8 @@ the url of the form for someone with admin access to paste it in).</p>
 </div>
 <p>The instructions from <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will also give you the correct
 command to run.</p>
-</section>
-<section id="setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">
+</div>
+<div class="section" id="setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to">
 <h2>Setting up Doctr for a repo you don’t have admin access to<a class="headerlink" href="#setting-up-doctr-for-a-repo-you-don-t-have-admin-access-to" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> by default asks for your GitHub credentials so that it can
 upload the deploy key it creates. However, if you do not have admin access to
@@ -132,8 +131,8 @@ repository to add the public key which Doctr has printed as a deploy key for
 the repo (Doctr will also print the url where they can add this). Don’t worry,
 the key is a public SSH key, so it’s OK to post it publicly in the pull
 request.</p>
-</section>
-<section id="post-processing-the-docs-on-gh-pages">
+</div>
+<div class="section" id="post-processing-the-docs-on-gh-pages">
 <h2>Post-processing the docs on gh-pages<a class="headerlink" href="#post-processing-the-docs-on-gh-pages" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes you may want to post-process your docs on the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch.
 For example, you may want to add some links to other versions in your
@@ -146,8 +145,8 @@ you can run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>doctr deploy --command <span class="s1">&#39;post-process.py&#39;</span> deploy_dir
 </pre></div>
 </div>
-</section>
-<section id="using-a-separate-command-to-deploy-to-gh-pages">
+</div>
+<div class="section" id="using-a-separate-command-to-deploy-to-gh-pages">
 <h2>Using a separate command to deploy to gh-pages<a class="headerlink" href="#using-a-separate-command-to-deploy-to-gh-pages" title="Permalink to this headline">¶</a></h2>
 <p>If you already have an existing tool to deploy to <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>, you can still
 use Doctr to manage your deploy key. Use</p>
@@ -156,8 +155,8 @@ use Doctr to manage your deploy key. Use</p>
 </div>
 <p>The command to deploy should add any files that you want committed to the
 index.</p>
-</section>
-<section id="deploying-to-a-github-wiki">
+</div>
+<div class="section" id="deploying-to-a-github-wiki">
 <span id="recipe-wikis"></span><h2>Deploying to a GitHub wiki<a class="headerlink" href="#deploying-to-a-github-wiki" title="Permalink to this headline">¶</a></h2>
 <p>Doctr supports deploying to GitHub wikis. Just use <code class="docutils literal notranslate"><span class="pre">org/repo.wiki</span></code> when
 as the deploy repo running <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code>. When deploying, use</p>
@@ -167,8 +166,8 @@ as the deploy repo running <code class="docutils literal notranslate"><span clas
 <p>The deploy key for pushing to a wiki is the same as for pushing to the repo
 itself, so if you are pushing to both, you will not need more than one deploy
 key.</p>
-</section>
-<section id="using-doctr-with-github-io-pages">
+</div>
+<div class="section" id="using-doctr-with-github-io-pages">
 <span id="recipe-github-io"></span><h2>Using doctr with <code class="docutils literal notranslate"><span class="pre">*.github.io</span></code> pages<a class="headerlink" href="#using-doctr-with-github-io-pages" title="Permalink to this headline">¶</a></h2>
 <p>Github allows users to create pages at the root URL of users’ or
 organizations’ <a class="reference external" href="http://github.io">http://github.io</a> pages. For example, an organization
@@ -202,8 +201,8 @@ lists the <code class="docutils literal notranslate"><span class="pre">source</s
 </div>
 <p>The source files should only be pushed to the <code class="docutils literal notranslate"><span class="pre">source</span></code> branch and all output
 files will be pushed to the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch during the Travis builds.</p>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
