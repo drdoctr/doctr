@@ -2,6 +2,21 @@
  Doctr Changelog
 =================
 
+1.9.0 (2021-04-08)
+==================
+
+Major Changes
+-------------
+
+- Fixes ``doctr configure``. GitHub authentication now uses the device
+  authentication flow, as the username/password flow is no longer supported.
+  (:issue:`373`)
+
+Minor Changes
+-------------
+
+- Increase the number of retries for pushing from 3 to 5. (:issue:`340`)
+
 1.8.0 (2019-02-01)
 ==================
 
@@ -39,7 +54,7 @@ Major Changes
        fi
 
 
-- New ``-no-authenticate`` flag to ``doctr configure``. This disables
+- New ``--no-authenticate`` flag to ``doctr configure``. This disables
   authentication with GitHub. If GitHub authentication is required (i.e., the
   repository is private), then it will fail. This
   flag implies ``-no-upload-key``, which now no longer disables
