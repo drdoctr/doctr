@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doctr &#8212; Doctr 1.8.0+14.gd909927 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -32,7 +31,7 @@
 
           <div class="body" role="main">
             
-  <section id="doctr">
+  <div class="section" id="doctr">
 <h1>Doctr<a class="headerlink" href="#doctr" title="Permalink to this headline">¶</a></h1>
 <p>A tool for automatically deploying docs from Travis CI to GitHub pages.</p>
 <p>Doctr helps deploy things to GitHub pages from Travis CI by managing the
@@ -43,7 +42,7 @@ to GitHub pages that can be built on Travis CI. For example, you can use Doctr
 to deploy a <a class="reference external" href="http://www.asmeurer.com/blog/posts/automatically-deploying-this-blog-to-github-pages-with-travis-ci/">blog</a>
 or website that uses a <a class="reference external" href="https://www.staticgen.com/">static site generator</a>.</p>
 <p>Contribute to Doctr development on <a class="reference external" href="https://github.com/drdoctr/doctr">GitHub</a>.</p>
-<section id="installation">
+<div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Install Doctr with pip</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">doctr</span>
@@ -54,10 +53,10 @@ or website that uses a <a class="reference external" href="https://www.staticgen
 </pre></div>
 </div>
 <p><strong>Note that Doctr requires Python 3.5 or newer.</strong></p>
-</section>
-<section id="usage">
+</div>
+<div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<section id="run-doctr-configure">
+<div class="section" id="run-doctr-configure">
 <h3>Run Doctr configure<a class="headerlink" href="#run-doctr-configure" title="Permalink to this headline">¶</a></h3>
 <p>First use Doctr to generate the necessary key files so that travis can push
 to your gh-pages (or other) branch.</p>
@@ -71,8 +70,8 @@ repo organization / name for which you want to build the docs.</p>
 <a class="reference external" href="https://help.github.com/articles/about-protected-branches/">branch protection</a>
 for the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch and other branches, as the deploy key
 used by Doctr has the ability to push to any branch in your repo.</p>
-</section>
-<section id="edit-your-travis-file">
+</div>
+<div class="section" id="edit-your-travis-file">
 <h3>Edit your travis file<a class="headerlink" href="#edit-your-travis-file" title="Permalink to this headline">¶</a></h3>
 <p>Doctr will output a bunch of text as well as instructions for next steps. You
 need to edit your <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> with this text. It contains the secure key
@@ -112,15 +111,15 @@ when the docs build fails.</p>
 you use <code class="docutils literal notranslate"><span class="pre">after_success</span></code>, it will <a class="reference external" href="https://docs.travis-ci.com/user/customizing-the-build#Breaking-the-Build">not cause</a>
 the build to fail.</p>
 </div>
-</section>
-<section id="commit-your-new-files-and-build-your-site">
+</div>
+<div class="section" id="commit-your-new-files-and-build-your-site">
 <h3>Commit your new files and build your site<a class="headerlink" href="#commit-your-new-files-and-build-your-site" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">configure</span></code> will create a new file that contains your key. Commit this as
 well as the changes to <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code>. Once you push to GitHub, travis should
 now automatically build your documentation and deploy it.</p>
-</section>
-</section>
-<section id="notes">
+</div>
+</div>
+<div class="section" id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
 <p><strong>Doctr requires Python 3.5 or newer.</strong> Be sure to run it in a
 Python 3.5 or newer section of your build matrix. It should be in the same
@@ -128,8 +127,8 @@ build in your build matrix as your docs build, as it reuses that.</p>
 <p><strong>Doctr does not require Sphinx.</strong> It will work with deploying anything to
 GitHub pages. However, if you do use Sphinx, Doctr will find your Sphinx
 docs automatically (otherwise use <code class="docutils literal notranslate"><span class="pre">doctr</span> <span class="pre">deploy</span> <span class="pre">.</span> <span class="pre">--built-docs</span> <span class="pre">&lt;DOCS</span> <span class="pre">PATH&gt;</span></code>).</p>
-</section>
-<section id="faq">
+</div>
+<div class="section" id="faq">
 <h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p><strong>Why did you build this?</strong></p>
@@ -207,8 +206,8 @@ GitHub automatically.</p>
 feel good.</p>
 </li>
 </ul>
-</section>
-<section id="projects-using-doctr">
+</div>
+<div class="section" id="projects-using-doctr">
 <h2>Projects using Doctr<a class="headerlink" href="#projects-using-doctr" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.sympy.org/en/index.html">SymPy</a></p></li>
@@ -284,16 +283,16 @@ feel good.</p>
 </li>
 </ul>
 </div>
-</section>
-</section>
-<section id="indices-and-tables">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</section>
+</div>
 
 
           </div>
