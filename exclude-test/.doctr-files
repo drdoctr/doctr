@@ -14,14 +14,14 @@ exclude-test/_static/custom.css
 exclude-test/_static/doctools.js
 exclude-test/_static/documentation_options.js
 exclude-test/_static/file.png
-exclude-test/_static/jquery-3.4.1.js
+exclude-test/_static/jquery-3.5.1.js
 exclude-test/_static/jquery.js
 exclude-test/_static/language_data.js
 exclude-test/_static/minus.png
 exclude-test/_static/plus.png
 exclude-test/_static/pygments.css
 exclude-test/_static/searchtools.js
-exclude-test/_static/underscore-1.3.1.js
+exclude-test/_static/underscore-1.12.0.js
 exclude-test/_static/underscore.js
 exclude-test/api.html
 exclude-test/changelog.html
