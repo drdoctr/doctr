@@ -4,14 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Notes for testing doctr &#8212; Doctr 1.8.0+10.g1e5be24 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Notes for testing doctr &#8212; Doctr 1.8.0+13.g7e75711 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Releasing" href="releasing.html" />
@@ -31,9 +32,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="notes-for-testing-doctr">
+  <section id="notes-for-testing-doctr">
 <h1>Notes for testing doctr<a class="headerlink" href="#notes-for-testing-doctr" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="github-test-authentication">
+<section id="github-test-authentication">
 <h2>GitHub Test Authentication<a class="headerlink" href="#github-test-authentication" title="Permalink to this headline">¶</a></h2>
 <p>Many of the <code class="docutils literal notranslate"><span class="pre">doctr</span></code> tests in <code class="docutils literal notranslate"><span class="pre">doctr/tests/test_local.py</span></code> contact GitHub to
 check that invalid repo names raise errors, etc. However, the GitHub API has a
@@ -49,8 +50,8 @@ privileges to check in with the GitHub API).</p>
 <p>Paste the token string into the <code class="docutils literal notranslate"><span class="pre">Value</span></code> field and <code class="docutils literal notranslate"><span class="pre">TESTING_TOKEN</span></code> in the
 <code class="docutils literal notranslate"><span class="pre">Name</span></code> field (unless you have changed this value in
 <code class="docutils literal notranslate"><span class="pre">doctr/tests/test_local.py</span></code>).</p>
-</div>
-<div class="section" id="travis-ci-com-cs-travis-ci-org">
+</section>
+<section id="travis-ci-com-cs-travis-ci-org">
 <h2>travis-ci.com cs. travis-ci.org<a class="headerlink" href="#travis-ci-com-cs-travis-ci-org" title="Permalink to this headline">¶</a></h2>
 <p>Travis CI is <a class="reference external" href="https://blog.travis-ci.com/2018-05-02-open-source-projects-on-travis-ci-com-with-github-apps">migrating</a>
 from .org to .com. While the migration is in place, it is possible to enable a
@@ -74,8 +75,8 @@ that should be enabled.</p>
 <p>There are automated tests in the test suite that check the function that
 determines which of .org/.com it is enabled on, which test against these repos
 (<code class="docutils literal notranslate"><span class="pre">test_check_repo_exists_org_com</span></code>).</p>
-</div>
-<div class="section" id="private-repositories">
+</section>
+<section id="private-repositories">
 <h2>Private Repositories<a class="headerlink" href="#private-repositories" title="Permalink to this headline">¶</a></h2>
 <p>Doctr also supports private repositories on GitHub. GitHub allows free private
 repositories, but they must be made on a user account, not the <code class="docutils literal notranslate"><span class="pre">drdoctr</span></code>
@@ -87,8 +88,8 @@ necessary.</p>
 <p>GitHub does not allow GitHub pages on private repositories on the free plan,
 but you can just manually verify that things are pushed to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>
 branch.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -136,7 +137,7 @@ branch.</p>
       &copy;2016, Aaron Meurer and Gil Forsyth.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
