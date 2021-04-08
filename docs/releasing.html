@@ -4,9 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
-    <title>Releasing &#8212; Doctr 1.8.0+14.gd909927 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Releasing &#8212; Doctr 1.9.0+1.g3365576 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="releasing">
+  <div class="section" id="releasing">
 <h1>Releasing<a class="headerlink" href="#releasing" title="Permalink to this headline">¶</a></h1>
 <p>Here is how to do a release:</p>
 <ul class="simple">
@@ -48,14 +47,15 @@ below commands not work until you delete the branch.</p></li>
 like <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">2.0</span> <span class="pre">-a</span></code>. Include the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag. This will ask for some
 commit message for the tag (you can just use something like “Doctr 2.0
 release”, or you can put the changelog in there if you want).</p></li>
-<li><p>Do <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">bdist_wheel</span> <span class="pre">upload</span></code>. It uses the tag to get the version number, so
-you need to do this after you tag.</p></li>
+<li><p>Do <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">bdist_wheel</span></code>, then <code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">upload</span>
+<span class="pre">dist/doctr-&lt;version&gt;*</span></code>. It uses the tag to get the version number, so you
+need to do this after you tag.</p></li>
 <li><p>Push up the tag (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">2.0</span></code>).</p></li>
 <li><p>Merge the pull request.</p></li>
 <li><p>Create a pull request to the <a class="reference external" href="https://github.com/conda-forge/doctr-feedstock">conda-forge feedstock</a> to update it. Make sure
 to do a pull request from a fork. Merge it once those tests pass.</p></li>
 </ul>
-</section>
+</div>
 
 
           </div>
