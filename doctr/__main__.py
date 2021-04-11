@@ -273,7 +273,9 @@ def deploy(args, parser):
 
     if not args.force and not on_travis():
         parser.error("doctr does not appear to be running on Travis. Use "
-                     "doctr deploy <target-dir> --force to run anyway.")
+                     "doctr deploy <target-dir> --force to run anyway.\n\n"
+                     "WARNING: this will remove any dirty files"
+                    )
 
     config = get_config()
 
