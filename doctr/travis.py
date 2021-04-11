@@ -177,7 +177,7 @@ def get_travis_branch():
     for ``$TRAVIS_PULL_REQUEST_BRANCH`` if it's a PR build, and
     ``$TRAVIS_BRANCH`` if it's a push build.
     """
-    if os.environ.get("TRAVIS_PULL_REQUEST", "") == "true":
+    if os.environ.get("TRAVIS_PULL_REQUEST", "") != "false":
         return os.environ.get("TRAVIS_PULL_REQUEST_BRANCH", "")
     else:
         return os.environ.get("TRAVIS_BRANCH", "")
